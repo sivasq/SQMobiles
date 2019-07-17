@@ -13,6 +13,7 @@ import InventoryAdd from "./pages/user/InventoryAdd";
 import IMEIStockDetails from "./pages/user/IMEIStockDetails";
 import ManageUser from "./pages/user/ManageUser";
 import IMEISalesDetails from "./pages/user/IMEISalesDetails";
+import ProductStockDetails from "./pages/user/ProductStockDetails";
 // Routes
 const routes = [
     {
@@ -156,6 +157,19 @@ const routes = [
         path: '/sqmobiles/public/imeisalesdetail',
         name: 'imeisalesdetail',
         component: IMEISalesDetails,
+        meta: {
+            // auth: true,
+            auth: {
+                roles: 'admin',
+                redirect: { name: 'admin' },
+                forbiddenRedirect: '/sqmobiles/public/admin/403'
+            }
+        }
+    },
+    {
+        path: '/sqmobiles/public/productstockdetail',
+        name: 'productstockdetail',
+        component: ProductStockDetails,
         meta: {
             // auth: true,
             auth: {

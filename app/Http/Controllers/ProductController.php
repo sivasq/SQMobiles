@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Brand;
+use App\Http\Resources\Product as ProductResource;
 use App\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Validator;
-use App\Http\Resources\Product as ProductResource;
 
 class ProductController extends Controller
 {
@@ -21,9 +21,36 @@ class ProductController extends Controller
         return ProductResource::collection($products);
     }
 
+    public function getProductStock($branch_id)
+    {
+        //        if ($branch_id == 0) {
+        //            return ProductResource::collection(Product::all());
+        //        } else if ($branch_id > 0) {
+        $data = DB::table('inventory_product_details')
+            ->where('inventory_product_details.sales_invoice', null)
+            ->join('inventory_products', function ($join) {
+                $join->on('inventory_product_details.inventory_product_id', '=', 'inventory_products.id');
+            })
+            ->join('products', function ($join) {
+                $join->on('inventory_products.product_id', '=', 'products.id');
+            })
+            ->get();
+
+        $grouped = $data->groupBy(function ($item, $key) {
+            return $item->product_name;
+        });
+
+//        $groupCount = $grouped->map(function ($item, $key) {
+//            return collect($item)->count();
+//        });
+
+        return $grouped;
+        //        }
+    }
+
     public function getProductsByBrand($brand_id)
     {
-        $products = Product::where('brand_id',$brand_id)->get();
+        $products = Product::where('brand_id', $brand_id)->get();
         return ProductResource::collection($products);
     }
 
@@ -40,7 +67,7 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -69,7 +96,7 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\product  $product
+     * @param \App\product $product
      * @return \Illuminate\Http\Response
      */
     public function show(product $product)
@@ -80,7 +107,7 @@ class ProductController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\product  $product
+     * @param \App\product $product
      * @return \Illuminate\Http\Response
      */
     public function edit(product $product)
@@ -91,8 +118,8 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\product  $product
+     * @param \Illuminate\Http\Request $request
+     * @param \App\product $product
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, product $product)
@@ -103,7 +130,7 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\product  $product
+     * @param \App\product $product
      * @return \Illuminate\Http\Response
      */
     public function destroy(product $product)

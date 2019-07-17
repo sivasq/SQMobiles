@@ -6,6 +6,7 @@ use App\Http\Resources\InventoryProductDetail as InventoryProductDetailResource;
 use App\Inventory;
 use App\InventoryProduct;
 use App\InventoryProductDetail;
+use App\Product;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -78,15 +79,29 @@ class InventoryController extends Controller
         }
     }
 
-    public function getImeiBasedStockDetails()
+    public function getImeiBasedStockDetailsByBranch($branch_id)
     {
-        return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', null)->get());
+        if ($branch_id == 0) {
+            return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', null)->get());
+        } else if ($branch_id > 0) {
+            return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', null)->where('branch_id', $branch_id)->get());
+        }
 
         // return InventoryProductDetailResource::collection(InventoryProductDetail::where('branch_id', auth()->user()->branch_id)->get());
     }
 
-    public function getImeiBasedSalesDetails()
+    public function getImeiBasedSalesDetailsByBranch($branch_id)
     {
-        return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', '!=', null)->get());
+        if ($branch_id == 0) {
+            return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', '!=', null)->get());
+        } else if ($branch_id > 0) {
+            return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', '!=', null)->where('branch_id', $branch_id)->get());
+        }
+    }
+
+    public function getProductStock($branch_id)
+    {
+        $products = Product::find(1);
+        dd($products);
     }
 }

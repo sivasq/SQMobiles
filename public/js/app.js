@@ -3315,6 +3315,9 @@ __webpack_require__.r(__webpack_exports__);
         }, {
           name: "IMEI Sales Details",
           path: "imeisalesdetail"
+        }, {
+          name: "Product Stock Details",
+          path: "productstockdetail"
         }]
       }
     };
@@ -3379,22 +3382,44 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      stockSalesDetails: []
+      stockSalesDetails: [],
+      branches: []
     };
   },
   created: function created() {
-    this.fetchProducts();
+    this.fetchBranches();
+    this.fetchProducts(0);
   },
   methods: {
-    fetchProducts: function fetchProducts() {
+    fetchBranches: function fetchBranches() {
       var _this = this;
 
-      axios.get(window.base_url + '/api/v1/auth/getImeiBasedSalesDetails').then(function (response) {
-        _this.stockSalesDetails = response.data.data;
-        console.log(_this.stockSalesDetails);
+      axios.get(window.base_url + '/api/v1/auth/fetchBranches').then(function (response) {
+        _this.branches = response.data.data;
+        console.log(_this.branches);
+      })["catch"](function (err) {
+        return console.error(err);
+      });
+    },
+    fetchProducts: function fetchProducts(branchId) {
+      var _this2 = this;
+
+      axios.get(window.base_url + '/api/v1/auth/getImeiBasedSalesDetails/' + branchId).then(function (response) {
+        _this2.stockSalesDetails = response.data.data;
+        console.log(_this2.stockSalesDetails);
       })["catch"](function (err) {
         return console.error(err);
       });
@@ -3450,22 +3475,44 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
-      stocksDetails: []
+      stocksDetails: [],
+      branches: []
     };
   },
   created: function created() {
-    this.fetchProducts();
+    this.fetchBranches();
+    this.fetchProducts(0);
   },
   methods: {
-    fetchProducts: function fetchProducts() {
+    fetchBranches: function fetchBranches() {
       var _this = this;
 
-      axios.get(window.base_url + '/api/v1/auth/getImeiBasedStockDetails').then(function (response) {
-        _this.stocksDetails = response.data.data;
-        console.log(_this.stocksDetails);
+      axios.get(window.base_url + '/api/v1/auth/fetchBranches').then(function (response) {
+        _this.branches = response.data.data;
+        console.log(_this.branches);
+      })["catch"](function (err) {
+        return console.error(err);
+      });
+    },
+    fetchProducts: function fetchProducts(branchId) {
+      var _this2 = this;
+
+      axios.get(window.base_url + '/api/v1/auth/getImeiBasedStockDetails/' + branchId).then(function (response) {
+        _this2.stocksDetails = response.data.data;
+        console.log(_this2.stocksDetails);
       })["catch"](function (err) {
         return console.error(err);
       });
@@ -4002,6 +4049,96 @@ __webpack_require__.r(__webpack_exports__);
       axios.get(window.base_url + '/api/v1/auth/fetchProducts').then(function (response) {
         _this3.products = response.data.data;
         console.log(_this3.products);
+      })["catch"](function (err) {
+        return console.error(err);
+      });
+    }
+  },
+  components: {//
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/pages/user/ProductStockDetails.vue?vue&type=script&lang=js&":
+/*!******************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/pages/user/ProductStockDetails.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      stocksDetails: [],
+      branches: []
+    };
+  },
+  created: function created() {
+    this.fetchBranches();
+    this.fetchProducts(0);
+  },
+  methods: {
+    fetchBranches: function fetchBranches() {
+      var _this = this;
+
+      axios.get(window.base_url + '/api/v1/auth/fetchBranches').then(function (response) {
+        _this.branches = response.data.data;
+        console.log(_this.branches);
+      })["catch"](function (err) {
+        return console.error(err);
+      });
+    },
+    fetchProducts: function fetchProducts(branchId) {
+      axios.get(window.base_url + '/api/v1/auth/getProductStock/' + branchId).then(function (response) {// this.stocksDetails = response.data.data;
+        // console.log(this.stocksDetails);
       })["catch"](function (err) {
         return console.error(err);
       });
@@ -42078,6 +42215,48 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container-fluid" }, [
+    _c(
+      "div",
+      { staticClass: "row justify-content-center" },
+      [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-sm",
+            on: {
+              click: function($event) {
+                $event.preventDefault()
+                return _vm.fetchProducts(0)
+              }
+            }
+          },
+          [_vm._v("\n            All\n        ")]
+        ),
+        _vm._v(" "),
+        _vm._l(_vm.branches, function(branch, index) {
+          return _c(
+            "button",
+            {
+              key: branch.id,
+              staticClass: "btn btn-sm",
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  return _vm.fetchProducts(branch.id)
+                }
+              }
+            },
+            [
+              _vm._v(
+                "\n            " + _vm._s(branch.branch_name) + "\n        "
+              )
+            ]
+          )
+        })
+      ],
+      2
+    ),
+    _vm._v(" "),
     _c("div", { staticClass: "row justify-content-center" }, [
       _c("h4", [_vm._v("IMEI Number Based Sales Details")]),
       _vm._v(" "),
@@ -42200,6 +42379,48 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container-fluid" }, [
+    _c(
+      "div",
+      { staticClass: "row justify-content-center" },
+      [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-sm",
+            on: {
+              click: function($event) {
+                $event.preventDefault()
+                return _vm.fetchProducts(0)
+              }
+            }
+          },
+          [_vm._v("\n            All\n        ")]
+        ),
+        _vm._v(" "),
+        _vm._l(_vm.branches, function(branch, index) {
+          return _c(
+            "button",
+            {
+              key: branch.id,
+              staticClass: "btn btn-sm",
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  return _vm.fetchProducts(branch.id)
+                }
+              }
+            },
+            [
+              _vm._v(
+                "\n            " + _vm._s(branch.branch_name) + "\n        "
+              )
+            ]
+          )
+        })
+      ],
+      2
+    ),
+    _vm._v(" "),
     _c("div", { staticClass: "row justify-content-center" }, [
       _c("h4", [_vm._v("IMEI Number Based Stock Details")]),
       _vm._v(" "),
@@ -43508,6 +43729,153 @@ var render = function() {
   ])
 }
 var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/pages/user/ProductStockDetails.vue?vue&type=template&id=3c124540&":
+/*!**********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/pages/user/ProductStockDetails.vue?vue&type=template&id=3c124540& ***!
+  \**********************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "container-fluid" }, [
+    _c(
+      "div",
+      { staticClass: "row justify-content-center" },
+      [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-sm",
+            on: {
+              click: function($event) {
+                $event.preventDefault()
+                return _vm.fetchProducts(0)
+              }
+            }
+          },
+          [_vm._v("\n            All\n        ")]
+        ),
+        _vm._v(" "),
+        _vm._l(_vm.branches, function(branch, index) {
+          return _c(
+            "button",
+            {
+              key: branch.id,
+              staticClass: "btn btn-sm",
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  return _vm.fetchProducts(branch.id)
+                }
+              }
+            },
+            [
+              _vm._v(
+                "\n            " + _vm._s(branch.branch_name) + "\n        "
+              )
+            ]
+          )
+        })
+      ],
+      2
+    ),
+    _vm._v(" "),
+    _c("div", { staticClass: "row justify-content-center" }, [
+      _c("h4", [_vm._v("Product Stock Details")]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-12 mt-5" }, [
+        _c("table", { staticClass: "table table-striped table-hover" }, [
+          _vm._m(0),
+          _vm._v(" "),
+          _c(
+            "tbody",
+            _vm._l(_vm.stocksDetails, function(stocksDetail, index) {
+              return _c("tr", { key: stocksDetail.id }, [
+                _c("td", [_vm._v(_vm._s(stocksDetail.imei_number))]),
+                _vm._v(" "),
+                _c("td", [
+                  _vm._v(
+                    _vm._s(
+                      stocksDetail.inventory_product_detail.inventory_detail
+                        .invoice_number
+                    )
+                  )
+                ]),
+                _vm._v(" "),
+                _c("td", [
+                  _vm._v(
+                    _vm._s(
+                      stocksDetail.inventory_product_detail.inventory_detail
+                        .supplier_details.supplier_name
+                    ) + "\n                    "
+                  )
+                ]),
+                _vm._v(" "),
+                _c("td", [
+                  _vm._v(
+                    _vm._s(
+                      stocksDetail.inventory_product_detail.product_details
+                        .brand_details.brand_name
+                    ) +
+                      " - " +
+                      _vm._s(
+                        stocksDetail.inventory_product_detail.product_details
+                          .product_name
+                      ) +
+                      "\n                    "
+                  )
+                ]),
+                _vm._v(" "),
+                _c("td", [
+                  _vm._v(
+                    _vm._s(stocksDetail.branch_detail.branch_name) +
+                      " -\n                        " +
+                      _vm._s(stocksDetail.branch_detail.branch_location) +
+                      "\n                    "
+                  )
+                ])
+              ])
+            }),
+            0
+          )
+        ])
+      ])
+    ])
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("IMEI")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Invoice")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Supplier")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Product")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Located At")])
+      ])
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -59536,6 +59904,75 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/pages/user/ProductStockDetails.vue":
+/*!*********************************************************!*\
+  !*** ./resources/js/pages/user/ProductStockDetails.vue ***!
+  \*********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _ProductStockDetails_vue_vue_type_template_id_3c124540___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ProductStockDetails.vue?vue&type=template&id=3c124540& */ "./resources/js/pages/user/ProductStockDetails.vue?vue&type=template&id=3c124540&");
+/* harmony import */ var _ProductStockDetails_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ProductStockDetails.vue?vue&type=script&lang=js& */ "./resources/js/pages/user/ProductStockDetails.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _ProductStockDetails_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _ProductStockDetails_vue_vue_type_template_id_3c124540___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _ProductStockDetails_vue_vue_type_template_id_3c124540___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/pages/user/ProductStockDetails.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/pages/user/ProductStockDetails.vue?vue&type=script&lang=js&":
+/*!**********************************************************************************!*\
+  !*** ./resources/js/pages/user/ProductStockDetails.vue?vue&type=script&lang=js& ***!
+  \**********************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ProductStockDetails_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./ProductStockDetails.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/pages/user/ProductStockDetails.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ProductStockDetails_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/pages/user/ProductStockDetails.vue?vue&type=template&id=3c124540&":
+/*!****************************************************************************************!*\
+  !*** ./resources/js/pages/user/ProductStockDetails.vue?vue&type=template&id=3c124540& ***!
+  \****************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ProductStockDetails_vue_vue_type_template_id_3c124540___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./ProductStockDetails.vue?vue&type=template&id=3c124540& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/pages/user/ProductStockDetails.vue?vue&type=template&id=3c124540&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ProductStockDetails_vue_vue_type_template_id_3c124540___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ProductStockDetails_vue_vue_type_template_id_3c124540___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/pages/user/Supplier.vue":
 /*!**********************************************!*\
   !*** ./resources/js/pages/user/Supplier.vue ***!
@@ -59626,10 +60063,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pages_user_IMEIStockDetails__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./pages/user/IMEIStockDetails */ "./resources/js/pages/user/IMEIStockDetails.vue");
 /* harmony import */ var _pages_user_ManageUser__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./pages/user/ManageUser */ "./resources/js/pages/user/ManageUser.vue");
 /* harmony import */ var _pages_user_IMEISalesDetails__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./pages/user/IMEISalesDetails */ "./resources/js/pages/user/IMEISalesDetails.vue");
+/* harmony import */ var _pages_user_ProductStockDetails__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./pages/user/ProductStockDetails */ "./resources/js/pages/user/ProductStockDetails.vue");
  // Pages
 // import Home from './pages/Home'
 
  // import Register from './pages/Register'
+
 
 
 
@@ -59788,6 +60227,20 @@ var routes = [{
   path: '/sqmobiles/public/imeisalesdetail',
   name: 'imeisalesdetail',
   component: _pages_user_IMEISalesDetails__WEBPACK_IMPORTED_MODULE_11__["default"],
+  meta: {
+    // auth: true,
+    auth: {
+      roles: 'admin',
+      redirect: {
+        name: 'admin'
+      },
+      forbiddenRedirect: '/sqmobiles/public/admin/403'
+    }
+  }
+}, {
+  path: '/sqmobiles/public/productstockdetail',
+  name: 'productstockdetail',
+  component: _pages_user_ProductStockDetails__WEBPACK_IMPORTED_MODULE_12__["default"],
   meta: {
     // auth: true,
     auth: {

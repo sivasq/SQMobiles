@@ -27,7 +27,8 @@
                         {name: "Products", path: "product"},
                         {name: "Add Inventory", path: "addinventory"},
                         {name: "IMEI Stock Details", path: "imeistockdetail"},
-                        {name: "IMEI Sales Details", path: "imeisalesdetail"}
+                        {name: "IMEI Sales Details", path: "imeisalesdetail"},
+                        {name: "Product Stock Details", path: "productstockdetail"}
                     ],
                 }
             }

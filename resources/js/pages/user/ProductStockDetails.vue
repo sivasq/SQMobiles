@@ -4,35 +4,29 @@
             <button @click.prevent="fetchProducts(0)" class="btn btn-sm">
                 All
             </button>
-            <button :key="branch.id" @click.prevent="fetchProducts(branch.id)" class="btn btn-sm"
-                    v-for="(branch, index) in branches">
+            <button :key="branch.id" @click.prevent="fetchProducts(branch.id)" v-for="(branch, index) in branches"
+                    class="btn btn-sm">
                 {{branch.branch_name}}
             </button>
         </div>
 
         <div class="row justify-content-center">
-            <h4>IMEI Number Based Sales Details</h4>
+            <h4>Product Stock Details</h4>
             <div class="col-12 mt-5">
                 <table class="table table-striped table-hover">
                     <thead>
                     <tr>
                         <th>IMEI</th>
-                        <th>Purchase Invoice</th>
-                        <th>Sales Invoice</th>
-                        <th>Sales Date</th>
+                        <th>Invoice</th>
                         <th>Supplier</th>
                         <th>Product</th>
                         <th>Located At</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in stockSalesDetails">
+                    <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in stocksDetails">
                         <td>{{stocksDetail.imei_number}}</td>
                         <td>{{stocksDetail.inventory_product_detail.inventory_detail.invoice_number}}</td>
-                        <td>{{stocksDetail.sales_invoice}}
-                        </td>
-                        <td>{{stocksDetail.sales_at}}
-                        </td>
                         <td>{{stocksDetail.inventory_product_detail.inventory_detail.supplier_details
                             .supplier_name}}
                         </td>
@@ -53,7 +47,7 @@
     export default {
         data() {
             return {
-                stockSalesDetails: [],
+                stocksDetails: [],
                 branches: [],
             }
         },
@@ -71,10 +65,10 @@
                     .catch((err) => console.error(err));
             },
             fetchProducts(branchId) {
-                axios.get(window.base_url + '/api/v1/auth/getImeiBasedSalesDetails/' + branchId)
+                axios.get(window.base_url + '/api/v1/auth/getProductStock/' + branchId)
                     .then(response => {
-                        this.stockSalesDetails = response.data.data;
-                        console.log(this.stockSalesDetails);
+                        // this.stocksDetails = response.data.data;
+                        // console.log(this.stocksDetails);
                     })
                     .catch((err) => console.error(err));
             },

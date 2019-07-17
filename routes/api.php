@@ -66,13 +66,14 @@ Route::prefix('v1')->group(function () {
             // Get Products BY Brand Id
             Route::get('fetchProductsByBrand/{brand_id}', 'ProductController@getProductsByBrand');
 
-
             // Add Inventory
             Route::post('addInventory', 'InventoryController@store');
 
-            Route::get('getImeiBasedStockDetails', 'InventoryController@getImeiBasedStockDetails');
+            Route::get('getImeiBasedStockDetails/{branch_id}', 'InventoryController@getImeiBasedStockDetailsByBranch');
 
-            Route::get('getImeiBasedSalesDetails', 'InventoryController@getImeiBasedSalesDetails');
+            Route::get('getImeiBasedSalesDetails/{branch_id}', 'InventoryController@getImeiBasedSalesDetailsByBranch');
+
+            Route::get('getProductStock/{branch_id}', 'ProductController@getProductStock');
         });
     });
 });

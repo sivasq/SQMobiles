@@ -1,6 +1,16 @@
 <template>
     <div class="container-fluid">
         <div class="row justify-content-center">
+            <button @click.prevent="fetchProducts(0)" class="btn btn-sm">
+                All
+            </button>
+            <button :key="branch.id" @click.prevent="fetchProducts(branch.id)" v-for="(branch, index) in branches"
+                    class="btn btn-sm">
+                {{branch.branch_name}}
+            </button>
+        </div>
+
+        <div class="row justify-content-center">
             <h4>IMEI Number Based Stock Details</h4>
             <div class="col-12 mt-5">
                 <table class="table table-striped table-hover">
@@ -38,14 +48,24 @@
         data() {
             return {
                 stocksDetails: [],
+                branches: [],
             }
         },
         created() {
-            this.fetchProducts();
+            this.fetchBranches();
+            this.fetchProducts(0);
         },
         methods: {
-            fetchProducts() {
-                axios.get(window.base_url + '/api/v1/auth/getImeiBasedStockDetails')
+            fetchBranches() {
+                axios.get(window.base_url + '/api/v1/auth/fetchBranches')
+                    .then(response => {
+                        this.branches = response.data.data;
+                        console.log(this.branches);
+                    })
+                    .catch((err) => console.error(err));
+            },
+            fetchProducts(branchId) {
+                axios.get(window.base_url + '/api/v1/auth/getImeiBasedStockDetails/' + branchId)
                     .then(response => {
                         this.stocksDetails = response.data.data;
                         console.log(this.stocksDetails);
