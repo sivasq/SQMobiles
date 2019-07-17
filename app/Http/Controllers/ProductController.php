@@ -18,13 +18,13 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
-        return new ProductResource($products);
+        return ProductResource::collection($products);
     }
 
     public function getProductsByBrand($brand_id)
     {
         $products = Product::where('brand_id',$brand_id)->get();
-        return new ProductResource($products);
+        return ProductResource::collection($products);
     }
 
     /**

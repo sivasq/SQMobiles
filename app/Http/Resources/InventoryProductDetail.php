@@ -2,9 +2,10 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Resources\Json\JsonResource;
 use App\Branch;
 use App\InventoryProduct;
+use App\User;
+use Illuminate\Http\Resources\Json\JsonResource;
 
 class InventoryProductDetail extends JsonResource
 {
@@ -16,12 +17,15 @@ class InventoryProductDetail extends JsonResource
      */
     public function toArray($request)
     {
-        //        return parent::toArray($request);
+        // return parent::toArray($request);
         return [
             'id' => $this->id,
             'imei_number' => $this->imei_number,
+            'sales_invoice' => $this->sales_invoice,
+            'sales_at' => $this->sales_at,
             'branch_detail' => $this->branch_details($this->branch_id),
-            'inventory_product_detail' => $this->inventory_product_details($this->inventory_product_id)
+            'inventory_product_detail' => $this->inventory_product_details($this->inventory_product_id),
+            'seller_detail' => $this->seller_details($this->sale_by)
         ];
     }
 
@@ -35,5 +39,11 @@ class InventoryProductDetail extends JsonResource
     {
         $inventory_product_details = InventoryProduct::where('id', $inventory_product_id)->first();
         return new \App\Http\Resources\InventoryProduct($inventory_product_details);
+    }
+
+    private function seller_details($user_id)
+    {
+        $user_details = User::where('id', $user_id)->first();
+        return new \App\Http\Resources\User($user_details);
     }
 }

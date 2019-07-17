@@ -16,8 +16,8 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        $branches = Supplier::all();
-        return new SupplierResource($branches);
+        $suppliers = Supplier::all();
+        return SupplierResource::collection($suppliers);
     }
 
     /**

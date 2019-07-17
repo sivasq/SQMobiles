@@ -35,41 +35,44 @@ Route::prefix('v1')->group(function () {
             Route::post('logout', 'AuthController@logout');
 
 
-            //Add New User
+            // Add New User
             Route::post('addUser', 'AuthController@register');
-            //Get All Users
+            // Get All Users
             Route::get('fetchUsers', 'AuthController@index');
 
-            //Add Supplier
+
+            // Add Supplier
             Route::post('addSupplier', 'SupplierController@store');
-            //Get All Suppliers
+            // Get All Suppliers
             Route::get('fetchSuppliers', 'SupplierController@index');
 
 
-            //Add Brand
+            // Add Brand
             Route::post('addBrand', 'BrandController@store');
-            //Get All Brands
+            // Get All Brands
             Route::get('fetchBrands', 'BrandController@index');
 
 
-            //Add Branch
+            // Add Branch
             Route::post('addBranch', 'BranchController@store');
-            //Get All Branches
+            // Get All Branches
             Route::get('fetchBranches', 'BranchController@index');
 
 
-            //Add Product
+            // Add Product
             Route::post('addProduct', 'ProductController@store');
-            //Get All Products
+            // Get All Products
             Route::get('fetchProducts', 'ProductController@index');
-            //Get Products BY Brand Id
+            // Get Products BY Brand Id
             Route::get('fetchProductsByBrand/{brand_id}', 'ProductController@getProductsByBrand');
 
 
-            //Add Inventory
+            // Add Inventory
             Route::post('addInventory', 'InventoryController@store');
 
-            Route::get('getInventoryProductDetails', 'InventoryController@getInventoryProductDetails');
+            Route::get('getImeiBasedStockDetails', 'InventoryController@getImeiBasedStockDetails');
+
+            Route::get('getImeiBasedSalesDetails', 'InventoryController@getImeiBasedSalesDetails');
         });
     });
 });

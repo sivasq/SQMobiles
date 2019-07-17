@@ -16,6 +16,7 @@ class Brand extends JsonResource
     {
 //        return parent::toArray($request);
         return [
+            'id' => $this->id,
             'brand_name' => $this->brand_name,
         ];
     }

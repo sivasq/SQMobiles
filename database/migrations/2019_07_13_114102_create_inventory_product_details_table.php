@@ -22,8 +22,8 @@ class CreateInventoryProductDetailsTable extends Migration
             $table->foreign('branch_id')->references('id')->on('branches');
             $table->string('sales_invoice')->nullable();
             $table->timestamp('sales_at')->nullable();
-            $table->integer('user_id')->nullable();
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->integer('sale_by')->nullable();
+            $table->foreign('sale_by')->references('id')->on('users');
             $table->timestamps();
         });
     }

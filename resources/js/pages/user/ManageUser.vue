@@ -159,7 +159,7 @@
                         this.email = '';
                         this.mobile = '';
                         this.branch_id = '';
-                        this.roles = '';
+                        // this.roles = '';
                         this.password = '';
                         this.password_confirmation = '';
                         this.fetchUsers();

@@ -10,7 +10,7 @@
 
     <meta name="base-url" content="{{ url('/') }}">
 
-    <title>{{ config('app.name', 'SQINDIA') }}</title>
+    <title>{{ config('app.name', 'SQMobiles') }}</title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">

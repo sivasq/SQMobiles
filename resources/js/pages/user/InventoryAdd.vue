@@ -59,6 +59,14 @@
                                       v-if="has_error && errors.product_id">{{ errors.product_id }}</span>
                             </div>
 
+                            <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.purchase_price }">
+                                <label for="product_qty">Purchase Price</label>
+                                <input @keypress="isNumber($event)" class="form-control" id="purchase_price" placeholder="Purchase Price"
+                                       type="text" v-model="inventory.purchase_price">
+                                <span class="help-block"
+                                      v-if="has_error && errors.purchase_price">{{ errors.purchase_price }}</span>
+                            </div>
+
                             <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.product_qty }">
                                 <label for="product_qty">Product Qty</label>
                                 <input @keypress="isNumber($event)" class="form-control" id="product_qty" placeholder="Product Qty"
@@ -91,10 +99,11 @@
                 inventory: {
                     invoice_number: '',
                     supplier_id: '',
-                    branch_id: 0,
+                    // branch_id: 1,
                     brand_id: '',
                     product_id: '',
                     product_qty: '',
+                    purchase_price:'',
                     product_serial_numbers: []
                 },
                 has_error: false,
@@ -180,6 +189,7 @@
                         this.inventory.brand_id = '';
                         this.inventory.product_id = '';
                         this.inventory.product_qty = '';
+                        this.inventory.purchase_price = '';
                         this.inventory.product_serial_numbers = [];
                         // this.fetchBranches();
                     })

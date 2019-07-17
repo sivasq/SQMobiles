@@ -17,9 +17,8 @@
 
                                 <select class="form-control" id="brand_id" v-model="product.brand_id">
                                     <option disabled selected value="">Select Brand</option>
-                                    <option :key="brand.id" :value="brand.id"
-                                            class="list-group-item" v-for="(brand, index) in brands">{{brand
-                                        .brand_name}}
+                                    <option :key="brand.id" :value="brand.id" class="list-group-item"
+                                            v-for="(brand, index) in brands">{{brand.brand_name}}
                                     </option>
                                 </select>
 
@@ -76,7 +75,8 @@
         },
         methods: {
             addProduct() {
-                var app = this
+                var app = this;
+                console.log(this.product);
                 axios.post(window.base_url + '/api/v1/auth/addProduct', this.product)
                     .then(response => {
                         this.product.brand_id = '';

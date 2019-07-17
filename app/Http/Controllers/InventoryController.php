@@ -6,31 +6,14 @@ use App\Http\Resources\InventoryProductDetail as InventoryProductDetailResource;
 use App\Inventory;
 use App\InventoryProduct;
 use App\InventoryProductDetail;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Validator;
+
 
 class InventoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -42,13 +25,12 @@ class InventoryController extends Controller
         $validator = Validator::make($request->all(), [
             'invoice_number' => 'required',
             'supplier_id' => 'required',
-            'branch_id' => 'required',
             'brand_id' => 'required',
             'product_id' => 'required',
             'product_qty' => 'required',
+            'purchase_price' => 'required',
             'product_serial_numbers' => 'required',
         ]);
-
 
         if ($validator->fails()) {
             return response()->json([
@@ -56,87 +38,55 @@ class InventoryController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
+        try {
+            DB::beginTransaction();
 
-        $inventory = Inventory::firstOrCreate(
-            ['invoice_number' => $request->invoice_number],
-            ['supplier_id' => $request->supplier_id]
-        );
+            $inventory = Inventory::firstOrCreate(
+                ['invoice_number' => $request->invoice_number],
+                ['supplier_id' => $request->supplier_id]
+            );
 
-        //        $inventory = new Inventory();
-        //        $inventory->invoice_number = $request->invoice_number;
-        //        $inventory->supplier_id = $request->supplier_id;
-        //        $inventory->save();
+            $filtered_imei_numbers = collect($request->product_serial_numbers)->filter(function ($item) {
+                return $item['imei_number'] != null;
+            })->values()->toArray();
 
-        $inventoryProduct = new InventoryProduct();
-        $inventoryProduct->inventory_id = $inventory->id;
-        $inventoryProduct->product_id = $request->product_id;
-        $inventoryProduct->qty = ($request->product_qty != count($request->product_serial_numbers)) ? count
-        ($request->product_serial_numbers) : $request->product_qty;
-        $inventoryProduct->save();
+            $inventoryProduct = new InventoryProduct();
+            $inventoryProduct->inventory_id = $inventory->id;
+            $inventoryProduct->product_id = $request->product_id;
+            $inventoryProduct->inventory_product_qty = ($request->product_qty != count($filtered_imei_numbers)) ? count
+            ($filtered_imei_numbers) : $request->product_qty;
+            $inventoryProduct->purchase_price_per_qty = $request->purchase_price;
+            $inventoryProduct->save();
 
-        // Book records to be saved
-        $inventory_imei_records = [];
-        foreach ($request->product_serial_numbers as $product_serial_number) {
-            if (!empty($product_serial_number['imei_number'])) {
-                $inventory_imei_records[] = [
-                    'inventory_product_id' => $inventoryProduct->id,
-                    'imei_number' => $product_serial_number['imei_number'],
-                    'branch_id' => 0
-                ];
+            // Inventory_imei_records to be saved
+            $inventory_imei_records = [];
+            foreach ($request->product_serial_numbers as $product_serial_number) {
+                if (!empty($product_serial_number['imei_number'])) {
+                    $inventory_imei_records[] = [
+                        'inventory_product_id' => $inventoryProduct->id,
+                        'imei_number' => $product_serial_number['imei_number'],
+                        'branch_id' => 1
+                    ];
+                }
             }
+            InventoryProductDetail::insert($inventory_imei_records);
+            DB::commit();
+            return response()->json(['success' => true], 200);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json(['success' => false], 401);
         }
-        InventoryProductDetail::insert($inventory_imei_records);
-
-        return response()->json(['status' => 'success'], 200);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param \App\stock $stock
-     * @return \Illuminate\Http\Response
-     */
-    public function show(stock $stock)
+    public function getImeiBasedStockDetails()
     {
-        //
+        return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', null)->get());
+
+        // return InventoryProductDetailResource::collection(InventoryProductDetail::where('branch_id', auth()->user()->branch_id)->get());
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param \App\stock $stock
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(stock $stock)
+    public function getImeiBasedSalesDetails()
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\stock $stock
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, stock $stock)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param \App\stock $stock
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(stock $stock)
-    {
-        //
-    }
-
-    public function getInventoryProductDetails()
-    {
-        return InventoryProductDetailResource::collection(InventoryProductDetail::where('branch_id', auth()->user()->branch_id)->get());
+        return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', '!=', null)->get());
     }
 }

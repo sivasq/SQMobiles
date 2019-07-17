@@ -18,6 +18,7 @@ class InventoryProduct extends JsonResource
     {
         //        return parent::toArray($request);
         return [
+            'id' => $this->id,
             'product_details' => $this->product_details($this->product_id),
             'inventory_detail' => $this->inventory_details($this->inventory_id)
         ];

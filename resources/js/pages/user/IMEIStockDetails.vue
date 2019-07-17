@@ -1,25 +1,17 @@
 <template>
     <div class="container-fluid">
-        <div class="row justify-content-md-center">
+        <div class="row justify-content-center">
+            <h4>IMEI Number Based Stock Details</h4>
             <div class="col-12 mt-5">
-<!--                <ul class="list-group">-->
-<!--                    <li class="list-group-item text-center text-primary"> Stock List</li>-->
-<!--                    <li class="list-group-item text-center text-danger" v-if='stocksDetails.length === 0'>There are no-->
-<!--                        Stock-->
-<!--                        yet!-->
-<!--                    </li>-->
-<!--                    <li :key="stocksDetail.id" class="list-group-item" v-for="(stocksDetail, index) in stocksDetails">-->
-<!--                        {{index + 1}}) {{stocksDetail.imei_number}}-->
-<!--                    </li>-->
-<!--                </ul>-->
-
-                <table class="table">
+                <table class="table table-striped table-hover">
                     <thead>
-                    <th>IMEI</th>
-                    <th>Invoice</th>
-                    <th>Supplier</th>
-                    <th>Product</th>
-                    <th>Location</th>
+                    <tr>
+                        <th>IMEI</th>
+                        <th>Invoice</th>
+                        <th>Supplier</th>
+                        <th>Product</th>
+                        <th>Located At</th>
+                    </tr>
                     </thead>
                     <tbody>
                     <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in stocksDetails">
@@ -53,7 +45,7 @@
         },
         methods: {
             fetchProducts() {
-                axios.get(window.base_url + '/api/v1/auth/getInventoryProductDetails')
+                axios.get(window.base_url + '/api/v1/auth/getImeiBasedStockDetails')
                     .then(response => {
                         this.stocksDetails = response.data.data;
                         console.log(this.stocksDetails);

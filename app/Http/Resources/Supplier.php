@@ -16,6 +16,7 @@ class Supplier extends JsonResource
     {
 //        return parent::toArray($request);
         return [
+            'id' => $this->id,
             'supplier_name' => $this->supplier_name
         ];
     }
