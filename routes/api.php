@@ -15,6 +15,10 @@
 //     return $request->user();
 // });
 
+//Event::listen('illuminate.query', function ($query) {
+//    var_dump($query);
+//});
+
 Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         // Below mention routes are public, user can access those without any restriction.
@@ -74,6 +78,8 @@ Route::prefix('v1')->group(function () {
             Route::get('getImeiBasedSalesDetails/{branch_id}', 'InventoryController@getImeiBasedSalesDetailsByBranch');
 
             Route::get('getProductStock/{branch_id}', 'ProductController@getProductStock');
+
+            Route::post('transferStock', 'InventoryController@transferStock');
         });
     });
 });

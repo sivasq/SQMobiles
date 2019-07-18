@@ -23,45 +23,51 @@ class ProductController extends Controller
 
     public function getProductStock($branch_id)
     {
-        //        if ($branch_id == 0) {
-        //            return ProductResource::collection(Product::all());
-        //        } else if ($branch_id > 0) {
-        $data = DB::table('inventory_product_details')
-            ->where('inventory_product_details.sales_invoice', null)
-            ->join('inventory_products', function ($join) {
-                $join->on('inventory_product_details.inventory_product_id', '=', 'inventory_products.id');
-            })
-            ->join('products', function ($join) {
-                $join->on('inventory_products.product_id', '=', 'products.id');
-            })
-            ->get();
+        if ($branch_id == 0) {
+            $data = DB::table('products')
+                ->where('inventory_product_details.sales_invoice', null)
+                ->leftJoin('inventory_product_details', function ($join) {
+                    $join->on('products.id', '=', 'inventory_product_details.product_id');
+                })
+                ->join('brands', function ($join) {
+                    $join->on('products.brand_id', '=', 'brands.id');
+                })
+                ->select('products.id', 'brands.brand_name', 'products.product_name', DB::raw("IFNULL(sum(inventory_product_details.imei_qty),0) as available_stock"))
+                ->groupBy('products.id')
+                ->get();
+            return $data;
 
-        $grouped = $data->groupBy(function ($item, $key) {
-            return $item->product_name;
-        });
+        } else if ($branch_id > 0) {
+            $data = DB::table('products')
+                ->where('inventory_product_details.sales_invoice', null)
+                ->where('inventory_product_details.branch_id', $branch_id)
+                ->leftJoin('inventory_product_details', function ($join) {
+                    $join->on('products.id', '=', 'inventory_product_details.product_id');
+                })
+                ->join('brands', function ($join) {
+                    $join->on('products.brand_id', '=', 'brands.id');
+                })
+                ->select('products.id', 'brands.brand_name', 'products.product_name', DB::raw("IFNULL(sum(inventory_product_details.imei_qty),0) as available_stock"))
+                ->groupBy('products.id')
+                ->get();
+            return $data;
 
-//        $groupCount = $grouped->map(function ($item, $key) {
-//            return collect($item)->count();
-//        });
+            //            $grouped = $data->groupBy(function ($item, $key) {
+            //                return $item->product_name;
+            //            });
+            //
+            //            $groupCount = $grouped->map(function ($item, $key) {
+            //                return collect($item)->count();
+            //            });
 
-        return $grouped;
-        //        }
+            return $data;
+        }
     }
 
     public function getProductsByBrand($brand_id)
     {
         $products = Product::where('brand_id', $brand_id)->get();
         return ProductResource::collection($products);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -91,28 +97,6 @@ class ProductController extends Controller
         $product->save();
 
         return response()->json(['status' => 'success'], 200);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param \App\product $product
-     * @return \Illuminate\Http\Response
-     */
-    public function show(product $product)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param \App\product $product
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(product $product)
-    {
-        //
     }
 
     /**

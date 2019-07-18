@@ -16,26 +16,26 @@
                 <table class="table table-striped table-hover">
                     <thead>
                     <tr>
-                        <th>IMEI</th>
-                        <th>Invoice</th>
-                        <th>Supplier</th>
-                        <th>Product</th>
-                        <th>Located At</th>
+                        <th>Product Name</th>
+                        <th>Available Stock</th>
+<!--                        <th>Supplier</th>-->
+<!--                        <th>Product</th>-->
+<!--                        <th>Located At</th>-->
                     </tr>
                     </thead>
                     <tbody>
                     <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in stocksDetails">
-                        <td>{{stocksDetail.imei_number}}</td>
-                        <td>{{stocksDetail.inventory_product_detail.inventory_detail.invoice_number}}</td>
-                        <td>{{stocksDetail.inventory_product_detail.inventory_detail.supplier_details
-                            .supplier_name}}
-                        </td>
-                        <td>{{stocksDetail.inventory_product_detail.product_details.brand_details
-                            .brand_name}} - {{stocksDetail.inventory_product_detail.product_details.product_name}}
-                        </td>
-                        <td>{{stocksDetail.branch_detail.branch_name}} -
-                            {{stocksDetail.branch_detail.branch_location}}
-                        </td>
+                        <td>{{stocksDetail.brand_name}} {{stocksDetail.product_name}}</td>
+                        <td>{{stocksDetail.available_stock}}</td>
+<!--                        <td>{{stocksDetail.inventory_product_detail.inventory_detail.supplier_details-->
+<!--                            .supplier_name}}-->
+<!--                        </td>-->
+<!--                        <td>{{stocksDetail.inventory_product_detail.product_details.brand_details-->
+<!--                            .brand_name}} - {{stocksDetail.inventory_product_detail.product_details.product_name}}-->
+<!--                        </td>-->
+<!--                        <td>{{stocksDetail.branch_detail.branch_name}} - -->
+<!--                            {{stocksDetail.branch_detail.branch_location}}-->
+<!--                        </td>-->
                     </tr>
                     </tbody>
                 </table>
@@ -53,7 +53,7 @@
         },
         created() {
             this.fetchBranches();
-            this.fetchProducts(0);
+            this.fetchProducts(1);
         },
         methods: {
             fetchBranches() {
@@ -67,8 +67,8 @@
             fetchProducts(branchId) {
                 axios.get(window.base_url + '/api/v1/auth/getProductStock/' + branchId)
                     .then(response => {
-                        // this.stocksDetails = response.data.data;
-                        // console.log(this.stocksDetails);
+                        this.stocksDetails = response.data;
+                        console.log(this.stocksDetails);
                     })
                     .catch((err) => console.error(err));
             },

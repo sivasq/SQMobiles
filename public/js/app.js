@@ -3485,11 +3485,53 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       stocksDetails: [],
-      branches: []
+      branches: [],
+      selected: [],
+      selectAll: false,
+      activeTab: 0,
+      showTransfer: false,
+      transferTo: ''
     };
   },
   created: function created() {
@@ -3497,6 +3539,15 @@ __webpack_require__.r(__webpack_exports__);
     this.fetchProducts(0);
   },
   methods: {
+    selectALLIMEI: function selectALLIMEI() {
+      this.selected = [];
+
+      if (!this.selectAll) {
+        for (var i in this.stocksDetails) {
+          this.selected.push(this.stocksDetails[i].id);
+        }
+      }
+    },
     fetchBranches: function fetchBranches() {
       var _this = this;
 
@@ -3510,14 +3561,43 @@ __webpack_require__.r(__webpack_exports__);
     fetchProducts: function fetchProducts(branchId) {
       var _this2 = this;
 
+      this.activeTab = branchId;
       axios.get(window.base_url + '/api/v1/auth/getImeiBasedStockDetails/' + branchId).then(function (response) {
+        _this2.selected = [];
+        _this2.showTransfer = false;
         _this2.stocksDetails = response.data.data;
         console.log(_this2.stocksDetails);
       })["catch"](function (err) {
         return console.error(err);
       });
+    },
+    selectChange: function selectChange() {
+      if (this.selected.length > 0) {
+        this.showTransfer = true;
+      } else {
+        this.transferTo = '';
+        this.showTransfer = false;
+      }
+    },
+    transferStock: function transferStock() {
+      var _this3 = this;
+
+      console.log(this.transferTo);
+      console.log(this.activeTab);
+      console.log(this.selected);
+      var app = this;
+      axios.post(window.base_url + '/api/v1/auth/transferStock', {
+        transfer_to: app.transferTo,
+        transfer_from: app.activeTab,
+        transfer_items: app.selected
+      }).then(function (response) {
+        if (response.data.success) {
+          _this3.fetchProducts(app.activeTab);
+        }
+      })["catch"](function (res) {});
     }
   },
+  watch: {},
   components: {//
   }
 });
@@ -4123,7 +4203,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   created: function created() {
     this.fetchBranches();
-    this.fetchProducts(0);
+    this.fetchProducts(1);
   },
   methods: {
     fetchBranches: function fetchBranches() {
@@ -4137,8 +4217,11 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     fetchProducts: function fetchProducts(branchId) {
-      axios.get(window.base_url + '/api/v1/auth/getProductStock/' + branchId).then(function (response) {// this.stocksDetails = response.data.data;
-        // console.log(this.stocksDetails);
+      var _this2 = this;
+
+      axios.get(window.base_url + '/api/v1/auth/getProductStock/' + branchId).then(function (response) {
+        _this2.stocksDetails = response.data;
+        console.log(_this2.stocksDetails);
       })["catch"](function (err) {
         return console.error(err);
       });
@@ -42379,59 +42462,226 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container-fluid" }, [
-    _c(
-      "div",
-      { staticClass: "row justify-content-center" },
-      [
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-sm",
-            on: {
-              click: function($event) {
-                $event.preventDefault()
-                return _vm.fetchProducts(0)
-              }
-            }
-          },
-          [_vm._v("\n            All\n        ")]
-        ),
-        _vm._v(" "),
-        _vm._l(_vm.branches, function(branch, index) {
-          return _c(
-            "button",
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { staticClass: "row justify-content-center mt-3" }, [
+      _c(
+        "div",
+        {
+          staticClass: "btn-group btn-group-toggle",
+          attrs: { "data-toggle": "buttons" }
+        },
+        [
+          _c(
+            "label",
             {
-              key: branch.id,
-              staticClass: "btn btn-sm",
+              staticClass: "btn btn-outline-primary btn-toggle active",
               on: {
                 click: function($event) {
                   $event.preventDefault()
-                  return _vm.fetchProducts(branch.id)
+                  return _vm.fetchProducts(0)
                 }
               }
             },
             [
-              _vm._v(
-                "\n            " + _vm._s(branch.branch_name) + "\n        "
-              )
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.activeTab,
+                    expression: "activeTab"
+                  }
+                ],
+                attrs: { autocomplete: "off", checked: "", type: "radio" },
+                domProps: { checked: _vm._q(_vm.activeTab, null) },
+                on: {
+                  change: function($event) {
+                    _vm.activeTab = null
+                  }
+                }
+              }),
+              _vm._v("\n                ALL\n            ")
             ]
-          )
-        })
-      ],
-      2
-    ),
+          ),
+          _vm._v(" "),
+          _vm._l(_vm.branches, function(branch, index) {
+            return _c(
+              "label",
+              {
+                key: branch.id,
+                staticClass: "btn btn-outline-primary btn-toggle",
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    return _vm.fetchProducts(branch.id)
+                  }
+                }
+              },
+              [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.activeTab,
+                      expression: "activeTab"
+                    }
+                  ],
+                  attrs: { autocomplete: "off", type: "radio" },
+                  domProps: { checked: _vm._q(_vm.activeTab, null) },
+                  on: {
+                    change: function($event) {
+                      _vm.activeTab = null
+                    }
+                  }
+                }),
+                _vm._v(
+                  "\n                " +
+                    _vm._s(branch.branch_name) +
+                    "\n            "
+                )
+              ]
+            )
+          })
+        ],
+        2
+      )
+    ]),
     _vm._v(" "),
-    _c("div", { staticClass: "row justify-content-center" }, [
-      _c("h4", [_vm._v("IMEI Number Based Stock Details")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-12 mt-5" }, [
+    _vm.showTransfer
+      ? _c("div", { staticClass: "row justify-content-center mt-3" }, [
+          _c("span", [_vm._v("Transfer To")]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-12 text-center" }, [
+            _c(
+              "div",
+              {
+                staticClass: "btn-group btn-group-toggle",
+                attrs: { "data-toggle": "buttons" }
+              },
+              _vm._l(_vm.branches, function(branch, index) {
+                return branch.id !== _vm.activeTab
+                  ? _c(
+                      "label",
+                      {
+                        key: branch.id,
+                        staticClass: "btn btn-sm btn-outline-info",
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            _vm.transferTo = branch.id
+                          }
+                        }
+                      },
+                      [
+                        _c("input", {
+                          attrs: { autocomplete: "off", type: "radio" }
+                        }),
+                        _vm._v(
+                          "\n                    " +
+                            _vm._s(branch.branch_name) +
+                            "\n                "
+                        )
+                      ]
+                    )
+                  : _vm._e()
+              }),
+              0
+            ),
+            _vm._v(" "),
+            _vm.transferTo != ""
+              ? _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-sm btn-success",
+                    attrs: { type: "button" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.transferStock()
+                      }
+                    }
+                  },
+                  [_vm._v("Transfer\n                Now")]
+                )
+              : _vm._e()
+          ])
+        ])
+      : _vm._e(),
+    _vm._v(" "),
+    _c("div", { staticClass: "row justify-content-center mt-3" }, [
+      _c("div", { staticClass: "col-12" }, [
         _c("table", { staticClass: "table table-striped table-hover" }, [
-          _vm._m(0),
+          _c("thead", [
+            _c("tr", [
+              _vm.activeTab != 0 ? _c("th") : _vm._e(),
+              _vm._v(" "),
+              _c("th", [_vm._v("IMEI")]),
+              _vm._v(" "),
+              _c("th", [_vm._v("Invoice")]),
+              _vm._v(" "),
+              _c("th", [_vm._v("Supplier")]),
+              _vm._v(" "),
+              _c("th", [_vm._v("Product")]),
+              _vm._v(" "),
+              _c("th", [_vm._v("Located At")])
+            ])
+          ]),
           _vm._v(" "),
           _c(
             "tbody",
             _vm._l(_vm.stocksDetails, function(stocksDetail, index) {
               return _c("tr", { key: stocksDetail.id }, [
+                _vm.activeTab != 0
+                  ? _c("td", [
+                      _c("div", { staticClass: "form-check" }, [
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.selected,
+                              expression: "selected"
+                            }
+                          ],
+                          attrs: { type: "checkbox" },
+                          domProps: {
+                            value: stocksDetail.id,
+                            checked: Array.isArray(_vm.selected)
+                              ? _vm._i(_vm.selected, stocksDetail.id) > -1
+                              : _vm.selected
+                          },
+                          on: {
+                            change: [
+                              function($event) {
+                                var $$a = _vm.selected,
+                                  $$el = $event.target,
+                                  $$c = $$el.checked ? true : false
+                                if (Array.isArray($$a)) {
+                                  var $$v = stocksDetail.id,
+                                    $$i = _vm._i($$a, $$v)
+                                  if ($$el.checked) {
+                                    $$i < 0 &&
+                                      (_vm.selected = $$a.concat([$$v]))
+                                  } else {
+                                    $$i > -1 &&
+                                      (_vm.selected = $$a
+                                        .slice(0, $$i)
+                                        .concat($$a.slice($$i + 1)))
+                                  }
+                                } else {
+                                  _vm.selected = $$c
+                                }
+                              },
+                              _vm.selectChange
+                            ]
+                          }
+                        })
+                      ])
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
                 _c("td", [_vm._v(_vm._s(stocksDetail.imei_number))]),
                 _vm._v(" "),
                 _c("td", [
@@ -42458,7 +42708,7 @@ var render = function() {
                       stocksDetail.inventory_product_detail.product_details
                         .brand_details.brand_name
                     ) +
-                      " - " +
+                      " -\n                        " +
                       _vm._s(
                         stocksDetail.inventory_product_detail.product_details
                           .product_name
@@ -42489,18 +42739,8 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("thead", [
-      _c("tr", [
-        _c("th", [_vm._v("IMEI")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Invoice")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Supplier")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Product")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Located At")])
-      ])
+    return _c("div", { staticClass: "row justify-content-center" }, [
+      _c("h4", [_vm._v("IMEI Number Based Stock Details")])
     ])
   }
 ]
@@ -43766,7 +44006,7 @@ var render = function() {
               }
             }
           },
-          [_vm._v("\n            All\n        ")]
+          [_vm._v("\n                All\n            ")]
         ),
         _vm._v(" "),
         _vm._l(_vm.branches, function(branch, index) {
@@ -43784,7 +44024,9 @@ var render = function() {
             },
             [
               _vm._v(
-                "\n            " + _vm._s(branch.branch_name) + "\n        "
+                "\n                " +
+                  _vm._s(branch.branch_name) +
+                  "\n            "
               )
             ]
           )
@@ -43804,49 +44046,15 @@ var render = function() {
             "tbody",
             _vm._l(_vm.stocksDetails, function(stocksDetail, index) {
               return _c("tr", { key: stocksDetail.id }, [
-                _c("td", [_vm._v(_vm._s(stocksDetail.imei_number))]),
-                _vm._v(" "),
                 _c("td", [
                   _vm._v(
-                    _vm._s(
-                      stocksDetail.inventory_product_detail.inventory_detail
-                        .invoice_number
-                    )
+                    _vm._s(stocksDetail.brand_name) +
+                      " " +
+                      _vm._s(stocksDetail.product_name)
                   )
                 ]),
                 _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    _vm._s(
-                      stocksDetail.inventory_product_detail.inventory_detail
-                        .supplier_details.supplier_name
-                    ) + "\n                    "
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    _vm._s(
-                      stocksDetail.inventory_product_detail.product_details
-                        .brand_details.brand_name
-                    ) +
-                      " - " +
-                      _vm._s(
-                        stocksDetail.inventory_product_detail.product_details
-                          .product_name
-                      ) +
-                      "\n                    "
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    _vm._s(stocksDetail.branch_detail.branch_name) +
-                      " -\n                        " +
-                      _vm._s(stocksDetail.branch_detail.branch_location) +
-                      "\n                    "
-                  )
-                ])
+                _c("td", [_vm._v(_vm._s(stocksDetail.available_stock))])
               ])
             }),
             0
@@ -43863,15 +44071,9 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("thead", [
       _c("tr", [
-        _c("th", [_vm._v("IMEI")]),
+        _c("th", [_vm._v("Product Name")]),
         _vm._v(" "),
-        _c("th", [_vm._v("Invoice")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Supplier")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Product")]),
-        _vm._v(" "),
-        _c("th", [_vm._v("Located At")])
+        _c("th", [_vm._v("Available Stock")])
       ])
     ])
   }

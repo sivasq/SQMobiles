@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `inventories` (
   KEY `inventories_supplier_id_foreign` (`supplier_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table sqindia.inventories: 1 rows
+-- Dumping data for table sqindia.inventories: 2 rows
 /*!40000 ALTER TABLE `inventories` DISABLE KEYS */;
 REPLACE INTO `inventories` (`id`, `invoice_number`, `supplier_id`, `created_at`, `updated_at`) VALUES
 	(1, 'gfgd', 1, '2019-07-16 07:42:05', '2019-07-16 07:42:05'),
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS `inventory_products` (
   KEY `inventory_products_product_id_foreign` (`product_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table sqindia.inventory_products: 1 rows
+-- Dumping data for table sqindia.inventory_products: 4 rows
 /*!40000 ALTER TABLE `inventory_products` DISABLE KEYS */;
 REPLACE INTO `inventory_products` (`id`, `inventory_id`, `product_id`, `inventory_product_qty`, `purchase_price_per_qty`, `created_at`, `updated_at`) VALUES
 	(1, 1, 1, 2, 0, '2019-07-16 07:42:05', '2019-07-16 07:42:05'),
@@ -99,7 +99,9 @@ REPLACE INTO `inventory_products` (`id`, `inventory_id`, `product_id`, `inventor
 CREATE TABLE IF NOT EXISTS `inventory_product_details` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `inventory_product_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
   `imei_number` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `imei_qty` int(11) DEFAULT '1',
   `branch_id` int(11) NOT NULL,
   `sales_invoice` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `sales_at` timestamp NULL DEFAULT NULL,
@@ -110,19 +112,23 @@ CREATE TABLE IF NOT EXISTS `inventory_product_details` (
   KEY `inventory_product_details_inventory_product_id_foreign` (`inventory_product_id`),
   KEY `inventory_product_details_branch_id_foreign` (`branch_id`),
   KEY `inventory_product_details_user_id_foreign` (`sale_by`)
-) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table sqindia.inventory_product_details: 2 rows
+-- Dumping data for table sqindia.inventory_product_details: 8 rows
 /*!40000 ALTER TABLE `inventory_product_details` DISABLE KEYS */;
-REPLACE INTO `inventory_product_details` (`id`, `inventory_product_id`, `imei_number`, `branch_id`, `sales_invoice`, `sales_at`, `sale_by`, `created_at`, `updated_at`) VALUES
-	(1, 1, 'gfdg', 1, 'sdfds', NULL, NULL, NULL, NULL),
-	(2, 1, 'gdfg', 1, NULL, NULL, NULL, NULL, NULL),
-	(3, 2, 'erere', 1, NULL, NULL, NULL, NULL, NULL),
-	(4, 2, 'fgdfgfd', 1, NULL, NULL, NULL, NULL, NULL),
-	(5, 3, 'gfdgll', 1, NULL, NULL, NULL, NULL, NULL),
-	(6, 3, 'gdfgjo', 1, NULL, NULL, NULL, NULL, NULL),
-	(7, 4, 'ggjoi', 1, NULL, NULL, NULL, NULL, NULL),
-	(8, 4, 'ggkkjoi', 1, NULL, NULL, NULL, NULL, NULL);
+REPLACE INTO `inventory_product_details` (`id`, `inventory_product_id`, `product_id`, `imei_number`, `imei_qty`, `branch_id`, `sales_invoice`, `sales_at`, `sale_by`, `created_at`, `updated_at`) VALUES
+	(1, 1, 1, 'gfdg', 1, 1, 'sdfds', NULL, NULL, NULL, NULL),
+	(2, 1, 1, 'gdfg', 1, 2, NULL, NULL, NULL, NULL, NULL),
+	(3, 2, 2, 'erere', 1, 2, NULL, NULL, NULL, NULL, NULL),
+	(4, 2, 2, 'fgdfgfd', 1, 2, NULL, NULL, NULL, NULL, NULL),
+	(5, 3, 1, 'gfdgll', 1, 2, NULL, NULL, NULL, NULL, NULL),
+	(6, 3, 1, 'gdfgjo', 1, 1, NULL, NULL, NULL, NULL, NULL),
+	(7, 4, 2, 'ggjoi', 1, 1, NULL, NULL, NULL, NULL, NULL),
+	(8, 4, 2, 'ggkkjoi', 1, 1, NULL, NULL, NULL, NULL, NULL),
+	(9, 4, 2, 'ggkkeejoi', 1, 2, NULL, NULL, NULL, NULL, NULL),
+	(10, 4, 2, '435gfd', 1, 2, NULL, NULL, NULL, NULL, NULL),
+	(11, 4, 2, '6t5', 1, 2, NULL, NULL, NULL, NULL, NULL),
+	(12, 4, 2, 'bf4r5', 1, 2, NULL, NULL, NULL, NULL, NULL);
 /*!40000 ALTER TABLE `inventory_product_details` ENABLE KEYS */;
 
 -- Dumping structure for table sqindia.inventory_product_detail_txn_histories

@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use App\Brand;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 
 class Product extends JsonResource
 {
@@ -15,7 +16,7 @@ class Product extends JsonResource
      */
     public function toArray($request)
     {
-        //        return parent::toArray($request);
+        // return parent::toArray($request);
         return [
             'id' => $this->id,
             'product_name' => $this->product_name,
@@ -30,18 +31,25 @@ class Product extends JsonResource
         return new \App\Http\Resources\Brand($brand_details);
     }
 
+    private function product_stock($product_id)
+    {
+        //        return \App\InventoryProductDetail::where('sales_invoice', null)->where('product_id', $product_id)->get();
+
+        return DB::table('inventory_product_details')
+            ->where('inventory_product_details.sales_invoice', null)
+            ->where('inventory_product_details.product_id', $product_id)
+            ->where('inventory_product_details.branch_id', 2)
+            ->join('branches', function ($join) {
+                $join->on('inventory_product_details.branch_id', '=', 'branches.id');
+            })
+//            ->select('inventory_product_details.branch_id', 'branches.branch_name', 'branches.branch_location', DB::raw("count(*) as stock"))
+//            ->groupBy('inventory_product_details.branch_id')
+            ->get();
+    }
+
     private function get_related_ids($product_id)
     {
         return $inventory_product_ids = \App\InventoryProduct::where('product_id', $product_id)->pluck('id');
-    }
-
-    private function product_stock($product_id)
-    {
-        $inventory_product_ids = $this->get_related_ids($product_id);
-
-        $stocks = \App\InventoryProductDetail::where('sales_invoice', null)->whereIn('inventory_product_id', $inventory_product_ids)->get();
-
-        return $stocks;
     }
 
 }

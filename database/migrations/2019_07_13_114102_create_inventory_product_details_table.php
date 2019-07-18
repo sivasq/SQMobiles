@@ -17,6 +17,8 @@ class CreateInventoryProductDetailsTable extends Migration
             $table->bigIncrements('id');
             $table->integer('inventory_product_id');
             $table->foreign('inventory_product_id')->references('id')->on('inventory_products');
+            $table->integer('product_id');
+            $table->foreign('product_id')->references('id')->on('products');
             $table->string('imei_number');
             $table->integer('branch_id');
             $table->foreign('branch_id')->references('id')->on('branches');

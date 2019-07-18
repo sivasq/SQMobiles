@@ -104,4 +104,14 @@ class InventoryController extends Controller
         $products = Product::find(1);
         dd($products);
     }
+
+    public function transferStock(Request $request)
+    {
+        $transfered = DB::table('inventory_product_details')->whereIn('id', $request->get('transfer_items'))->update
+        (['branch_id' => $request->get('transfer_to')]);
+
+        if ($transfered) {
+            return response()->json(['success' => true], 200);
+        }
+    }
 }
