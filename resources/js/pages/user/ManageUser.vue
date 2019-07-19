@@ -3,7 +3,8 @@
         <div class="row justify-content-md-center">
             <div class="col-12 col-md-6">
                 <div class="card card-default">
-                    <div class="card-header">Add New User</div>
+                    <div class="card-header" v-if="!isUpdate">Add New User</div>
+                    <div class="card-header" v-if="isUpdate">Update User</div>
                     <div class="card-body">
                         <div class="alert alert-danger" v-if="has_error && !success">
                             <p v-if="error == 'registration_validation_error'">Validation Errors.</p>
@@ -11,7 +12,8 @@
                                 administrator.</p>
                         </div>
 
-                        <form @submit.prevent="register" autocomplete="off" method="post" v-if="!success">
+                        <form autocomplete="off" method="post" v-if="!success"
+                              v-on:submit.prevent="handle_function_call(action)">
                             <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.name[0] }">
                                 <label for="name">Name</label>
                                 <input class="form-control" id="name" placeholder="Full Name" type="text"
@@ -62,6 +64,8 @@
                             </div>
 
                             <button class="btn btn-primary" type="submit">Submit</button>
+
+                            <button @click="cancelEdit()" class="btn btn-danger" v-if="isUpdate">Cancel</button>
                         </form>
                     </div>
                 </div>
@@ -73,12 +77,13 @@
                 <div class="col-12 mt-5">
                     <div class="card card-default">
                         <div class="card-header">Users List</div>
-                        <table class="table">
+                        <table class="table table-responsive-xl">
                             <thead>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Mobile</th>
                             <th>Branch</th>
+                            <th></th>
                             </thead>
                             <tbody>
                             <tr :key="user.id" v-for="(user, index) in users">
@@ -86,6 +91,9 @@
                                 <td>{{user.email}}</td>
                                 <td>{{user.mobile}}</td>
                                 <td>{{user.branch_details.branch_name}} - {{user.branch_details.branch_location}}</td>
+                                <td>
+                                    <button @click="editUser(user)" class="btn btn-sm btn-outline-info">Edit</button>
+                                </td>
                             </tr>
                             </tbody>
                         </table>
@@ -99,6 +107,7 @@
     export default {
         data() {
             return {
+                user_id: '',
                 name: '',
                 email: '',
                 mobile: '',
@@ -111,7 +120,9 @@
                 errors: {},
                 success: false,
                 branches: [],
-                users: []
+                users: [],
+                isUpdate: false,
+                action: 'addUser'
             }
         },
         created() {
@@ -119,6 +130,9 @@
             this.fetchUsers();
         },
         methods: {
+            handle_function_call(function_name) {
+                this[function_name]()
+            },
             isNumber: function (evt) {
                 evt = (evt) ? evt : window.event;
                 var charCode = (evt.which) ? evt.which : evt.keyCode;
@@ -143,7 +157,7 @@
                     })
                     .catch((err) => console.error(err));
             },
-            register() {
+            addUser() {
                 var app = this;
                 axios.post(window.base_url + '/api/v1/auth/addUser', {
                     name: app.name,
@@ -162,6 +176,52 @@
                         // this.roles = '';
                         this.password = '';
                         this.password_confirmation = '';
+                        this.fetchUsers();
+                    })
+                    .catch((res) => {
+                        app.has_error = true
+                        app.error = res.response.data.error
+                        app.errors = res.response.data.errors || {}
+                    });
+            },
+            editUser(user) {
+                this.action = 'updateUser';
+                this.isUpdate = true;
+                this.user_id = user.id;
+                this.name = user.name;
+                this.email = user.email;
+                this.mobile = user.mobile;
+                this.password = '';
+                this.password_confirmation = '';
+                this.branch_id = user.branch_details.id;
+            },
+            cancelEdit() {
+                this.action = 'addUser';
+                this.isUpdate = false;
+                this.user_id = '';
+                this.name = '';
+                this.email = '';
+                this.mobile = '';
+                this.branch_id = '';
+            },
+            updateUser() {
+                var app = this;
+                axios.post(window.base_url + '/api/v1/auth/updateUser/' + app.user_id, {
+                    name: app.name,
+                    email: app.email,
+                    mobile: app.mobile,
+                    branch_id: app.branch_id,
+                    password: app.password,
+                    password_confirmation: app.password_confirmation
+                })
+                    .then(response => {
+                        this.name = '';
+                        this.email = '';
+                        this.mobile = '';
+                        this.branch_id = '';
+                        // this.roles = '';
+                        // this.password = '';
+                        // this.password_confirmation = '';
                         this.fetchUsers();
                     })
                     .catch((res) => {

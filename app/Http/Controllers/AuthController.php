@@ -10,12 +10,12 @@ use Validator;
 
 class AuthController extends Controller
 {
-
     public function index()
     {
         $users = User::all();
         return UserResource::collection($users);
     }
+
     /**
      * Register a new user
      */
@@ -44,6 +44,20 @@ class AuthController extends Controller
         $user->password = bcrypt($request->password);
         $user->save();
         return response()->json(['success' => true], 200);
+    }
+
+    public function updateUser(Request $request, User $user)
+    {
+        if ($request->input('name') != "") $user->name = $request->input('name');
+        if ($request->input('email') != "") $user->email = $request->input('email');
+        if ($request->input('mobile') != "") $user->mobile = $request->input('mobile');
+        if ($request->input('branch_id') != "") $user->branch_id = $request->input('branch_id');
+        if ($request->input('password') != "") $user->password = bcrypt($request->input('password'));
+        $user->save();
+
+        if($user->exists()) {
+            return response()->json(['success' => true], 200);
+        }
     }
 
     /**

@@ -1,18 +1,29 @@
 <template>
     <div class="container-fluid">
-        <div class="row justify-content-center">
-            <button @click.prevent="fetchProducts(0)" class="btn btn-sm">
-                All
-            </button>
-            <button :key="branch.id" @click.prevent="fetchProducts(branch.id)" class="btn btn-sm"
-                    v-for="(branch, index) in branches">
-                {{branch.branch_name}}
-            </button>
-        </div>
 
         <div class="row justify-content-center">
             <h4>IMEI Number Based Sales Details</h4>
-            <div class="col-12 mt-5">
+        </div>
+
+        <!-- Branch Buttons -->
+        <div class="row justify-content-center mt-3">
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <label @click.prevent="fetchProducts(0)" class="btn btn-outline-primary btn-toggle active">
+                    <input autocomplete="off" checked type="radio" v-model="activeTab">
+                    ALL
+                </label>
+
+                <label :key="branch.id" @click.prevent="fetchProducts(branch.id)"
+                       class="btn btn-outline-primary btn-toggle"
+                       v-for="(branch, index) in branches">
+                    <input autocomplete="off" type="radio" v-model="activeTab">
+                    {{branch.branch_name}}
+                </label>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mt-3">
+            <div class="col-12">
                 <table class="table table-striped table-hover">
                     <thead>
                     <tr>

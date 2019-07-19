@@ -1,11 +1,12 @@
 <template>
     <div class="container">
         <div class="card card-default">
-            <div class="card-header">Dashboard</div>
-            <div class="card-body">
-                <ul class="navbar-nav mr-auto" v-if="$auth.check('admin')">
-                    <li class="nav-item" v-bind:key="route.path" v-for="(route, key) in routes.admin">
-                        <router-link :key="key" :to="{ name : route.path }" class="nav-link">{{route.name}}
+            <div class="card-header">Navigation</div>
+            <div class="card-body p-0">
+                <ul class="list-group" v-if="$auth.check('admin')">
+                    <li class="list-group-item" v-bind:key="route.path" v-for="(route, key) in
+                    routes.admin">
+                        <router-link :key="key" :to="{ name : route.path }" class="nav-link p-0">{{route.name}}
                         </router-link>
                     </li>
                 </ul>

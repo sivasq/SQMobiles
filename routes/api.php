@@ -41,6 +41,8 @@ Route::prefix('v1')->group(function () {
 
             // Add New User
             Route::post('addUser', 'AuthController@register');
+            // Update User
+            Route::post('updateUser/{user}', 'AuthController@updateUser');
             // Get All Users
             Route::get('fetchUsers', 'AuthController@index');
 

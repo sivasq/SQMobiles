@@ -14,24 +14,37 @@ import IMEIStockDetails from "./pages/user/IMEIStockDetails";
 import ManageUser from "./pages/user/ManageUser";
 import IMEISalesDetails from "./pages/user/IMEISalesDetails";
 import ProductStockDetails from "./pages/user/ProductStockDetails";
+
 // Routes
 const routes = [
     {
-        path: '/sqmobiles/public/',
+        path: '',
         name: 'home',
         component: Login,
         meta: {
-            auth: false
+            auth: false,
+            // auth: {
+            //     redirect: { name: 'dashboard' },
+            //     forbiddenRedirect: 'dashboard'
+            // }
         }
     },
     {
-        path: '/sqmobiles/public/about',
-        name: 'about',
+        path: '/403',
+        name: '403',
         component: About,
         meta: {
             auth: undefined
         }
     },
+    // {
+    //     path: '/about',
+    //     name: 'about',
+    //     component: About,
+    //     meta: {
+    //         auth: undefined
+    //     }
+    // },
     // {
     //     path: '/sqmobiles/public/register',
     //     name: 'register',
@@ -41,42 +54,41 @@ const routes = [
     //     }
     // },
     {
-        path: '/sqmobiles/public/login',
+        path: '/login',
         name: 'login',
         component: Login,
         meta: {
-            auth: false
+            // auth: false
+            auth: {
+                redirect: { name: 'dashboard' },
+                forbiddenRedirect: 'dashboard'
+            }
         }
     },
     // USER ROUTES
     {
-        path: '/sqmobiles/public/dashboard',
+        path: '/dashboard',
         name: 'dashboard',
         component: Dashboard,
         meta: {
-            // auth: true,
-            auth: {
-                roles: 'admin',
-                redirect: { name: 'dashboard' },
-                forbiddenRedirect: '/sqmobiles/public/admin/403'
-            }
+            auth: true,
         }
     },
     {
-        path: '/sqmobiles/public/users',
+        path: '/users',
         name: 'users',
         component: ManageUser,
         meta: {
             // auth: true,
             auth: {
                 roles: 'admin',
-                redirect: { name: 'admin' },
-                forbiddenRedirect: '/sqmobiles/public/admin/403'
+                redirect: { name: '403' },
+                forbiddenRedirect: '/403'
             }
         }
     },
     {
-        path: '/sqmobiles/public/supplier',
+        path: '/supplier',
         name: 'supplier',
         component: Supplier,
         meta: {
@@ -84,12 +96,12 @@ const routes = [
             auth: {
                 roles: 'admin',
                 redirect: { name: 'admin' },
-                forbiddenRedirect: '/sqmobiles/public/admin/403'
+                forbiddenRedirect: '/admin/403'
             }
         }
     },
     {
-        path: '/sqmobiles/public/brand',
+        path: '/brand',
         name: 'brand',
         component: Brand,
         meta: {
@@ -97,12 +109,12 @@ const routes = [
             auth: {
                 roles: 'admin',
                 redirect: { name: 'admin' },
-                forbiddenRedirect: '/sqmobiles/public/admin/403'
+                forbiddenRedirect: '/admin/403'
             }
         }
     },
     {
-        path: '/sqmobiles/public/branch',
+        path: '/branch',
         name: 'branch',
         component: Branch,
         meta: {
@@ -110,12 +122,12 @@ const routes = [
             auth: {
                 roles: 'admin',
                 redirect: { name: 'admin' },
-                forbiddenRedirect: '/sqmobiles/public/admin/403'
+                forbiddenRedirect: '/admin/403'
             }
         }
     },
     {
-        path: '/sqmobiles/public/product',
+        path: '/product',
         name: 'product',
         component: Product,
         meta: {
@@ -123,12 +135,12 @@ const routes = [
             auth: {
                 roles: 'admin',
                 redirect: { name: 'admin' },
-                forbiddenRedirect: '/sqmobiles/public/admin/403'
+                forbiddenRedirect: '/admin/403'
             }
         }
     },
     {
-        path: '/sqmobiles/public/addinventory',
+        path: '/addinventory',
         name: 'addinventory',
         component: InventoryAdd,
         meta: {
@@ -136,12 +148,12 @@ const routes = [
             auth: {
                 roles: 'admin',
                 redirect: { name: 'admin' },
-                forbiddenRedirect: '/sqmobiles/public/admin/403'
+                forbiddenRedirect: '/admin/403'
             }
         }
     },
     {
-        path: '/sqmobiles/public/imeistockdetail',
+        path: '/imeistockdetail',
         name: 'imeistockdetail',
         component: IMEIStockDetails,
         meta: {
@@ -149,12 +161,12 @@ const routes = [
             auth: {
                 roles: 'admin',
                 redirect: { name: 'admin' },
-                forbiddenRedirect: '/sqmobiles/public/admin/403'
+                forbiddenRedirect: '/admin/403'
             }
         }
     },
     {
-        path: '/sqmobiles/public/imeisalesdetail',
+        path: '/imeisalesdetail',
         name: 'imeisalesdetail',
         component: IMEISalesDetails,
         meta: {
@@ -162,12 +174,12 @@ const routes = [
             auth: {
                 roles: 'admin',
                 redirect: { name: 'admin' },
-                forbiddenRedirect: '/sqmobiles/public/admin/403'
+                forbiddenRedirect: '/admin/403'
             }
         }
     },
     {
-        path: '/sqmobiles/public/productstockdetail',
+        path: '/productstockdetail',
         name: 'productstockdetail',
         component: ProductStockDetails,
         meta: {
@@ -175,7 +187,7 @@ const routes = [
             auth: {
                 roles: 'admin',
                 redirect: { name: 'admin' },
-                forbiddenRedirect: '/sqmobiles/public/admin/403'
+                forbiddenRedirect: '/admin/403'
             }
         }
     },

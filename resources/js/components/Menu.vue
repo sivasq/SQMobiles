@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
         <router-link :to="{name: 'home'}" class="navbar-brand">SQIndia Mobiles</router-link>
         <button
             aria-controls="navbarSupportedContent"

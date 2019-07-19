@@ -3286,6 +3286,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3341,6 +3342,17 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -3929,9 +3941,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      user_id: '',
       name: '',
       email: '',
       mobile: '',
@@ -3944,7 +3965,9 @@ __webpack_require__.r(__webpack_exports__);
       errors: {},
       success: false,
       branches: [],
-      users: []
+      users: [],
+      isUpdate: false,
+      action: 'addUser'
     };
   },
   created: function created() {
@@ -3952,6 +3975,9 @@ __webpack_require__.r(__webpack_exports__);
     this.fetchUsers();
   },
   methods: {
+    handle_function_call: function handle_function_call(function_name) {
+      this[function_name]();
+    },
     isNumber: function isNumber(evt) {
       evt = evt ? evt : window.event;
       var charCode = evt.which ? evt.which : evt.keyCode; // console.log(charCode);
@@ -3980,7 +4006,7 @@ __webpack_require__.r(__webpack_exports__);
         return console.error(err);
       });
     },
-    register: function register() {
+    addUser: function addUser() {
       var _this3 = this;
 
       var app = this;
@@ -4002,6 +4028,52 @@ __webpack_require__.r(__webpack_exports__);
         _this3.password_confirmation = '';
 
         _this3.fetchUsers();
+      })["catch"](function (res) {
+        app.has_error = true;
+        app.error = res.response.data.error;
+        app.errors = res.response.data.errors || {};
+      });
+    },
+    editUser: function editUser(user) {
+      this.action = 'updateUser';
+      this.isUpdate = true;
+      this.user_id = user.id;
+      this.name = user.name;
+      this.email = user.email;
+      this.mobile = user.mobile;
+      this.password = '';
+      this.password_confirmation = '';
+      this.branch_id = user.branch_details.id;
+    },
+    cancelEdit: function cancelEdit() {
+      this.action = 'addUser';
+      this.isUpdate = false;
+      this.user_id = '';
+      this.name = '';
+      this.email = '';
+      this.mobile = '';
+      this.branch_id = '';
+    },
+    updateUser: function updateUser() {
+      var _this4 = this;
+
+      var app = this;
+      axios.post(window.base_url + '/api/v1/auth/updateUser/' + app.user_id, {
+        name: app.name,
+        email: app.email,
+        mobile: app.mobile,
+        branch_id: app.branch_id,
+        password: app.password,
+        password_confirmation: app.password_confirmation
+      }).then(function (response) {
+        _this4.name = '';
+        _this4.email = '';
+        _this4.mobile = '';
+        _this4.branch_id = ''; // this.roles = '';
+        // this.password = '';
+        // this.password_confirmation = '';
+
+        _this4.fetchUsers();
       })["catch"](function (res) {
         app.has_error = true;
         app.error = res.response.data.error;
@@ -41512,7 +41584,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "nav",
-    { staticClass: "navbar navbar-expand-lg navbar-dark bg-dark" },
+    { staticClass: "navbar navbar-expand-sm navbar-dark bg-dark" },
     [
       _c(
         "router-link",
@@ -42243,23 +42315,23 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
     _c("div", { staticClass: "card card-default" }, [
-      _c("div", { staticClass: "card-header" }, [_vm._v("Dashboard")]),
+      _c("div", { staticClass: "card-header" }, [_vm._v("Navigation")]),
       _vm._v(" "),
-      _c("div", { staticClass: "card-body" }, [
+      _c("div", { staticClass: "card-body p-0" }, [
         _vm.$auth.check("admin")
           ? _c(
               "ul",
-              { staticClass: "navbar-nav mr-auto" },
+              { staticClass: "list-group" },
               _vm._l(_vm.routes.admin, function(route, key) {
                 return _c(
                   "li",
-                  { key: route.path, staticClass: "nav-item" },
+                  { key: route.path, staticClass: "list-group-item" },
                   [
                     _c(
                       "router-link",
                       {
                         key: key,
-                        staticClass: "nav-link",
+                        staticClass: "nav-link p-0",
                         attrs: { to: { name: route.path } }
                       },
                       [_vm._v(_vm._s(route.name) + "\n                    ")]
@@ -42298,54 +42370,97 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container-fluid" }, [
-    _c(
-      "div",
-      { staticClass: "row justify-content-center" },
-      [
-        _c(
-          "button",
-          {
-            staticClass: "btn btn-sm",
-            on: {
-              click: function($event) {
-                $event.preventDefault()
-                return _vm.fetchProducts(0)
-              }
-            }
-          },
-          [_vm._v("\n            All\n        ")]
-        ),
-        _vm._v(" "),
-        _vm._l(_vm.branches, function(branch, index) {
-          return _c(
-            "button",
+    _vm._m(0),
+    _vm._v(" "),
+    _c("div", { staticClass: "row justify-content-center mt-3" }, [
+      _c(
+        "div",
+        {
+          staticClass: "btn-group btn-group-toggle",
+          attrs: { "data-toggle": "buttons" }
+        },
+        [
+          _c(
+            "label",
             {
-              key: branch.id,
-              staticClass: "btn btn-sm",
+              staticClass: "btn btn-outline-primary btn-toggle active",
               on: {
                 click: function($event) {
                   $event.preventDefault()
-                  return _vm.fetchProducts(branch.id)
+                  return _vm.fetchProducts(0)
                 }
               }
             },
             [
-              _vm._v(
-                "\n            " + _vm._s(branch.branch_name) + "\n        "
-              )
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.activeTab,
+                    expression: "activeTab"
+                  }
+                ],
+                attrs: { autocomplete: "off", checked: "", type: "radio" },
+                domProps: { checked: _vm._q(_vm.activeTab, null) },
+                on: {
+                  change: function($event) {
+                    _vm.activeTab = null
+                  }
+                }
+              }),
+              _vm._v("\n                ALL\n            ")
             ]
-          )
-        })
-      ],
-      2
-    ),
+          ),
+          _vm._v(" "),
+          _vm._l(_vm.branches, function(branch, index) {
+            return _c(
+              "label",
+              {
+                key: branch.id,
+                staticClass: "btn btn-outline-primary btn-toggle",
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    return _vm.fetchProducts(branch.id)
+                  }
+                }
+              },
+              [
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.activeTab,
+                      expression: "activeTab"
+                    }
+                  ],
+                  attrs: { autocomplete: "off", type: "radio" },
+                  domProps: { checked: _vm._q(_vm.activeTab, null) },
+                  on: {
+                    change: function($event) {
+                      _vm.activeTab = null
+                    }
+                  }
+                }),
+                _vm._v(
+                  "\n                " +
+                    _vm._s(branch.branch_name) +
+                    "\n            "
+                )
+              ]
+            )
+          })
+        ],
+        2
+      )
+    ]),
     _vm._v(" "),
-    _c("div", { staticClass: "row justify-content-center" }, [
-      _c("h4", [_vm._v("IMEI Number Based Sales Details")]),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-12 mt-5" }, [
+    _c("div", { staticClass: "row justify-content-center mt-3" }, [
+      _c("div", { staticClass: "col-12" }, [
         _c("table", { staticClass: "table table-striped table-hover" }, [
-          _vm._m(0),
+          _vm._m(1),
           _vm._v(" "),
           _c(
             "tbody",
@@ -42417,6 +42532,14 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row justify-content-center" }, [
+      _c("h4", [_vm._v("IMEI Number Based Sales Details")])
+    ])
+  },
   function() {
     var _vm = this
     var _h = _vm.$createElement
@@ -43313,7 +43436,15 @@ var render = function() {
     _c("div", { staticClass: "row justify-content-md-center" }, [
       _c("div", { staticClass: "col-12 col-md-6" }, [
         _c("div", { staticClass: "card card-default" }, [
-          _c("div", { staticClass: "card-header" }, [_vm._v("Add New User")]),
+          !_vm.isUpdate
+            ? _c("div", { staticClass: "card-header" }, [
+                _vm._v("Add New User")
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.isUpdate
+            ? _c("div", { staticClass: "card-header" }, [_vm._v("Update User")])
+            : _vm._e(),
           _vm._v(" "),
           _c("div", { staticClass: "card-body" }, [
             _vm.has_error && !_vm.success
@@ -43336,7 +43467,7 @@ var render = function() {
                     on: {
                       submit: function($event) {
                         $event.preventDefault()
-                        return _vm.register($event)
+                        return _vm.handle_function_call(_vm.action)
                       }
                     }
                   },
@@ -43656,7 +43787,22 @@ var render = function() {
                         attrs: { type: "submit" }
                       },
                       [_vm._v("Submit")]
-                    )
+                    ),
+                    _vm._v(" "),
+                    _vm.isUpdate
+                      ? _c(
+                          "button",
+                          {
+                            staticClass: "btn btn-danger",
+                            on: {
+                              click: function($event) {
+                                return _vm.cancelEdit()
+                              }
+                            }
+                          },
+                          [_vm._v("Cancel")]
+                        )
+                      : _vm._e()
                   ]
                 )
               : _vm._e()
@@ -43671,7 +43817,7 @@ var render = function() {
           _c("div", { staticClass: "card card-default" }, [
             _c("div", { staticClass: "card-header" }, [_vm._v("Users List")]),
             _vm._v(" "),
-            _c("table", { staticClass: "table" }, [
+            _c("table", { staticClass: "table table-responsive-xl" }, [
               _vm._m(0),
               _vm._v(" "),
               _c(
@@ -43689,6 +43835,21 @@ var render = function() {
                         _vm._s(user.branch_details.branch_name) +
                           " - " +
                           _vm._s(user.branch_details.branch_location)
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-sm btn-outline-info",
+                          on: {
+                            click: function($event) {
+                              return _vm.editUser(user)
+                            }
+                          }
+                        },
+                        [_vm._v("Edit")]
                       )
                     ])
                   ])
@@ -43714,7 +43875,9 @@ var staticRenderFns = [
       _vm._v(" "),
       _c("th", [_vm._v("Mobile")]),
       _vm._v(" "),
-      _c("th", [_vm._v("Branch")])
+      _c("th", [_vm._v("Branch")]),
+      _vm._v(" "),
+      _c("th")
     ])
   }
 ]
@@ -59259,7 +59422,7 @@ var config = {
   logoutData: {
     url: 'auth/logout',
     method: 'POST',
-    redirect: 'login',
+    redirect: '/',
     makeRequest: true
   },
   fetchData: {
@@ -60284,20 +60447,32 @@ __webpack_require__.r(__webpack_exports__);
  // Routes
 
 var routes = [{
-  path: '/sqmobiles/public/',
+  path: '',
   name: 'home',
   component: _pages_Login__WEBPACK_IMPORTED_MODULE_2__["default"],
   meta: {
-    auth: false
+    auth: false // auth: {
+    //     redirect: { name: 'dashboard' },
+    //     forbiddenRedirect: 'dashboard'
+    // }
+
   }
 }, {
-  path: '/sqmobiles/public/about',
-  name: 'about',
+  path: '/403',
+  name: '403',
   component: _pages_About__WEBPACK_IMPORTED_MODULE_1__["default"],
   meta: {
     auth: undefined
   }
 }, // {
+//     path: '/about',
+//     name: 'about',
+//     component: About,
+//     meta: {
+//         auth: undefined
+//     }
+// },
+// {
 //     path: '/sqmobiles/public/register',
 //     name: 'register',
 //     component: Register,
@@ -60306,29 +60481,28 @@ var routes = [{
 //     }
 // },
 {
-  path: '/sqmobiles/public/login',
+  path: '/login',
   name: 'login',
   component: _pages_Login__WEBPACK_IMPORTED_MODULE_2__["default"],
   meta: {
-    auth: false
-  }
-}, // USER ROUTES
-{
-  path: '/sqmobiles/public/dashboard',
-  name: 'dashboard',
-  component: _pages_user_Dashboard__WEBPACK_IMPORTED_MODULE_3__["default"],
-  meta: {
-    // auth: true,
+    // auth: false
     auth: {
-      roles: 'admin',
       redirect: {
         name: 'dashboard'
       },
-      forbiddenRedirect: '/sqmobiles/public/admin/403'
+      forbiddenRedirect: 'dashboard'
     }
   }
+}, // USER ROUTES
+{
+  path: '/dashboard',
+  name: 'dashboard',
+  component: _pages_user_Dashboard__WEBPACK_IMPORTED_MODULE_3__["default"],
+  meta: {
+    auth: true
+  }
 }, {
-  path: '/sqmobiles/public/users',
+  path: '/users',
   name: 'users',
   component: _pages_user_ManageUser__WEBPACK_IMPORTED_MODULE_10__["default"],
   meta: {
@@ -60336,13 +60510,13 @@ var routes = [{
     auth: {
       roles: 'admin',
       redirect: {
-        name: 'admin'
+        name: '403'
       },
-      forbiddenRedirect: '/sqmobiles/public/admin/403'
+      forbiddenRedirect: '/403'
     }
   }
 }, {
-  path: '/sqmobiles/public/supplier',
+  path: '/supplier',
   name: 'supplier',
   component: _pages_user_Supplier__WEBPACK_IMPORTED_MODULE_4__["default"],
   meta: {
@@ -60352,11 +60526,11 @@ var routes = [{
       redirect: {
         name: 'admin'
       },
-      forbiddenRedirect: '/sqmobiles/public/admin/403'
+      forbiddenRedirect: '/admin/403'
     }
   }
 }, {
-  path: '/sqmobiles/public/brand',
+  path: '/brand',
   name: 'brand',
   component: _pages_user_Brand__WEBPACK_IMPORTED_MODULE_5__["default"],
   meta: {
@@ -60366,11 +60540,11 @@ var routes = [{
       redirect: {
         name: 'admin'
       },
-      forbiddenRedirect: '/sqmobiles/public/admin/403'
+      forbiddenRedirect: '/admin/403'
     }
   }
 }, {
-  path: '/sqmobiles/public/branch',
+  path: '/branch',
   name: 'branch',
   component: _pages_user_Branch__WEBPACK_IMPORTED_MODULE_6__["default"],
   meta: {
@@ -60380,11 +60554,11 @@ var routes = [{
       redirect: {
         name: 'admin'
       },
-      forbiddenRedirect: '/sqmobiles/public/admin/403'
+      forbiddenRedirect: '/admin/403'
     }
   }
 }, {
-  path: '/sqmobiles/public/product',
+  path: '/product',
   name: 'product',
   component: _pages_user_Product__WEBPACK_IMPORTED_MODULE_7__["default"],
   meta: {
@@ -60394,11 +60568,11 @@ var routes = [{
       redirect: {
         name: 'admin'
       },
-      forbiddenRedirect: '/sqmobiles/public/admin/403'
+      forbiddenRedirect: '/admin/403'
     }
   }
 }, {
-  path: '/sqmobiles/public/addinventory',
+  path: '/addinventory',
   name: 'addinventory',
   component: _pages_user_InventoryAdd__WEBPACK_IMPORTED_MODULE_8__["default"],
   meta: {
@@ -60408,11 +60582,11 @@ var routes = [{
       redirect: {
         name: 'admin'
       },
-      forbiddenRedirect: '/sqmobiles/public/admin/403'
+      forbiddenRedirect: '/admin/403'
     }
   }
 }, {
-  path: '/sqmobiles/public/imeistockdetail',
+  path: '/imeistockdetail',
   name: 'imeistockdetail',
   component: _pages_user_IMEIStockDetails__WEBPACK_IMPORTED_MODULE_9__["default"],
   meta: {
@@ -60422,11 +60596,11 @@ var routes = [{
       redirect: {
         name: 'admin'
       },
-      forbiddenRedirect: '/sqmobiles/public/admin/403'
+      forbiddenRedirect: '/admin/403'
     }
   }
 }, {
-  path: '/sqmobiles/public/imeisalesdetail',
+  path: '/imeisalesdetail',
   name: 'imeisalesdetail',
   component: _pages_user_IMEISalesDetails__WEBPACK_IMPORTED_MODULE_11__["default"],
   meta: {
@@ -60436,11 +60610,11 @@ var routes = [{
       redirect: {
         name: 'admin'
       },
-      forbiddenRedirect: '/sqmobiles/public/admin/403'
+      forbiddenRedirect: '/admin/403'
     }
   }
 }, {
-  path: '/sqmobiles/public/productstockdetail',
+  path: '/productstockdetail',
   name: 'productstockdetail',
   component: _pages_user_ProductStockDetails__WEBPACK_IMPORTED_MODULE_12__["default"],
   meta: {
@@ -60450,7 +60624,7 @@ var routes = [{
       redirect: {
         name: 'admin'
       },
-      forbiddenRedirect: '/sqmobiles/public/admin/403'
+      forbiddenRedirect: '/admin/403'
     }
   }
 }];
