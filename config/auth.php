@@ -45,6 +45,12 @@ return [
             'driver' => 'jwt',
             'provider' => 'users',
         ],
+
+        'mobileapi' => [
+            'driver' => 'token',
+            'provider' => 'users',
+            'hash' => true,
+        ],
     ],
 
     /*

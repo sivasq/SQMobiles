@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration
             $table->integer('branch_id');
             $table->foreign('branch_id')->references('id')->on('branches');
             $table->timestamp('email_verified_at')->nullable();
+            $table->string('api_token');
             $table->rememberToken();
             $table->timestamps();
         });

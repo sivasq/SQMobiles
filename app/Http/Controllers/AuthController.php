@@ -72,6 +72,17 @@ class AuthController extends Controller
         return response()->json(['success' => false, 'message' => 'unAuthorized'], 401);
     }
 
+    public function user_login(Request $request)
+    {
+        $request->request->add(['roles' => 'user']);
+        $credentials = $request->only('email', 'password', 'roles');
+
+        if ($token = $this->guard()->attempt($credentials)) {
+            return response()->json(['success' => true], 200)->header('Authorization', $token);
+        }
+        return response()->json(['success' => false, 'message' => 'unAuthorized'], 401);
+    }
+
     /**
      * Return auth guard
      */

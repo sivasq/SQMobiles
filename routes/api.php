@@ -85,3 +85,35 @@ Route::prefix('v1')->group(function () {
         });
     });
 });
+
+Route::prefix('mobile')->group(function () {
+    Route::prefix('auth')->group(function () {
+        // Below mention routes are public, user can access those without any restriction.
+        // Login User
+        Route::post('login', 'MobileApi\Auth\LoginController@login');
+
+        // Below mention routes are available only for the authenticated users.
+        Route::middleware('auth:mobileapi')->group(function () {
+            // Get user info
+            Route::get('user', 'MobileApi\Auth\LoginController@details');
+
+            // Logout user from application
+            Route::post('logout', 'MobileApi\Auth\LoginController@logout');
+
+            // Get Product Stock
+            Route::get('get_stock', 'MobileApi\ProductController@getProductStock');
+
+            // Get Product Details By IMEI
+            Route::post('getProductDetailByImei', 'MobileApi\InventoryController@getProductDetailByImei');
+
+            // Transfer Stock
+            Route::post('transferStock', 'MobileApi\InventoryController@transferStock');
+
+            // Make Sales Entry
+            Route::post('salesEntry', 'MobileApi\InventoryController@salesEntry');
+
+            // Get Branches
+            Route::get('getBranches', 'MobileApi\BranchController@index');
+        });
+    });
+});
