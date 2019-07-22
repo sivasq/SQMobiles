@@ -66,6 +66,7 @@
             return {
                 stockSalesDetails: [],
                 branches: [],
+                activeTab: 0,
             }
         },
         created() {

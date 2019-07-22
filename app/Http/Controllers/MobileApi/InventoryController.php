@@ -83,7 +83,8 @@ class InventoryController extends BaseController
             ->where('id', $request->get('imei_id'))
             ->where('inventory_product_details.sales_invoice', null)
             ->where('branch_id', $branch_id)
-            ->update(['sales_invoice' => $request->get('invoice_number'), 'sales_at' => now()]);
+            ->update(['sales_invoice' => $request->get('invoice_number'), 'sales_at' => now(), 'sales_by' =>
+                Auth::user()->id]);
         if ($sales) {
             return $this->sendResponse('', 'Sales Completed Successfully.');
         } else {

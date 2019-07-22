@@ -3,7 +3,7 @@
         <header id="header">
             <Menu></Menu>
         </header>
-        <div id="content">
+        <div id="content" style="margin-top: 100px;">
             <router-view></router-view>
         </div>
     </div>
