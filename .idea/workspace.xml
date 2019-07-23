@@ -2,33 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="709d9296-8614-44dd-b467-9892832cbb06" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqindia.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqindia.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/BranchController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/BranchController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/BrandController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/BrandController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/InventoryController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/InventoryController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/ProductController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/ProductController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/SupplierController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/SupplierController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/app.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/css/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/css/app.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/user/Branch.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/Branch.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/user/Brand.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/Brand.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/user/IMEIStockDetails.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/IMEIStockDetails.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/user/InventoryAdd.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/InventoryAdd.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/user/ManageUser.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/ManageUser.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/user/Product.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/Product.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/user/ProductStockDetails.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/ProductStockDetails.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/user/Supplier.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/Supplier.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/composer/autoload_classmap.php" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/composer/autoload_classmap.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/composer/autoload_files.php" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/composer/autoload_files.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/composer/autoload_psr4.php" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/composer/autoload_psr4.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/composer/autoload_static.php" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/composer/autoload_static.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vendor/composer/installed.json" beforeDir="false" afterPath="$PROJECT_DIR$/vendor/composer/installed.json" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -105,7 +79,7 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/Exports/ImeiStockExport.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="36">
+            <state relative-caret-position="-180">
               <caret line="48" column="16" lean-forward="true" selection-start-line="48" selection-start-column="16" selection-end-line="48" selection-end-column="16" />
               <folding>
                 <element signature="e#31#72#0#PHP" expanded="true" />
@@ -503,12 +477,12 @@
       <workItem from="1563512508132" duration="17150000" />
       <workItem from="1563599261048" duration="15728000" />
       <workItem from="1563771457950" duration="4536000" />
-      <workItem from="1563858410266" duration="24052000" />
+      <workItem from="1563858410266" duration="24325000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="173897000" />
+    <option name="totallyTimeSpent" value="174170000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -521,7 +495,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.497545" visible="true" weight="0.24281392" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -925,7 +898,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/Exports/ImeiStockExport.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="36">
+        <state relative-caret-position="-180">
           <caret line="48" column="16" lean-forward="true" selection-start-line="48" selection-start-column="16" selection-end-line="48" selection-end-column="16" />
           <folding>
             <element signature="e#31#72#0#PHP" expanded="true" />
