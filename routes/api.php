@@ -49,24 +49,32 @@ Route::prefix('v1')->group(function () {
 
             // Add Supplier
             Route::post('addSupplier', 'SupplierController@store');
+            // Update Supplier
+            Route::post('updateSupplier/{supplier}', 'SupplierController@update');
             // Get All Suppliers
             Route::get('fetchSuppliers', 'SupplierController@index');
 
 
             // Add Brand
             Route::post('addBrand', 'BrandController@store');
+            // Update Brand
+            Route::post('updateBrand/{brand}', 'BrandController@update');
             // Get All Brands
             Route::get('fetchBrands', 'BrandController@index');
 
 
             // Add Branch
             Route::post('addBranch', 'BranchController@store');
+            // Update Branch
+            Route::post('updateBranch/{branch}', 'BranchController@update');
             // Get All Branches
             Route::get('fetchBranches', 'BranchController@index');
 
 
             // Add Product
             Route::post('addProduct', 'ProductController@store');
+            // Update Product
+            Route::post('updateProduct/{product}', 'ProductController@update');
             // Get All Products
             Route::get('fetchProducts', 'ProductController@index');
             // Get Products BY Brand Id
@@ -76,10 +84,12 @@ Route::prefix('v1')->group(function () {
             Route::post('addInventory', 'InventoryController@store');
 
             Route::get('getImeiBasedStockDetails/{branch_id}', 'InventoryController@getImeiBasedStockDetailsByBranch');
+            Route::get('getImeiBasedStockDetailsExcel/{branch_id}', 'InventoryController@getImeiBasedStockDetailsByBranchExcel');
 
             Route::get('getImeiBasedSalesDetails/{branch_id}', 'InventoryController@getImeiBasedSalesDetailsByBranch');
 
             Route::get('getProductStock/{branch_id}', 'ProductController@getProductStock');
+            Route::get('getProductStockExcel/{branch_id}', 'ProductController@getProductStockExcel');
 
             Route::post('transferStock', 'InventoryController@transferStock');
         });

@@ -13,7 +13,7 @@
                         </div>
                         <form @submit.prevent="addInventory" autocomplete="off" method="post" v-if="!success">
                             <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.invoice_number }">
-                                <label for="invoice_number">Invoice Number</label>
+                                <label for="invoice_number">Bill Number</label>
                                 <input class="form-control" id="invoice_number" placeholder="Invoice Number" type="text"
                                        v-model="inventory.invoice_number">
                                 <span class="help-block" v-if="has_error && errors.invoice_number">{{ errors.invoice_number }}</span>

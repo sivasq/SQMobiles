@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Branch;
+use App\Exports\ImeiStockExport;
 use App\Http\Resources\InventoryProductDetail as InventoryProductDetailResource;
 use App\Inventory;
 use App\InventoryProduct;
@@ -10,6 +12,7 @@ use App\Product;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Validator;
 
 
@@ -90,6 +93,47 @@ class InventoryController extends Controller
         // return InventoryProductDetailResource::collection(InventoryProductDetail::where('branch_id', auth()->user()->branch_id)->get());
     }
 
+    public function getImeiBasedStockDetailsByBranchExcel($branch_id)
+    {
+        if ($branch_id == 0) {
+            $data = DB::table('inventory_product_details')
+                ->where('inventory_product_details.sales_invoice', null)
+                ->leftJoin('products', function ($join) {
+                    $join->on('products.id', '=', 'inventory_product_details.product_id');
+                })
+                ->join('brands', function ($join) {
+                    $join->on('products.brand_id', '=', 'brands.id');
+                })
+                ->join('branches', function ($join) {
+                    $join->on('inventory_product_details.branch_id', '=', 'branches.id');
+                })
+                ->get()->toArray();
+            return Excel::download(new ImeiStockExport($data, [['Products Stock Report - All Branch'], [date('d-M-Y')], [],
+                ['Product IMEI', 'Product Name', 'Branch', 'Location']]), 'stock.xlsx');
+
+        } else if ($branch_id > 0) {
+            $data = DB::table('inventory_product_details')
+                ->where('inventory_product_details.branch_id', $branch_id)
+                ->where('inventory_product_details.sales_invoice', null)
+                ->leftJoin('products', function ($join) {
+                    $join->on('products.id', '=', 'inventory_product_details.product_id');
+                })
+                ->join('brands', function ($join) {
+                    $join->on('products.brand_id', '=', 'brands.id');
+                })
+                ->join('branches', function ($join) {
+                    $join->on('inventory_product_details.branch_id', '=', 'branches.id');
+                })
+                ->get()->toArray();
+
+            $branch = Branch::find($branch_id)->first();
+
+            return Excel::download(new ImeiStockExport($data, [['Products Stock Report - ' . $branch->branch_name . ' ' .
+                $branch->branch_location], [date('d-M-Y')], [],
+                ['Product IMEI', 'Product Name', 'Branch', 'Location']]), 'stock.xlsx');
+        }
+    }
+
     public function getImeiBasedSalesDetailsByBranch($branch_id)
     {
         if ($branch_id == 0) {
@@ -114,4 +158,5 @@ class InventoryController extends Controller
             return response()->json(['success' => true], 200);
         }
     }
+
 }

@@ -21,16 +21,6 @@ class SupplierController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -58,28 +48,6 @@ class SupplierController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\supplier  $supplier
-     * @return \Illuminate\Http\Response
-     */
-    public function show(supplier $supplier)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\supplier  $supplier
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(supplier $supplier)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -88,7 +56,22 @@ class SupplierController extends Controller
      */
     public function update(Request $request, supplier $supplier)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'supplier_name' => 'required',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $supplier->supplier_name = $request->supplier_name;
+        $supplier->save();
+
+        return response()->json(['status' => 'success'], 200);
     }
 
     /**

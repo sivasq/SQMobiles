@@ -3,14 +3,15 @@
         <div class="row justify-content-md-center">
             <div class="col-12">
                 <div class="card card-default">
-                    <div class="card-header">Add New Product</div>
+                    <div class="card-header" v-if="!isUpdate">Add New Product</div>
+                    <div class="card-header" v-if="isUpdate">Update Product</div>
                     <div class="card-body">
                         <div class="alert alert-danger" v-if="has_error && !success">
                             <p v-if="error == 'registration_validation_error'">Validation Errors.</p>
                             <p v-else>Error, can not Add Product at the moment. If the problem persists, please contact
                                 an administrator.</p>
                         </div>
-                        <form @submit.prevent="addProduct" autocomplete="off" method="post" v-if="!success">
+                        <form v-on:submit.prevent="handle_function_call(action)" autocomplete="off" method="post" v-if="!success">
 
                             <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.brand_id[0] }">
                                 <label for="product_name">Brand Name</label>
@@ -34,6 +35,7 @@
                                     errors.product_name[0] }}</span>
                             </div>
                             <button class="btn btn-primary" type="submit">Submit</button>
+                            <button @click="cancelEdit()" class="btn btn-danger" v-if="isUpdate">Cancel</button>
                         </form>
                     </div>
                 </div>
@@ -46,7 +48,8 @@
                         Product yet!
                     </li>
                     <li :key="product.id" class="list-group-item" v-for="(product, index) in products">
-                        {{index + 1}}) {{product.product_name}}
+                        {{index + 1}}) {{product.brand_details.brand_name}} {{product.product_name}}
+                        <button @click="editProduct(product)" class="btn btn-sm btn-outline-info">Edit</button>
                     </li>
                 </ul>
             </div>
@@ -66,7 +69,10 @@
                 errors: {},
                 success: false,
                 brands: [],
-                products: []
+                products: [],
+                action: 'addProduct',
+                product_id: '',
+                isUpdate: false
             }
         },
         created() {
@@ -74,6 +80,9 @@
             this.fetchProducts();
         },
         methods: {
+            handle_function_call(function_name) {
+                this[function_name]()
+            },
             addProduct() {
                 var app = this;
                 console.log(this.product);
@@ -105,6 +114,35 @@
                     })
                     .catch((err) => console.error(err));
             },
+            editProduct(product) {
+                this.action = 'updateProduct';
+                this.isUpdate = true;
+                this.product_id = product.id;
+                this.product.product_name = product.product_name;
+                this.product.brand_id = product.brand_details.id;
+            },
+            cancelEdit() {
+                this.action = 'addProduct';
+                this.isUpdate = false;
+                this.product_id = '';
+                this.product.product_name = '';
+                this.product.brand_id = '';
+            },
+            updateProduct() {
+                var app = this;
+                axios.post(window.base_url + '/api/v1/auth/updateProduct/' + app.product_id, this.product)
+                    .then(response => {
+                        this.isUpdate = false;
+                        this.product.product_name = '';
+                        this.product.brand_id = '';
+                        this.fetchProducts();
+                    })
+                    .catch((res) => {
+                        app.has_error = true
+                        app.error = res.response.data.error
+                        app.errors = res.response.data.errors || {}
+                    });
+            }
         },
         components: {
             //

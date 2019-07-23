@@ -22,30 +22,22 @@
         </div>
 
         <div class="row justify-content-center mt-3">
+            <button @click.prevent="exportData" class="btn btn-sm btn-outline-secondary">Export As Excel</button>
+        </div>
+
+        <div class="row justify-content-center">
             <div class="col-12 mt-5">
                 <table class="table table-striped table-hover">
                     <thead>
                     <tr>
                         <th>Product Name</th>
                         <th>Available Stock</th>
-<!--                        <th>Supplier</th>-->
-<!--                        <th>Product</th>-->
-<!--                        <th>Located At</th>-->
                     </tr>
                     </thead>
                     <tbody>
                     <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in stocksDetails">
                         <td>{{stocksDetail.brand_name}} {{stocksDetail.product_name}}</td>
                         <td>{{stocksDetail.available_stock}}</td>
-<!--                        <td>{{stocksDetail.inventory_product_detail.inventory_detail.supplier_details-->
-<!--                            .supplier_name}}-->
-<!--                        </td>-->
-<!--                        <td>{{stocksDetail.inventory_product_detail.product_details.brand_details-->
-<!--                            .brand_name}} - {{stocksDetail.inventory_product_detail.product_details.product_name}}-->
-<!--                        </td>-->
-<!--                        <td>{{stocksDetail.branch_detail.branch_name}} - -->
-<!--                            {{stocksDetail.branch_detail.branch_location}}-->
-<!--                        </td>-->
                     </tr>
                     </tbody>
                 </table>
@@ -65,8 +57,23 @@
         created() {
             this.fetchBranches();
             this.fetchProducts(this.activeTab);
+            // this.fetchDownload();
         },
         methods: {
+            exportData() {
+                axios({
+                    url: window.base_url + '/api/v1/auth/getProductStockExcel/' + this.activeTab,
+                    method: 'GET',
+                    responseType: 'blob', // important
+                }).then((response) => {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'file.xlsx'); //or any other extension
+                    document.body.appendChild(link);
+                    link.click();
+                });
+            },
             fetchBranches() {
                 axios.get(window.base_url + '/api/v1/auth/fetchBranches')
                     .then(response => {
@@ -76,6 +83,7 @@
                     .catch((err) => console.error(err));
             },
             fetchProducts(branchId) {
+                this.activeTab = branchId;
                 axios.get(window.base_url + '/api/v1/auth/getProductStock/' + branchId)
                     .then(response => {
                         this.stocksDetails = response.data;

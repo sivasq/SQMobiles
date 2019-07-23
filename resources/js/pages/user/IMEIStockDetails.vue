@@ -40,6 +40,10 @@
             </div>
         </div>
 
+        <div class="row justify-content-center mt-3">
+            <button @click.prevent="exportData" class="btn btn-sm btn-outline-secondary">Export As Excel</button>
+        </div>
+
         <!-- Stock Details -->
         <div class="row justify-content-center mt-3">
             <div class="col-12">
@@ -98,6 +102,20 @@
             this.fetchProducts(0);
         },
         methods: {
+            exportData() {
+                axios({
+                    url: window.base_url + '/api/v1/auth/getImeiBasedStockDetailsExcel/' + this.activeTab,
+                    method: 'GET',
+                    responseType: 'blob', // important
+                }).then((response) => {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'file.xlsx'); //or any other extension
+                    document.body.appendChild(link);
+                    link.click();
+                });
+            },
             selectALLIMEI() {
                 this.selected = [];
                 if (!this.selectAll) {

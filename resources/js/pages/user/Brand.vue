@@ -3,14 +3,16 @@
         <div class="row justify-content-md-center">
             <div class="col-12">
                 <div class="card card-default">
-                    <div class="card-header">Add New Brand</div>
+                    <div class="card-header" v-if="!isUpdate">Add New Brand</div>
+                    <div class="card-header" v-if="isUpdate">Update Brand</div>
                     <div class="card-body">
                         <div class="alert alert-danger" v-if="has_error && !success">
                             <p v-if="error == 'registration_validation_error'">Validation Errors.</p>
                             <p v-else>Error, can not Add Brand at the moment. If the problem persists, please contact
                                 an administrator.</p>
                         </div>
-                        <form @submit.prevent="addBrand" autocomplete="off" method="post" v-if="!success">
+                        <form autocomplete="off" method="post" v-if="!success"
+                              v-on:submit.prevent="handle_function_call(action)">
                             <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.brand_name[0] }">
                                 <label for="brand_name">Brand Name</label>
                                 <input class="form-control" id="brand_name" placeholder="Brand Name" type="text"
@@ -18,6 +20,7 @@
                                 <span class="help-block" v-if="has_error && errors.brand_name[0]">{{ errors.brand_name[0] }}</span>
                             </div>
                             <button class="btn btn-primary" type="submit">Submit</button>
+                            <button @click="cancelEdit()" class="btn btn-danger" v-if="isUpdate">Cancel</button>
                         </form>
                     </div>
                 </div>
@@ -31,6 +34,7 @@
                     </li>
                     <li :key="brand.id" class="list-group-item" v-for="(brand, index) in brands">
                         {{index + 1}}) {{brand.brand_name}}
+                        <button @click="editBrand(brand)" class="btn btn-sm btn-outline-info">Edit</button>
                     </li>
                 </ul>
             </div>
@@ -47,12 +51,18 @@
                 errors: {},
                 success: false,
                 brands: [],
+                action: 'addBrand',
+                brand_id: '',
+                isUpdate: false
             }
         },
         created() {
             this.fetchBrands();
         },
         methods: {
+            handle_function_call(function_name) {
+                this[function_name]()
+            },
             addBrand() {
                 var app = this
                 axios.post(window.base_url + '/api/v1/auth/addBrand', {brand_name: app.brand_name})
@@ -74,6 +84,34 @@
                     })
                     .catch((err) => console.error(err));
             },
+            editBrand(brand) {
+                this.action = 'updateBrand';
+                this.isUpdate = true;
+                this.brand_id = brand.id;
+                this.brand_name = brand.brand_name;
+            },
+            cancelEdit() {
+                this.action = 'addBrand';
+                this.isUpdate = false;
+                this.brand_id = '';
+                this.brand_name = '';
+            },
+            updateBrand() {
+                var app = this;
+                axios.post(window.base_url + '/api/v1/auth/updateBrand/' + app.brand_id, {
+                    brand_name: app.brand_name
+                })
+                    .then(response => {
+                        this.isUpdate = false;
+                        this.brand_name = '';
+                        this.fetchBrands();
+                    })
+                    .catch((res) => {
+                        app.has_error = true
+                        app.error = res.response.data.error
+                        app.errors = res.response.data.errors || {}
+                    });
+            }
         },
         components: {
             //

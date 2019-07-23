@@ -21,16 +21,6 @@ class BrandController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -58,28 +48,6 @@ class BrandController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\brand  $brand
-     * @return \Illuminate\Http\Response
-     */
-    public function show(brand $brand)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\brand  $brand
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(brand $brand)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -88,7 +56,22 @@ class BrandController extends Controller
      */
     public function update(Request $request, brand $brand)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'brand_name' => 'required',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $brand->brand_name = $request->brand_name;
+        $brand->save();
+
+        return response()->json(['status' => 'success'], 200);
     }
 
     /**

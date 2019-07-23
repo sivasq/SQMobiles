@@ -215,6 +215,7 @@
                     password_confirmation: app.password_confirmation
                 })
                     .then(response => {
+                        this.isUpdate = false;
                         this.name = '';
                         this.email = '';
                         this.mobile = '';

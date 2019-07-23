@@ -3,7 +3,8 @@
         <div class="row justify-content-md-center">
             <div class="col-12 col-md-6">
                 <div class="card card-default">
-                    <div class="card-header">Add New Branch</div>
+                    <div class="card-header" v-if="!isUpdate">Add New Branch</div>
+                    <div class="card-header" v-if="isUpdate">Update Branch</div>
                     <div class="card-body">
                         <div class="alert alert-danger" v-if="has_error && !success">
                             <p v-if="error == 'registration_validation_error'">Validation Errors.</p>
@@ -13,7 +14,7 @@
                         <div class="alert alert-success" v-if="submitted">
                             Created!
                         </div>
-                        <form @submit.prevent="addBranch" autocomplete="off" method="post" v-if="!success">
+                        <form v-on:submit.prevent="handle_function_call(action)" autocomplete="off" method="post" v-if="!success">
                             <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.branch_name[0]
                              }">
                                 <label for="branch_name">Name</label>
@@ -32,6 +33,7 @@
                                       v-if="has_error && errors.branch_location[0]">{{ errors.branch_location[0] }}</span>
                             </div>
                             <button class="btn btn-primary" type="submit">Submit</button>
+                            <button @click="cancelEdit()" class="btn btn-danger" v-if="isUpdate">Cancel</button>
                         </form>
                     </div>
                 </div>
@@ -45,6 +47,7 @@
                     </li>
                     <li :key="branch.id" class="list-group-item" v-for="(branch, index) in branches">
                         {{index + 1}}) {{branch.branch_name}} - {{branch.branch_location}}
+                        <button @click="editBranch(branch)" class="btn btn-sm btn-outline-info">Edit</button>
                     </li>
                 </ul>
             </div>
@@ -65,12 +68,18 @@
                 success: false,
                 branches: [],
                 submitted: false,
+                action: 'addBranch',
+                branch_id: '',
+                isUpdate: false
             }
         },
         created() {
             this.fetchBranches();
         },
         methods: {
+            handle_function_call(function_name) {
+                this[function_name]()
+            },
             addBranch() {
                 var app = this
                 axios.post(window.base_url + '/api/v1/auth/addBranch', this.branch)
@@ -93,6 +102,35 @@
                     })
                     .catch((err) => console.error(err));
             },
+            editBranch(branch) {
+                this.action = 'updateBranch';
+                this.isUpdate = true;
+                this.branch_id = branch.id;
+                this.branch.branch_name = branch.branch_name;
+                this.branch.branch_location = branch.branch_location;
+            },
+            cancelEdit() {
+                this.action = 'addBranch';
+                this.isUpdate = false;
+                this.branch_id = '';
+                this.branch_name = '';
+            },
+            updateBranch() {
+                var app = this;
+                axios.post(window.base_url + '/api/v1/auth/updateBranch/' + app.branch_id, {
+                    branch_name: app.branch.branch_name, branch_location: app.branch.branch_location
+                })
+                    .then(response => {
+                        this.isUpdate = false;
+                        this.branch_name = '';
+                        this.fetchBranches();
+                    })
+                    .catch((res) => {
+                        app.has_error = true
+                        app.error = res.response.data.error
+                        app.errors = res.response.data.errors || {}
+                    });
+            }
         },
         components: {
             //
