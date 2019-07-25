@@ -6,17 +6,14 @@
                     <div class="card-header" v-if="!isUpdate">Add New Supplier</div>
                     <div class="card-header" v-if="isUpdate">Update Supplier</div>
                     <div class="card-body">
-                        <div class="alert alert-danger" v-if="has_error && !success">
-                            <p v-if="error == 'registration_validation_error'">Validation Errors.</p>
-                            <p v-else>Error, can not Add Supplier at the moment. If the problem persists, please contact
-                                an administrator.</p>
-                        </div>
-                        <form v-on:submit.prevent="handle_function_call(action)" autocomplete="off" method="post" v-if="!success">
-                            <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.supplier_name[0] }">
+                        <form autocomplete="off" method="post" v-if="!success"
+                              v-on:submit.prevent="handle_function_call(action)">
+                            <div class="form-group"
+                                 v-bind:class="{ 'has-error': has_error && errors.supplier_name }">
                                 <label for="supplier_name">Name</label>
                                 <input class="form-control" id="supplier_name" placeholder="Supplier Name" type="text"
                                        v-model="supplier_name">
-                                <span class="help-block" v-if="has_error && errors.supplier_name[0]">{{ errors.supplier_name[0] }}</span>
+                                <span class="help-block" v-if="has_error && errors.supplier_name">{{ errors.supplier_name[0] }}</span>
                             </div>
                             <button class="btn btn-primary" type="submit">Submit</button>
 
@@ -36,6 +33,8 @@
                     <li :key="supplier.id" class="list-group-item" v-for="(supplier, index) in suppliers">
                         {{index + 1}}) {{supplier.supplier_name}}
                         <button @click="editSupplier(supplier)" class="btn btn-sm btn-outline-info">Edit</button>
+                        <button @click="deleteSupplier(supplier.id)" class="btn btn-sm btn-outline-danger">Delete
+                        </button>
                     </li>
                 </ul>
             </div>
@@ -66,15 +65,19 @@
             },
             addSupplier() {
                 var app = this;
+                app.has_error = false;
+                app.errors = {};
                 axios.post(window.base_url + '/api/v1/auth/addSupplier', {supplier_name: app.supplier_name})
                     .then(response => {
-                        this.supplier_name = '';
-                        this.fetchSuppliers();
+                        if (response.data.status === 'success') {
+                            this.supplier_name = '';
+                            this.fetchSuppliers();
+                        }
                     })
                     .catch((res) => {
-                        app.has_error = true
-                        app.error = res.response.data.error
-                        app.errors = res.response.data.errors || {}
+                        app.has_error = true;
+                        app.error = res.response.data.error;
+                        app.errors = res.response.data.errors || {};
                     });
             },
             fetchSuppliers() {
@@ -85,12 +88,18 @@
                     .catch((err) => console.error(err));
             },
             editSupplier(supplier) {
+                this.has_error = false;
+                this.error = '';
+                this.errors = {};
                 this.action = 'updateSupplier';
                 this.isUpdate = true;
                 this.supplier_id = supplier.id;
                 this.supplier_name = supplier.supplier_name;
             },
             cancelEdit() {
+                this.has_error = false;
+                this.error = '';
+                this.errors = {};
                 this.action = 'addSupplier';
                 this.isUpdate = false;
                 this.supplier_id = '';
@@ -98,18 +107,38 @@
             },
             updateSupplier() {
                 var app = this;
+                app.has_error = false;
+                app.errors = {};
                 axios.post(window.base_url + '/api/v1/auth/updateSupplier/' + app.supplier_id, {
                     supplier_name: app.supplier_name
                 })
                     .then(response => {
-                        this.isUpdate = false;
-                        this.supplier_name = '';
-                        this.fetchSuppliers();
+                        if (response.data.status === 'success') {
+                            this.isUpdate = false;
+                            this.action = 'addSupplier';
+                            this.isUpdate = false;
+                            this.supplier_name = '';
+                            this.fetchSuppliers();
+                        }
                     })
                     .catch((res) => {
-                        app.has_error = true
-                        app.error = res.response.data.error
-                        app.errors = res.response.data.errors || {}
+                        app.has_error = true;
+                        app.error = res.response.data.error;
+                        app.errors = res.response.data.errors || {};
+                    });
+            },
+            deleteSupplier(supplierid) {
+                var app = this;
+                app.has_error = false;
+                app.errors = {};
+                axios.post(window.base_url + '/api/v1/auth/deleteSupplier/' + supplierid)
+                    .then(response => {
+                        if (response.data.status === 'success') {
+                            this.fetchSuppliers();
+                        }
+                    })
+                    .catch((res) => {
+
                     });
             }
         },

@@ -5,18 +5,13 @@
                 <div class="card card-default">
                     <div class="card-header">Add New Inventory Stock</div>
                     <div class="card-body">
-                        <div class="alert alert-danger" v-if="has_error && !success">
-                            <p v-if="error == 'registration_validation_error'">Validation Errors.</p>
-                            <p v-else>Error, can not Add Inventory at the moment. If the problem persists, please
-                                contact
-                                an administrator.</p>
-                        </div>
                         <form @submit.prevent="addInventory" autocomplete="off" method="post" v-if="!success">
                             <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.invoice_number }">
                                 <label for="invoice_number">Bill Number</label>
-                                <input class="form-control" id="invoice_number" placeholder="Invoice Number" type="text"
+                                <input class="form-control" id="invoice_number" placeholder="Bill Number" type="text"
                                        v-model="inventory.invoice_number">
-                                <span class="help-block" v-if="has_error && errors.invoice_number">{{ errors.invoice_number }}</span>
+                                <span class="help-block"
+                                      v-if="has_error && errors.invoice_number">Bill NumberRequired</span>
                             </div>
 
                             <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.supplier_id }">
@@ -24,12 +19,13 @@
                                 <select class="form-control" id="supplier_id" v-model="inventory.supplier_id">
                                     <option disabled selected value="">Select Supplier</option>
                                     <option :key="supplier.id" :value="supplier.id"
-                                            class="list-group-item" v-for="(supplier, index) in suppliers">{{supplier
-                                        .supplier_name}}
+                                            class="list-group-item"
+                                            v-for="(supplier, index) in suppliers">{{supplier.supplier_name}}
                                     </option>
                                 </select>
                                 <span class="help-block"
-                                      v-if="has_error && errors.supplier_id">{{ errors.supplier_id }}</span>
+                                      v-if="has_error && errors.supplier_id">supplier
+                                        Name Required</span>
                             </div>
 
                             <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.brand_id }">
@@ -38,12 +34,12 @@
                                         v-model="inventory.brand_id">
                                     <option disabled selected value="">Select Brand</option>
                                     <option :key="brand.id" :value="brand.id"
-                                            class="list-group-item" v-for="(brand, index) in brands">{{brand
-                                        .brand_name}}
+                                            class="list-group-item"
+                                            v-for="(brand, index) in brands">{{brand.brand_name}}
                                     </option>
                                 </select>
                                 <span class="help-block"
-                                      v-if="has_error && errors.brand_id">{{ errors.brand_id }}</span>
+                                      v-if="has_error && errors.brand_id">Brand Required</span>
                             </div>
 
                             <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.product_id }">
@@ -51,37 +47,44 @@
                                 <select class="form-control" id="product_id" v-model="inventory.product_id">
                                     <option disabled selected value="">Select Product</option>
                                     <option :key="product.id" :value="product.id"
-                                            class="list-group-item" v-for="(product, index) in products">{{product
-                                        .product_name}}
+                                            class="list-group-item" v-for="(product, index) in products">
+                                        {{product.product_name}}
                                     </option>
                                 </select>
                                 <span class="help-block"
-                                      v-if="has_error && errors.product_id">{{ errors.product_id }}</span>
+                                      v-if="has_error && errors.product_id">Product
+                                        Required</span>
                             </div>
 
                             <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.purchase_price }">
                                 <label for="product_qty">Purchase Price</label>
-                                <input @keypress="isNumber($event)" class="form-control" id="purchase_price" placeholder="Purchase Price"
+                                <input @keypress="isNumber($event)" class="form-control" id="purchase_price"
+                                       placeholder="Purchase Price"
                                        type="text" v-model="inventory.purchase_price">
                                 <span class="help-block"
-                                      v-if="has_error && errors.purchase_price">{{ errors.purchase_price }}</span>
+                                      v-if="has_error && errors.purchase_price">{{ errors.purchase_price[0] }}</span>
                             </div>
 
                             <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.product_qty }">
                                 <label for="product_qty">Product Qty</label>
-                                <input @keypress="isNumber($event)" class="form-control" id="product_qty" placeholder="Product Qty"
+                                <input @keypress="isNumber($event)" class="form-control" id="product_qty"
+                                       placeholder="Product Qty"
                                        type="text" v-model="inventory.product_qty"
                                        v-on:input="onProductQtyChange($event)">
                                 <span class="help-block"
-                                      v-if="has_error && errors.product_qty">{{ errors.product_qty }}</span>
+                                      v-if="has_error && errors.product_qty">{{ errors.product_qty[0] }}</span>
                             </div>
 
                             <div class="form-group" v-if="inventory.product_serial_numbers.length > 0">
                                 <label for="imei_number">IMEI No.</label>
-                                <div v-for="(imei, index) in inventory.product_serial_numbers" class="mb-1">
+                                <div class="mb-1" v-for="(imei, index) in inventory.product_serial_numbers">
                                     <input class="form-control" id="imei_number" placeholder="IMEI No." type="text"
                                            v-model="imei.imei_number">
+                                    <span class="help-block"
+                                          v-if="has_error && errors['product_serial_numbers.'+index+'.imei_number']">{{errors['product_serial_numbers.'+index+'.imei_number'][0]}}
+                                    </span>
                                 </div>
+
                             </div>
 
                             <button class="btn btn-primary" type="submit">Submit</button>
@@ -103,7 +106,7 @@
                     brand_id: '',
                     product_id: '',
                     product_qty: '',
-                    purchase_price:'',
+                    purchase_price: 0,
                     product_serial_numbers: []
                 },
                 has_error: false,
@@ -113,7 +116,6 @@
                 suppliers: [],
                 brands: [],
                 products: [],
-
             }
         },
         created() {
@@ -181,22 +183,26 @@
                     .catch((err) => console.error(err));
             },
             addInventory() {
-                var app = this
+                var app = this;
+                app.has_error = false;
+                app.errors = {};
                 axios.post(window.base_url + '/api/v1/auth/addInventory', this.inventory)
                     .then(response => {
-                        this.inventory.invoice_number = '';
-                        this.inventory.supplier_id = '';
-                        this.inventory.brand_id = '';
-                        this.inventory.product_id = '';
-                        this.inventory.product_qty = '';
-                        this.inventory.purchase_price = '';
-                        this.inventory.product_serial_numbers = [];
-                        // this.fetchBranches();
+                        if (response.data.status === 'success') {
+                            this.inventory.invoice_number = '';
+                            this.inventory.supplier_id = '';
+                            this.inventory.brand_id = '';
+                            this.inventory.product_id = '';
+                            this.inventory.product_qty = '';
+                            this.inventory.purchase_price = '';
+                            this.inventory.product_serial_numbers = [];
+                            // this.fetchBranches();
+                        }
                     })
                     .catch((res) => {
-                        app.has_error = true
-                        app.error = res.response.data.error
-                        app.errors = res.response.data.errors || {}
+                        app.has_error = true;
+                        app.error = res.response.data.error;
+                        app.errors = res.response.data.errors || {};
                     });
             }
         },

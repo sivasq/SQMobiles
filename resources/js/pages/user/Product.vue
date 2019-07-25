@@ -6,14 +6,10 @@
                     <div class="card-header" v-if="!isUpdate">Add New Product</div>
                     <div class="card-header" v-if="isUpdate">Update Product</div>
                     <div class="card-body">
-                        <div class="alert alert-danger" v-if="has_error && !success">
-                            <p v-if="error == 'registration_validation_error'">Validation Errors.</p>
-                            <p v-else>Error, can not Add Product at the moment. If the problem persists, please contact
-                                an administrator.</p>
-                        </div>
-                        <form v-on:submit.prevent="handle_function_call(action)" autocomplete="off" method="post" v-if="!success">
+                        <form autocomplete="off" method="post" v-if="!success"
+                              v-on:submit.prevent="handle_function_call(action)">
 
-                            <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.brand_id[0] }">
+                            <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.brand_id }">
                                 <label for="product_name">Brand Name</label>
 
                                 <select class="form-control" id="brand_id" v-model="product.brand_id">
@@ -23,15 +19,15 @@
                                     </option>
                                 </select>
 
-                                <span class="help-block" v-if="has_error && errors.brand_id[0]">{{
+                                <span class="help-block" v-if="has_error && errors.brand_id">{{
                                     errors.brand_id[0] }}</span>
                             </div>
 
-                            <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.product_name[0] }">
+                            <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.product_name }">
                                 <label for="product_name">Name</label>
                                 <input class="form-control" id="product_name" placeholder="Product Name" type="text"
                                        v-model="product.product_name">
-                                <span class="help-block" v-if="has_error && errors.product_name[0]">{{
+                                <span class="help-block" v-if="has_error && errors.product_name">{{
                                     errors.product_name[0] }}</span>
                             </div>
                             <button class="btn btn-primary" type="submit">Submit</button>
@@ -50,6 +46,7 @@
                     <li :key="product.id" class="list-group-item" v-for="(product, index) in products">
                         {{index + 1}}) {{product.brand_details.brand_name}} {{product.product_name}}
                         <button @click="editProduct(product)" class="btn btn-sm btn-outline-info">Edit</button>
+                        <button @click="deleteProduct(product.id)" class="btn btn-sm btn-outline-danger">Delete</button>
                     </li>
                 </ul>
             </div>
@@ -85,17 +82,22 @@
             },
             addProduct() {
                 var app = this;
-                console.log(this.product);
+                app.has_error = false;
+                app.errors = {};
                 axios.post(window.base_url + '/api/v1/auth/addProduct', this.product)
                     .then(response => {
-                        this.product.brand_id = '';
-                        this.product.product_name = '';
-                        this.fetchProducts();
+                        console.log(response.data.status);
+                        if (response.data.status === 'success') {
+                            this.product_id = '';
+                            this.product.brand_id = '';
+                            this.product.product_name = '';
+                            this.fetchProducts();
+                        }
                     })
                     .catch((res) => {
-                        app.has_error = true
-                        app.error = res.response.data.error
-                        app.errors = res.response.data.errors || {}
+                        app.has_error = true;
+                        app.error = res.response.data.error;
+                        app.errors = res.response.data.errors || {};
                     });
             },
             fetchBrands() {
@@ -115,6 +117,9 @@
                     .catch((err) => console.error(err));
             },
             editProduct(product) {
+                this.has_error = false;
+                this.error = '';
+                this.errors = {};
                 this.action = 'updateProduct';
                 this.isUpdate = true;
                 this.product_id = product.id;
@@ -122,6 +127,9 @@
                 this.product.brand_id = product.brand_details.id;
             },
             cancelEdit() {
+                this.has_error = false;
+                this.error = '';
+                this.errors = {};
                 this.action = 'addProduct';
                 this.isUpdate = false;
                 this.product_id = '';
@@ -130,17 +138,37 @@
             },
             updateProduct() {
                 var app = this;
+                app.has_error = false;
+                app.errors = {};
                 axios.post(window.base_url + '/api/v1/auth/updateProduct/' + app.product_id, this.product)
                     .then(response => {
-                        this.isUpdate = false;
-                        this.product.product_name = '';
-                        this.product.brand_id = '';
-                        this.fetchProducts();
+                        if (response.data.status === 'success') {
+                            this.isUpdate = false;
+                            this.action = 'addProduct';
+                            this.product_id = '';
+                            this.product.brand_id = '';
+                            this.product.product_name = '';
+                            this.fetchProducts();
+                        }
                     })
                     .catch((res) => {
-                        app.has_error = true
-                        app.error = res.response.data.error
-                        app.errors = res.response.data.errors || {}
+                        app.has_error = true;
+                        app.error = res.response.data.error;
+                        app.errors = res.response.data.errors || {};
+                    });
+            },
+            deleteProduct(productid) {
+                var app = this;
+                app.has_error = false;
+                app.errors = {};
+                axios.post(window.base_url + '/api/v1/auth/deleteProduct/' + productid)
+                    .then(response => {
+                        if (response.data.status === 'success') {
+                            this.fetchProducts();
+                        }
+                    })
+                    .catch((res) => {
+
                     });
             }
         },

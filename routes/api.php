@@ -43,6 +43,8 @@ Route::prefix('v1')->group(function () {
             Route::post('addUser', 'AuthController@register');
             // Update User
             Route::post('updateUser/{user}', 'AuthController@updateUser');
+            // Delete User
+            Route::post('deleteUser/{user}', 'AuthController@destroy');
             // Get All Users
             Route::get('fetchUsers', 'AuthController@index');
 
@@ -51,6 +53,8 @@ Route::prefix('v1')->group(function () {
             Route::post('addSupplier', 'SupplierController@store');
             // Update Supplier
             Route::post('updateSupplier/{supplier}', 'SupplierController@update');
+            // Delete Supplier
+            Route::post('deleteSupplier/{supplier}', 'SupplierController@destroy');
             // Get All Suppliers
             Route::get('fetchSuppliers', 'SupplierController@index');
 
@@ -59,6 +63,8 @@ Route::prefix('v1')->group(function () {
             Route::post('addBrand', 'BrandController@store');
             // Update Brand
             Route::post('updateBrand/{brand}', 'BrandController@update');
+            // Delete Brand
+            Route::post('deleteBrand/{brand}', 'BrandController@destroy');
             // Get All Brands
             Route::get('fetchBrands', 'BrandController@index');
 
@@ -75,6 +81,8 @@ Route::prefix('v1')->group(function () {
             Route::post('addProduct', 'ProductController@store');
             // Update Product
             Route::post('updateProduct/{product}', 'ProductController@update');
+            // Delete Product
+            Route::post('deleteProduct/{product}', 'ProductController@destroy');
             // Get All Products
             Route::get('fetchProducts', 'ProductController@index');
             // Get Products BY Brand Id

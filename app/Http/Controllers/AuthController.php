@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\User as UserResource;
+use App\InventoryProductDetail;
 use App\User;
 use Auth;
 use Illuminate\Http\Request;
@@ -38,24 +39,45 @@ class AuthController extends Controller
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->mobile = $request->mobile;
+        $user->mobile = str_replace(' ', '', $request->mobile);
         $user->roles = $request->roles;
         $user->branch_id = $request->branch_id;
         $user->password = bcrypt($request->password);
         $user->save();
-        return response()->json(['success' => true], 200);
+
+        if ($user->exists()) {
+            return response()->json(['success' => true], 200);
+        }
     }
 
     public function updateUser(Request $request, User $user)
     {
-        if ($request->input('name') != "") $user->name = $request->input('name');
-        if ($request->input('email') != "") $user->email = $request->input('email');
-        if ($request->input('mobile') != "") $user->mobile = $request->input('mobile');
-        if ($request->input('branch_id') != "") $user->branch_id = $request->input('branch_id');
-        if ($request->input('password') != "") $user->password = bcrypt($request->input('password'));
+        $v = Validator::make($request->all(), [
+            'name' => 'required|min:3',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'mobile' => 'required|unique:users,mobile,' . $user->id,
+            'branch_id' => 'required',
+            'password' => 'nullable|min:3|confirmed'
+        ]);
+        if ($v->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $v->errors()
+            ], 422);
+        }
+
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        $user->mobile = str_replace(' ', '', $request->input('mobile'));
+        $user->branch_id = $request->input('branch_id');
+
+        if ($request->input('password') != "") {
+            $user->password = bcrypt($request->input('password'));
+        }
+
         $user->save();
 
-        if($user->exists()) {
+        if ($user->exists()) {
             return response()->json(['success' => true], 200);
         }
     }
@@ -72,6 +94,14 @@ class AuthController extends Controller
         return response()->json(['success' => false, 'message' => 'unAuthorized'], 401);
     }
 
+    /**
+     * Return auth guard
+     */
+    private function guard()
+    {
+        return Auth::guard();
+    }
+
     public function user_login(Request $request)
     {
         $request->request->add(['roles' => 'user']);
@@ -81,14 +111,6 @@ class AuthController extends Controller
             return response()->json(['success' => true], 200)->header('Authorization', $token);
         }
         return response()->json(['success' => false, 'message' => 'unAuthorized'], 401);
-    }
-
-    /**
-     * Return auth guard
-     */
-    private function guard()
-    {
-        return Auth::guard();
     }
 
     /**
@@ -126,5 +148,17 @@ class AuthController extends Controller
                 ->header('Authorization', $token);
         }
         return response()->json(['error' => 'refresh_token_error'], 401);
+    }
+
+    public function destroy(User $user)
+    {
+        $userEntryExists = InventoryProductDetail::where('sale_by', $user->id)->get()->count();
+
+        if ($userEntryExists == 0) {
+            $user->forceDelete();
+            return response()->json(['status' => 'success'], 200);
+        }
+        $user->delete();
+        return response()->json(['status' => 'success'], 200);
     }
 }

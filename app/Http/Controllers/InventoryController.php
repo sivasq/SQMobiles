@@ -18,12 +18,6 @@ use Validator;
 
 class InventoryController extends Controller
 {
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -33,8 +27,12 @@ class InventoryController extends Controller
             'product_id' => 'required',
             'product_qty' => 'required',
             'purchase_price' => 'required',
-            'product_serial_numbers' => 'required',
-        ]);
+            'product_serial_numbers.*.imei_number' => 'required|unique:inventory_product_details',
+        ],
+            [
+                'product_serial_numbers.*.imei_number.required' => 'Imei Number Required',
+                'product_serial_numbers.*.imei_number.unique' => 'This IMEI Number Already taken'
+            ]);
 
         if ($validator->fails()) {
             return response()->json([
@@ -42,6 +40,8 @@ class InventoryController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
+
+        dd($request->all());
         try {
             DB::beginTransaction();
 
@@ -69,16 +69,17 @@ class InventoryController extends Controller
                     $inventory_imei_records[] = [
                         'inventory_product_id' => $inventoryProduct->id,
                         'imei_number' => $product_serial_number['imei_number'],
-                        'branch_id' => 1
+                        'branch_id' => 1,
+                        'product_id' => $request->product_id
                     ];
                 }
             }
             InventoryProductDetail::insert($inventory_imei_records);
             DB::commit();
-            return response()->json(['success' => true], 200);
+            return response()->json(['status' => 'success'], 200);
         } catch (Exception $e) {
             DB::rollback();
-            return response()->json(['success' => false], 401);
+            return response()->json(['status' => 'false'], 400);
         }
     }
 

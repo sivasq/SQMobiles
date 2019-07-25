@@ -1,79 +1,76 @@
 <template>
-    <div class="container">
-        <div class="row justify-content-md-center">
-            <div class="col-12 col-md-6">
-                <div class="card card-default">
-                    <div class="card-header" v-if="!isUpdate">Add New User</div>
-                    <div class="card-header" v-if="isUpdate">Update User</div>
-                    <div class="card-body">
-                        <div class="alert alert-danger" v-if="has_error && !success">
-                            <p v-if="error == 'registration_validation_error'">Validation Errors.</p>
-                            <p v-else>Error, can not register at the moment. If the problem persists, please contact an
-                                administrator.</p>
+    <div>
+        <div class="container">
+            <div class="row justify-content-md-center">
+                <div class="col-12 col-md-6">
+                    <div class="card card-default">
+                        <div class="card-header" v-if="!isUpdate">Add New User</div>
+                        <div class="card-header" v-if="isUpdate">Update User</div>
+                        <div class="card-body">
+                            <form autocomplete="off" method="post" v-if="!success"
+                                  v-on:submit.prevent="handle_function_call(action)">
+                                <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.name }">
+                                    <label for="name">Name</label>
+                                    <input class="form-control" id="name" placeholder="Full Name" type="text"
+                                           v-model="name">
+                                    <span class="help-block" v-if="has_error && errors.name">{{ errors.name[0] }}</span>
+                                </div>
+
+                                <div class="form-group" v-bind:class="{ 'has_error': has_error && errors.email }">
+                                    <label for="email">E-mail</label>
+                                    <input class="form-control" id="email" placeholder="user@example.com" type="email"
+                                           v-model="email">
+                                    <span class="help-block"
+                                          v-if="has_error && errors.email">{{ errors.email[0] }}</span>
+                                </div>
+
+                                <div class="form-group" v-bind:class="{ 'has_error': has_error && errors.mobile }">
+                                    <label for="mobile">Mobile</label>
+                                    <input @keypress="isNumber($event)" class="form-control" id="mobile"
+                                           placeholder="1234567890" type="text"
+                                           v-model="mobile">
+                                    <span class="help-block"
+                                          v-if="has_error && errors.mobile">{{ errors.mobile[0] }}</span>
+                                </div>
+
+                                <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.branch_id }">
+                                    <label for="branch_id">Branch Name</label>
+                                    <select class="form-control" id="branch_id" v-model="branch_id">
+                                        <option disabled selected value="">Select Branch</option>
+                                        <option :key="branch.id" :value="branch.id" class="list-group-item"
+                                                v-for="(branch, index) in branches">{{branch.branch_name}}
+                                        </option>
+                                    </select>
+                                    <span class="help-block"
+                                          v-if="has_error && errors.branch_id">{{ errors.branch_id[0] }}</span>
+                                </div>
+
+                                <div class="form-group" v-bind:class="{ 'has_error': has_error && errors.password }">
+                                    <label for="password">Password</label>
+                                    <input autocomplete="new-password" class="form-control" id="password"
+                                           type="password"
+                                           v-model="password">
+                                    <span class="help-block"
+                                          v-if="has_error && errors.password">{{ errors.password[0] }}</span>
+                                </div>
+
+                                <div class="form-group" v-bind:class="{ 'has_error': has_error && errors.password }">
+                                    <label for="password_confirmation">Password confirmation</label>
+                                    <input class="form-control" id="password_confirmation" type="password"
+                                           v-model="password_confirmation">
+                                </div>
+
+                                <button class="btn btn-primary" type="submit">Submit</button>
+
+                                <button @click="cancelEdit()" class="btn btn-danger" v-if="isUpdate">Cancel</button>
+                            </form>
                         </div>
-
-                        <form autocomplete="off" method="post" v-if="!success"
-                              v-on:submit.prevent="handle_function_call(action)">
-                            <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.name[0] }">
-                                <label for="name">Name</label>
-                                <input class="form-control" id="name" placeholder="Full Name" type="text"
-                                       v-model="name">
-                                <span class="help-block" v-if="has_error && errors.name[0]">{{ errors.name[0] }}</span>
-                            </div>
-
-                            <div class="form-group" v-bind:class="{ 'has_error': has_error && errors.email[0] }">
-                                <label for="email">E-mail</label>
-                                <input class="form-control" id="email" placeholder="user@example.com" type="email"
-                                       v-model="email">
-                                <span class="help-block"
-                                      v-if="has_error && errors.email[0]">{{ errors.email[0] }}</span>
-                            </div>
-
-                            <div class="form-group" v-bind:class="{ 'has_error': has_error && errors.mobile[0] }">
-                                <label for="mobile">Mobile</label>
-                                <input @keypress="isNumber($event)" class="form-control" id="mobile"
-                                       placeholder="1234567890" type="text"
-                                       v-model="mobile">
-                                <span class="help-block"
-                                      v-if="has_error && errors.mobile[0]">{{ errors.mobile[0] }}</span>
-                            </div>
-
-                            <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.branch_id }">
-                                <label for="branch_id">Branch Name</label>
-                                <select class="form-control" id="branch_id" v-model="branch_id">
-                                    <option disabled selected value="">Select Branch</option>
-                                    <option :key="branch.id" :value="branch.id" class="list-group-item"
-                                            v-for="(branch, index) in branches">{{branch.branch_name}}
-                                    </option>
-                                </select>
-                                <span class="help-block"
-                                      v-if="has_error && errors.branch_id[0]">{{ errors.branch_id[0] }}</span>
-                            </div>
-
-                            <div class="form-group" v-bind:class="{ 'has_error': has_error && errors.password[0] }">
-                                <label for="password">Password</label>
-                                <input class="form-control" id="password" type="password" v-model="password">
-                                <span class="help-block"
-                                      v-if="has_error && errors.password[0]">{{ errors.password[0] }}</span>
-                            </div>
-
-                            <div class="form-group" v-bind:class="{ 'has_error': has_error && errors.password[0] }">
-                                <label for="password_confirmation">Password confirmation</label>
-                                <input class="form-control" id="password_confirmation" type="password"
-                                       v-model="password_confirmation">
-                            </div>
-
-                            <button class="btn btn-primary" type="submit">Submit</button>
-
-                            <button @click="cancelEdit()" class="btn btn-danger" v-if="isUpdate">Cancel</button>
-                        </form>
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="container-fluid">
-            <div class="row">
+            <div class="row justify-content-md-center">
                 <div class="col-12 mt-5">
                     <div class="card card-default">
                         <div class="card-header">Users List</div>
@@ -93,6 +90,9 @@
                                 <td>{{user.branch_details.branch_name}} - {{user.branch_details.branch_location}}</td>
                                 <td>
                                     <button @click="editUser(user)" class="btn btn-sm btn-outline-info">Edit</button>
+                                    <button @click="deleteUser(user.id)" class="btn btn-sm btn-outline-danger"
+                                            v-if="user.roles != 'admin'">Delete
+                                    </button>
                                 </td>
                             </tr>
                             </tbody>
@@ -169,22 +169,27 @@
                     password_confirmation: app.password_confirmation
                 })
                     .then(response => {
-                        this.name = '';
-                        this.email = '';
-                        this.mobile = '';
-                        this.branch_id = '';
-                        // this.roles = '';
-                        this.password = '';
-                        this.password_confirmation = '';
-                        this.fetchUsers();
+                        if (response.data.status === 'success') {
+                            this.name = '';
+                            this.email = '';
+                            this.mobile = '';
+                            this.branch_id = '';
+                            // this.roles = '';
+                            this.password = '';
+                            this.password_confirmation = '';
+                            this.fetchUsers();
+                        }
                     })
                     .catch((res) => {
-                        app.has_error = true
-                        app.error = res.response.data.error
-                        app.errors = res.response.data.errors || {}
+                        app.has_error = true;
+                        app.error = res.response.data.error;
+                        app.errors = res.response.data.errors || {};
                     });
             },
             editUser(user) {
+                this.has_error = false;
+                this.error = '';
+                this.errors = {};
                 this.action = 'updateUser';
                 this.isUpdate = true;
                 this.user_id = user.id;
@@ -196,6 +201,9 @@
                 this.branch_id = user.branch_details.id;
             },
             cancelEdit() {
+                this.has_error = false;
+                this.error = '';
+                this.errors = {};
                 this.action = 'addUser';
                 this.isUpdate = false;
                 this.user_id = '';
@@ -203,9 +211,13 @@
                 this.email = '';
                 this.mobile = '';
                 this.branch_id = '';
+                this.password = '';
+                this.password_confirmation = '';
             },
             updateUser() {
                 var app = this;
+                app.has_error = false;
+                app.errors = {};
                 axios.post(window.base_url + '/api/v1/auth/updateUser/' + app.user_id, {
                     name: app.name,
                     email: app.email,
@@ -215,20 +227,37 @@
                     password_confirmation: app.password_confirmation
                 })
                     .then(response => {
-                        this.isUpdate = false;
-                        this.name = '';
-                        this.email = '';
-                        this.mobile = '';
-                        this.branch_id = '';
-                        // this.roles = '';
-                        // this.password = '';
-                        // this.password_confirmation = '';
-                        this.fetchUsers();
+                        if (response.data.status === 'success') {
+                            this.isUpdate = false;
+                            this.action = 'addUser';
+                            this.name = '';
+                            this.email = '';
+                            this.mobile = '';
+                            this.branch_id = '';
+                            // this.roles = '';
+                            this.password = '';
+                            this.password_confirmation = '';
+                            this.fetchUsers();
+                        }
                     })
                     .catch((res) => {
-                        app.has_error = true
-                        app.error = res.response.data.error
-                        app.errors = res.response.data.errors || {}
+                        app.has_error = true;
+                        app.error = res.response.data.error;
+                        app.errors = res.response.data.errors || {};
+                    });
+            },
+            deleteUser(userid) {
+                var app = this;
+                app.has_error = false;
+                app.errors = {};
+                axios.post(window.base_url + '/api/v1/auth/deleteUser/' + userid)
+                    .then(response => {
+                        if (response.data.status === 'success') {
+                            this.fetchUsers();
+                        }
+                    })
+                    .catch((res) => {
+
                     });
             }
         }

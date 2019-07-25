@@ -4,34 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Brand;
 use App\Http\Resources\Brand as BrandResource;
+use App\Product;
 use Illuminate\Http\Request;
 use Validator;
 
 class BrandController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $brands = Brand::all();
         return BrandResource::collection($brands);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'brand_name' => 'required',
+            'brand_name' => 'required|unique:brands',
         ]);
-
 
         if ($validator->fails()) {
             return response()->json([
@@ -44,22 +33,16 @@ class BrandController extends Controller
         $brand->brand_name = $request->brand_name;
         $brand->save();
 
-        return response()->json(['status' => 'success'], 200);
+        if ($brand->exists()) {
+            return response()->json(['status' => 'success'], 200);
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\brand  $brand
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, brand $brand)
     {
         $validator = Validator::make($request->all(), [
-            'brand_name' => 'required',
+            'brand_name' => 'required|unique:brands,brand_name,' . $brand->id,
         ]);
-
 
         if ($validator->fails()) {
             return response()->json([
@@ -71,17 +54,19 @@ class BrandController extends Controller
         $brand->brand_name = $request->brand_name;
         $brand->save();
 
-        return response()->json(['status' => 'success'], 200);
+        if ($brand->exists()) {
+            return response()->json(['status' => 'success'], 200);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\brand  $brand
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(brand $brand)
     {
-        //
+        $productExists = Product::where('brand_id', $brand->id)->get()->count();
+
+        if ($productExists == 0) {
+            $brand::destroy($brand->id);
+            return response()->json(['status' => 'success'], 200);
+        }
+        return response()->json(['status' => 'false'], 200);
     }
 }

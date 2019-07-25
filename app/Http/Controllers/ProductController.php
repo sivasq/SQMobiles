@@ -5,19 +5,16 @@ namespace App\Http\Controllers;
 use App\Branch;
 use App\Exports\StockExport;
 use App\Http\Resources\Product as ProductResource;
+use App\InventoryProductDetail;
 use App\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 use Maatwebsite\Excel\Facades\Excel;
 use Validator;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $products = Product::all();
@@ -112,17 +109,11 @@ class ProductController extends Controller
         return ProductResource::collection($products);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'brand_id' => 'required',
-            'product_name' => 'required'
+            'product_name' => 'required|unique:products,product_name,NULL,id,brand_id,' . Input::get('brand_id')
         ]);
 
 
@@ -137,24 +128,18 @@ class ProductController extends Controller
         $product->brand_id = $request->brand_id;
         $product->product_name = $request->product_name;
         $product->save();
-
-        return response()->json(['status' => 'success'], 200);
+        if ($product->exists()) {
+            return response()->json(['status' => 'success'], 200);
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\product $product
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, product $product)
     {
         $validator = Validator::make($request->all(), [
             'brand_id' => 'required',
-            'product_name' => 'required'
+            'product_name' => 'required|unique:products,product_name,' . $product->id . ',id,brand_id,' . Input::get
+                ('brand_id')
         ]);
-
 
         if ($validator->fails()) {
             return response()->json([
@@ -167,17 +152,19 @@ class ProductController extends Controller
         $product->product_name = $request->product_name;
         $product->save();
 
-        return response()->json(['status' => 'success'], 200);
+        if ($product->exists()) {
+            return response()->json(['status' => 'success'], 200);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param \App\product $product
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(product $product)
     {
-        //
+        $productStock = InventoryProductDetail::where('product_id', $product->id)->get()->count();
+
+        if ($productStock == 0) {
+            Product::destroy($product->id);
+            return response()->json(['status' => 'success'], 200);
+        }
+        return response()->json(['status' => 'false'], 200);
     }
 }

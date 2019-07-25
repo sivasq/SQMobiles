@@ -3,33 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Branch;
+use App\Http\Resources\Branch as BranchResource;
 use Illuminate\Http\Request;
 use Validator;
-use App\Http\Resources\Branch as BranchResource;
 
 class BranchController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         $branches = Branch::all();
         return BranchResource::collection($branches);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'branch_name' => 'required',
+            'branch_name' => 'required|unique:branches',
             'branch_location' => 'required'
         ]);
 
@@ -46,20 +35,15 @@ class BranchController extends Controller
         $branch->branch_location = $request->branch_location;
         $branch->save();
 
-        return response()->json(['status' => 'success'], 200);
+        if ($branch->exists()) {
+            return response()->json(['status' => 'success'], 200);
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\branch $branch
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, branch $branch)
     {
         $validator = Validator::make($request->all(), [
-            'branch_name' => 'required',
+            'branch_name' => 'required|unique:branches,branch_name,' . $branch->id,
             'branch_location' => 'required'
         ]);
 
@@ -75,15 +59,11 @@ class BranchController extends Controller
         $branch->branch_location = $request->branch_location;
         $branch->save();
 
-        return response()->json(['status' => 'success'], 200);
+        if($branch->exists()) {
+            return response()->json(['status' => 'success'], 200);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param \App\branch $branch
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(branch $branch)
     {
         //

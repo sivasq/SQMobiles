@@ -25,6 +25,7 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('api_token');
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
