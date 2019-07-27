@@ -23,6 +23,7 @@ class CreateInventoryProductDetailTxnHistoriesTable extends Migration
             $table->foreign('txn_to')->references('id')->on('branches');
             $table->integer('txn_by')->nullable();
             $table->foreign('txn_by')->references('id')->on('users');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

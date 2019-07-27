@@ -15,22 +15,28 @@ import VueRouter from 'vue-router'
 import Index from './Index';
 import auth from './auth'
 import router from './router'
+import VueToast from 'vue-toast-notification';
+import 'vue-toast-notification/dist/index.css';
 
 // Set Vue globally
 window.Vue = require('vue');
 
 // Set Vue router
-Vue.router = router
-Vue.use(VueRouter)
+Vue.router = router;
+Vue.use(VueRouter);
+Vue.use(VueToast, {
+    // One of options
+    position: 'top'
+});
 
 // Set Vue authentication
-Vue.use(VueAxios, axios)
+Vue.use(VueAxios, axios);
 // axios.defaults.baseURL = `${process.env.MIX_APP_URL}/api/v1`
-axios.defaults.baseURL = window.base_url + '/api/v1'
-Vue.use(VueAuth, auth)
+axios.defaults.baseURL = window.base_url + '/api/v1';
+Vue.use(VueAuth, auth);
 
 // Load Index
-Vue.component('index', Index)
+Vue.component('index', Index);
 
 /**
  * The following block of code may be used to automatically register your

@@ -26,6 +26,7 @@ class CreateInventoryProductDetailsTable extends Migration
             $table->timestamp('sales_at')->nullable();
             $table->integer('sale_by')->nullable();
             $table->foreign('sale_by')->references('id')->on('users');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

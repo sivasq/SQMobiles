@@ -17,7 +17,8 @@ class Supplier extends JsonResource
 //        return parent::toArray($request);
         return [
             'id' => $this->id,
-            'supplier_name' => $this->supplier_name
+            'supplier_name' => $this->supplier_name,
+            'activeStatus' => is_null($this->deleted_at) ? true : false,
         ];
     }
 }

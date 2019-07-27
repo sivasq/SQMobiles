@@ -45,6 +45,8 @@ Route::prefix('v1')->group(function () {
             Route::post('updateUser/{user}', 'AuthController@updateUser');
             // Delete User
             Route::post('deleteUser/{user}', 'AuthController@destroy');
+            // UnDelete User
+            Route::post('unDeleteUser/{user}', 'AuthController@un_destroy');
             // Get All Users
             Route::get('fetchUsers', 'AuthController@index');
 
@@ -55,6 +57,8 @@ Route::prefix('v1')->group(function () {
             Route::post('updateSupplier/{supplier}', 'SupplierController@update');
             // Delete Supplier
             Route::post('deleteSupplier/{supplier}', 'SupplierController@destroy');
+            // UnDelete Supplier
+            Route::post('unDeleteSupplier/{supplier}', 'SupplierController@un_destroy');
             // Get All Suppliers
             Route::get('fetchSuppliers', 'SupplierController@index');
 
@@ -65,6 +69,8 @@ Route::prefix('v1')->group(function () {
             Route::post('updateBrand/{brand}', 'BrandController@update');
             // Delete Brand
             Route::post('deleteBrand/{brand}', 'BrandController@destroy');
+            // UnDelete Brand
+            Route::post('unDeleteBrand/{brand}', 'BrandController@un_destroy');
             // Get All Brands
             Route::get('fetchBrands', 'BrandController@index');
 
@@ -73,6 +79,10 @@ Route::prefix('v1')->group(function () {
             Route::post('addBranch', 'BranchController@store');
             // Update Branch
             Route::post('updateBranch/{branch}', 'BranchController@update');
+            // Delete Branch
+            Route::post('deleteBranch/{branch}', 'BranchController@destroy');
+            // UnDelete Branch
+            Route::post('unDeleteBranch/{branch}', 'BranchController@un_destroy');
             // Get All Branches
             Route::get('fetchBranches', 'BranchController@index');
 
@@ -83,6 +93,8 @@ Route::prefix('v1')->group(function () {
             Route::post('updateProduct/{product}', 'ProductController@update');
             // Delete Product
             Route::post('deleteProduct/{product}', 'ProductController@destroy');
+            // UnDelete Product
+            Route::post('unDeleteProduct/{product}', 'ProductController@un_destroy');
             // Get All Products
             Route::get('fetchProducts', 'ProductController@index');
             // Get Products BY Brand Id

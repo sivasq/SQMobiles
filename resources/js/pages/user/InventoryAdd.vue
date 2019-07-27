@@ -189,6 +189,7 @@
                 axios.post(window.base_url + '/api/v1/auth/addInventory', this.inventory)
                     .then(response => {
                         if (response.data.status === 'success') {
+                            Vue.$toast.success("Product Stock Added Successfully");
                             this.inventory.invoice_number = '';
                             this.inventory.supplier_id = '';
                             this.inventory.brand_id = '';

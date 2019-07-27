@@ -21,6 +21,7 @@ class CreateInventoryProductsTable extends Migration
             $table->foreign('product_id')->references('id')->on('products');
             $table->integer('inventory_product_qty');
             $table->integer('purchase_price_per_qty');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

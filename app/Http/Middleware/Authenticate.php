@@ -10,7 +10,7 @@ class Authenticate extends Middleware
     /**
      * Get the path the user should be redirected to when they are not authenticated.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return string
      */
     // protected function redirectTo($request)
@@ -24,10 +24,15 @@ class Authenticate extends Middleware
     public function handle($request, Closure $next, ...$guards)
     {
         if ($this->authenticate($request, $guards) === 'authentication_failed') {
-            return response()->json(['error' => 'Unauthorized'], 400);
+            if ($guards[0] == 'mobileapi') {
+                return response()->json(['success' => 'false', 'message' => 'User Unauthorized'], 401);
+            } else {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
         }
         return $next($request);
     }
+
     // Override authentication method
     protected function authenticate($request, array $guards)
     {

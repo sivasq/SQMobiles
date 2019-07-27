@@ -26,13 +26,13 @@ class InventoryProduct extends JsonResource
 
     private function product_details($product_id)
     {
-        $product_details = Product::where('id', $product_id)->first();
+        $product_details = Product::where('id', $product_id)->withTrashed()->first();
         return new \App\Http\Resources\Product($product_details);
     }
 
     private function inventory_details($inventory_id)
     {
-        $inventory_details = Inventory::where('id', $inventory_id)->first();
+        $inventory_details = Inventory::where('id', $inventory_id)->withTrashed()->first();
         return new \App\Http\Resources\Inventory($inventory_details);
     }
 }

@@ -13,7 +13,7 @@ class AuthController extends Controller
 {
     public function index()
     {
-        $users = User::all();
+        $users = User::withTrashed()->get();
         return UserResource::collection($users);
     }
 
@@ -156,9 +156,17 @@ class AuthController extends Controller
 
         if ($userEntryExists == 0) {
             $user->forceDelete();
-            return response()->json(['status' => 'success'], 200);
+            return response()->json(['status' => 'success', 'message' => 'user deleted successfully'], 200);
         }
         $user->delete();
-        return response()->json(['status' => 'success'], 200);
+        return response()->json(['status' => 'success', 'message' => 'user soft-deleted successfully'], 200);
+    }
+
+    public function un_destroy($user)
+    {
+        $restored = User::withTrashed()->find($user)->restore();
+        if($restored) {
+            return response()->json(['status' => 'success', 'message' => 'User Restored successfully'], 200);
+        }
     }
 }

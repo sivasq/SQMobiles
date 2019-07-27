@@ -12,7 +12,7 @@ class SupplierController extends Controller
 {
     public function index()
     {
-        $suppliers = Supplier::all();
+        $suppliers = Supplier::withTrashed()->get();
         return SupplierResource::collection($suppliers);
     }
 
@@ -63,9 +63,18 @@ class SupplierController extends Controller
         $productStock = Inventory::where('supplier_id', $supplier->id)->get()->count();
 
         if ($productStock == 0) {
-            Supplier::destroy($supplier->id);
-            return response()->json(['status' => 'success'], 200);
+            $supplier->forceDelete();
+            return response()->json(['status' => 'success', 'message' => 'Supplier deleted successfully'], 200);
         }
-        return response()->json(['status' => 'false'], 200);
+        $supplier->delete();
+        return response()->json(['status' => 'success', 'message' => 'Supplier soft-deleted successfully'], 200);
+    }
+
+    public function un_destroy($supplier)
+    {
+        $restored = Supplier::withTrashed()->find($supplier)->restore();
+        if ($restored) {
+            return response()->json(['status' => 'success', 'message' => 'Supplier Restored successfully'], 200);
+        }
     }
 }

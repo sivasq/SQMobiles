@@ -18,6 +18,7 @@ class CreateInventoriesTable extends Migration
             $table->string('invoice_number');
             $table->integer('supplier_id');
             $table->foreign('supplier_id')->references('id')->on('suppliers');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

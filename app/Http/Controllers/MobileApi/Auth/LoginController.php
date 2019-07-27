@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\MobileApi\Auth;
 
-use App\User;
 use App\Http\Controllers\MobileApi\BaseController as BaseController;
+use App\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;

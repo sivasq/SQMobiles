@@ -46,7 +46,12 @@
                     <li :key="product.id" class="list-group-item" v-for="(product, index) in products">
                         {{index + 1}}) {{product.brand_details.brand_name}} {{product.product_name}}
                         <button @click="editProduct(product)" class="btn btn-sm btn-outline-info">Edit</button>
-                        <button @click="deleteProduct(product.id)" class="btn btn-sm btn-outline-danger">Delete</button>
+                        <button @click="deleteProduct(product.id)" class="btn btn-sm btn-outline-danger"
+                                v-if="product.activeStatus == true">Delete
+                        </button>
+                        <button @click="unDeleteProduct(product.id)" class="btn btn-sm btn-outline-secondary"
+                                v-if="product.activeStatus == false">UnDelete
+                        </button>
                     </li>
                 </ul>
             </div>
@@ -88,6 +93,7 @@
                     .then(response => {
                         console.log(response.data.status);
                         if (response.data.status === 'success') {
+                            Vue.$toast.success("Product Added");
                             this.product_id = '';
                             this.product.brand_id = '';
                             this.product.product_name = '';
@@ -143,6 +149,7 @@
                 axios.post(window.base_url + '/api/v1/auth/updateProduct/' + app.product_id, this.product)
                     .then(response => {
                         if (response.data.status === 'success') {
+                            Vue.$toast.success("Product updated");
                             this.isUpdate = false;
                             this.action = 'addProduct';
                             this.product_id = '';
@@ -164,6 +171,22 @@
                 axios.post(window.base_url + '/api/v1/auth/deleteProduct/' + productid)
                     .then(response => {
                         if (response.data.status === 'success') {
+                            Vue.$toast.success(response.data.message);
+                            this.fetchProducts();
+                        }
+                    })
+                    .catch((res) => {
+
+                    });
+            },
+            unDeleteProduct(productid) {
+                var app = this;
+                app.has_error = false;
+                app.errors = {};
+                axios.post(window.base_url + '/api/v1/auth/unDeleteProduct/' + productid)
+                    .then(response => {
+                        if (response.data.status === 'success') {
+                            Vue.$toast.success(response.data.message);
                             this.fetchProducts();
                         }
                     })

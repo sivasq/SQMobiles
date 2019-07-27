@@ -17,7 +17,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::all();
+        $products = Product::withTrashed()->get();
         return ProductResource::collection($products);
     }
 
@@ -162,9 +162,18 @@ class ProductController extends Controller
         $productStock = InventoryProductDetail::where('product_id', $product->id)->get()->count();
 
         if ($productStock == 0) {
-            Product::destroy($product->id);
-            return response()->json(['status' => 'success'], 200);
+            $product->forceDelete();
+            return response()->json(['status' => 'success', 'message' => 'Product deleted successfully'], 200);
         }
-        return response()->json(['status' => 'false'], 200);
+        $product->delete();
+        return response()->json(['status' => 'success', 'message' => 'Product soft-deleted successfully'], 200);
+    }
+
+    public function un_destroy($branch)
+    {
+        $restored = Product::withTrashed()->find($branch)->restore();
+        if($restored) {
+            return response()->json(['status' => 'success', 'message' => 'Product Restored successfully'], 200);
+        }
     }
 }

@@ -19,7 +19,8 @@ class Branch extends JsonResource
         return [
             'id' => $this->id,
             'branch_name' => $this->branch_name,
-            'branch_location' => $this->branch_location
+            'branch_location' => $this->branch_location,
+            'activeStatus' => is_null($this->deleted_at) ? true : false,
         ];
     }
 }

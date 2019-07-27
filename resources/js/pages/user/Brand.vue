@@ -30,7 +30,11 @@
                     <li :key="brand.id" class="list-group-item" v-for="(brand, index) in brands">
                         {{index + 1}}) {{brand.brand_name}}
                         <button @click="editBrand(brand)" class="btn btn-sm btn-outline-info">Edit</button>
-                        <button @click="deleteBrand(brand.id)" class="btn btn-sm btn-outline-danger">Delete</button>
+                        <button @click="deleteBrand(brand.id)" class="btn btn-sm btn-outline-danger"
+                                v-if="brand.activeStatus == true">Delete</button>
+                        <button @click="unDeleteBrand(brand.id)" class="btn btn-sm btn-outline-secondary"
+                                v-if="brand.activeStatus == false">UnDelete
+                        </button>
                     </li>
                 </ul>
             </div>
@@ -66,6 +70,7 @@
                 axios.post(window.base_url + '/api/v1/auth/addBrand', {brand_name: app.brand_name})
                     .then(response => {
                         if (response.data.status === 'success') {
+                            Vue.$toast.success("Brand Added Successfully");
                             this.brand_name = '';
                             this.fetchBrands();
                         }
@@ -111,6 +116,7 @@
                 })
                     .then(response => {
                         if (response.data.status === 'success') {
+                            Vue.$toast.success("Brand Updated Successfully");
                             this.isUpdate = false;
                             this.action = 'addBrand';
                             this.isUpdate = false;
@@ -131,6 +137,22 @@
                 axios.post(window.base_url + '/api/v1/auth/deleteBrand/' + brandid)
                     .then(response => {
                         if (response.data.status === 'success') {
+                            Vue.$toast.success(response.data.message);
+                            this.fetchBrands();
+                        }
+                    })
+                    .catch((res) => {
+
+                    });
+            },
+            unDeleteBrand(brandid) {
+                var app = this;
+                app.has_error = false;
+                app.errors = {};
+                axios.post(window.base_url + '/api/v1/auth/unDeleteBrand/' + brandid)
+                    .then(response => {
+                        if (response.data.status === 'success') {
+                            Vue.$toast.success(response.data.message);
                             this.fetchBrands();
                         }
                     })

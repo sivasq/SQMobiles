@@ -31,19 +31,19 @@ class InventoryProductDetail extends JsonResource
 
     private function branch_details($branch_id)
     {
-        $branch_details = Branch::where('id', $branch_id)->first();
+        $branch_details = Branch::where('id', $branch_id)->withTrashed()->first();
         return new \App\Http\Resources\Branch($branch_details);
     }
 
     private function inventory_product_details($inventory_product_id)
     {
-        $inventory_product_details = InventoryProduct::where('id', $inventory_product_id)->first();
+        $inventory_product_details = InventoryProduct::where('id', $inventory_product_id)->withTrashed()->first();
         return new \App\Http\Resources\InventoryProduct($inventory_product_details);
     }
 
     private function seller_details($user_id)
     {
-        $user_details = User::where('id', $user_id)->first();
+        $user_details = User::where('id', $user_id)->withTrashed()->first();
         return new \App\Http\Resources\User($user_details);
     }
 }

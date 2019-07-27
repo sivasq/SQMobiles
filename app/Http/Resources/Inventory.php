@@ -25,7 +25,7 @@ class Inventory extends JsonResource
 
     private function supplier_details($supplier_id)
     {
-        $supplier_details = Supplier::where('id', $supplier_id)->first();
+        $supplier_details = Supplier::where('id', $supplier_id)->withTrashed()->first();
         return new \App\Http\Resources\Supplier($supplier_details);
     }
 }

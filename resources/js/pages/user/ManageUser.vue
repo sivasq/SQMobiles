@@ -80,7 +80,7 @@
                             <th>Email</th>
                             <th>Mobile</th>
                             <th>Branch</th>
-                            <th></th>
+                            <th>Action</th>
                             </thead>
                             <tbody>
                             <tr :key="user.id" v-for="(user, index) in users">
@@ -91,7 +91,10 @@
                                 <td>
                                     <button @click="editUser(user)" class="btn btn-sm btn-outline-info">Edit</button>
                                     <button @click="deleteUser(user.id)" class="btn btn-sm btn-outline-danger"
-                                            v-if="user.roles != 'admin'">Delete
+                                            v-if="user.roles != 'admin' && user.activeStatus == true">Delete
+                                    </button>
+                                    <button @click="unDeleteUser(user.id)" class="btn btn-sm btn-outline-secondary"
+                                            v-if="user.roles != 'admin' && user.activeStatus == false">UnDelete
                                     </button>
                                 </td>
                             </tr>
@@ -170,6 +173,7 @@
                 })
                     .then(response => {
                         if (response.data.status === 'success') {
+                            Vue.$toast.success("User Added Successfully");
                             this.name = '';
                             this.email = '';
                             this.mobile = '';
@@ -228,6 +232,7 @@
                 })
                     .then(response => {
                         if (response.data.status === 'success') {
+                            Vue.$toast.success("User Updated Successfully");
                             this.isUpdate = false;
                             this.action = 'addUser';
                             this.name = '';
@@ -253,6 +258,22 @@
                 axios.post(window.base_url + '/api/v1/auth/deleteUser/' + userid)
                     .then(response => {
                         if (response.data.status === 'success') {
+                            Vue.$toast.success(response.data.message);
+                            this.fetchUsers();
+                        }
+                    })
+                    .catch((res) => {
+
+                    });
+            },
+            unDeleteUser(userid) {
+                var app = this;
+                app.has_error = false;
+                app.errors = {};
+                axios.post(window.base_url + '/api/v1/auth/unDeleteUser/' + userid)
+                    .then(response => {
+                        if (response.data.status === 'success') {
+                            Vue.$toast.success(response.data.message);
                             this.fetchUsers();
                         }
                     })

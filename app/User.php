@@ -3,9 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable implements JWTSubject
@@ -47,5 +46,15 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function getSaleDetails()
+    {
+        return $this->hasMany('App\InventoryProductDetail', 'sale_by', 'id');
+    }
+
+    public function getBranchDetails()
+    {
+        return $this->belongsTo('App\Branch');
     }
 }

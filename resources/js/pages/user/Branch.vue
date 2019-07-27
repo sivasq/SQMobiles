@@ -43,7 +43,15 @@
                     </li>
                     <li :key="branch.id" class="list-group-item" v-for="(branch, index) in branches">
                         {{index + 1}}) {{branch.branch_name}} - {{branch.branch_location}}
-                        <button @click="editBranch(branch)" class="btn btn-sm btn-outline-info">Edit</button>
+                        <button @click="editBranch(branch)" class="btn btn-sm btn-outline-info" v-if="branch.id != '1'">
+                            Edit
+                        </button>
+                        <button @click="deleteBranch(branch.id)" class="btn btn-sm btn-outline-danger"
+                                v-if="branch.id != '1' && branch.activeStatus == true">Delete
+                        </button>
+                        <button @click="unDeleteBranch(branch.id)" class="btn btn-sm btn-outline-secondary"
+                                v-if="branch.id != '1' && branch.activeStatus == false">UnDelete
+                        </button>
                     </li>
                 </ul>
             </div>
@@ -84,6 +92,7 @@
                     .then(response => {
                         console.log(response.data.status);
                         if (response.data.status === 'success') {
+                            Vue.$toast.success("Branch Added Successfully");
                             this.branch.branch_name = '';
                             this.branch.branch_location = '';
                             this.fetchBranches();
@@ -131,6 +140,7 @@
                 })
                     .then(response => {
                         if (response.data.status === 'success') {
+                            Vue.$toast.success("Branch Updated Successfully");
                             this.isUpdate = false;
                             this.action = 'addBranch';
                             this.branch.branch_name = '';
@@ -142,6 +152,36 @@
                         app.has_error = true;
                         app.error = res.response.data.error;
                         app.errors = res.response.data.errors || {};
+                    });
+            },
+            deleteBranch(branchid) {
+                var app = this;
+                app.has_error = false;
+                app.errors = {};
+                axios.post(window.base_url + '/api/v1/auth/deleteBranch/' + branchid)
+                    .then(response => {
+                        if (response.data.status === 'success') {
+                            Vue.$toast.success(response.data.message);
+                            this.fetchBranches();
+                        }
+                    })
+                    .catch((res) => {
+
+                    });
+            },
+            unDeleteBranch(branchid) {
+                var app = this;
+                app.has_error = false;
+                app.errors = {};
+                axios.post(window.base_url + '/api/v1/auth/unDeleteBranch/' + branchid)
+                    .then(response => {
+                        if (response.data.status === 'success') {
+                            Vue.$toast.success(response.data.message);
+                            this.fetchBranches();
+                        }
+                    })
+                    .catch((res) => {
+
                     });
             }
         },

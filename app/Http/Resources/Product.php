@@ -22,12 +22,13 @@ class Product extends JsonResource
             'product_name' => $this->product_name,
             'brand_details' => $this->brand_details($this->brand_id),
             'stock' => $this->product_stock($this->id),
+            'activeStatus' => is_null($this->deleted_at) ? true : false,
         ];
     }
 
     private function brand_details($brand_id)
     {
-        $brand_details = Brand::where('id', $brand_id)->first();
+        $brand_details = Brand::where('id', $brand_id)->withTrashed()->first();
         return new \App\Http\Resources\Brand($brand_details);
     }
 

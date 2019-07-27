@@ -12,7 +12,7 @@ class BrandController extends Controller
 {
     public function index()
     {
-        $brands = Brand::all();
+        $brands = Brand::withTrashed()->get();
         return BrandResource::collection($brands);
     }
 
@@ -64,9 +64,18 @@ class BrandController extends Controller
         $productExists = Product::where('brand_id', $brand->id)->get()->count();
 
         if ($productExists == 0) {
-            $brand::destroy($brand->id);
-            return response()->json(['status' => 'success'], 200);
+            $brand->forceDelete();
+            return response()->json(['status' => 'success', 'message' => 'Brand deleted successfully'], 200);
         }
-        return response()->json(['status' => 'false'], 200);
+        $brand->delete();
+        return response()->json(['status' => 'success', 'message' => 'Brand soft-deleted successfully'], 200);
+    }
+
+    public function un_destroy($brand)
+    {
+        $restored = Brand::withTrashed()->find($brand)->restore();
+        if($restored) {
+            return response()->json(['status' => 'success', 'message' => 'Brand Restored successfully'], 200);
+        }
     }
 }

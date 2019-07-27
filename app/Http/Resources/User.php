@@ -22,13 +22,14 @@ class User extends JsonResource
             'email' => $this->email,
             'mobile' => $this->mobile,
             'roles' => $this->roles,
+            'activeStatus' => is_null($this->deleted_at) ? true : false,
             'branch_details' => $this->branch_details($this->branch_id)
         ];
     }
 
     public function branch_details($branch_id)
     {
-        $branch_details = Branch::where('id', $branch_id)->first();
+        $branch_details = Branch::where('id', $branch_id)->withTrashed()->first();
         return new \App\Http\Resources\Branch($branch_details);
     }
 }

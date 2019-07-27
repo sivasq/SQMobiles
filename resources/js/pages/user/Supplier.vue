@@ -33,7 +33,11 @@
                     <li :key="supplier.id" class="list-group-item" v-for="(supplier, index) in suppliers">
                         {{index + 1}}) {{supplier.supplier_name}}
                         <button @click="editSupplier(supplier)" class="btn btn-sm btn-outline-info">Edit</button>
-                        <button @click="deleteSupplier(supplier.id)" class="btn btn-sm btn-outline-danger">Delete
+                        <button @click="deleteSupplier(supplier.id)" class="btn btn-sm btn-outline-danger"
+                                v-if="supplier.activeStatus == true">Delete
+                        </button>
+                        <button @click="unDeleteSupplier(supplier.id)" class="btn btn-sm btn-outline-secondary"
+                                v-if="supplier.activeStatus == false">UnDelete
                         </button>
                     </li>
                 </ul>
@@ -70,6 +74,7 @@
                 axios.post(window.base_url + '/api/v1/auth/addSupplier', {supplier_name: app.supplier_name})
                     .then(response => {
                         if (response.data.status === 'success') {
+                            Vue.$toast.success("Supplier Added Successfully");
                             this.supplier_name = '';
                             this.fetchSuppliers();
                         }
@@ -114,6 +119,7 @@
                 })
                     .then(response => {
                         if (response.data.status === 'success') {
+                            Vue.$toast.success("Supplier Updated Successfully");
                             this.isUpdate = false;
                             this.action = 'addSupplier';
                             this.isUpdate = false;
@@ -134,6 +140,22 @@
                 axios.post(window.base_url + '/api/v1/auth/deleteSupplier/' + supplierid)
                     .then(response => {
                         if (response.data.status === 'success') {
+                            Vue.$toast.success(response.data.message);
+                            this.fetchSuppliers();
+                        }
+                    })
+                    .catch((res) => {
+
+                    });
+            },
+            unDeleteSupplier(supplierid) {
+                var app = this;
+                app.has_error = false;
+                app.errors = {};
+                axios.post(window.base_url + '/api/v1/auth/unDeleteSupplier/' + supplierid)
+                    .then(response => {
+                        if (response.data.status === 'success') {
+                            Vue.$toast.success(response.data.message);
                             this.fetchSuppliers();
                         }
                     })

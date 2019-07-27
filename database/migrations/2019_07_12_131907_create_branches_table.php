@@ -17,6 +17,7 @@ class CreateBranchesTable extends Migration
             $table->bigIncrements('id');
             $table->string('branch_name');
             $table->string('branch_location');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
