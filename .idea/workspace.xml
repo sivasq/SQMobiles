@@ -2,56 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="709d9296-8614-44dd-b467-9892832cbb06" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DB.sql" beforeDir="false" afterPath="$PROJECT_DIR$/DB.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Branch.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Branch.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Brand.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Brand.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/BranchController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/BranchController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/BrandController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/BrandController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/Auth/LoginController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/Auth/LoginController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/BaseController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/BaseController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/ClientController.php" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/InventoryController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/InventoryController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/BranchController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/BranchController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/InventoryController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/InventoryController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/ProfileController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/ProductController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/ProductController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/SupplierController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/SupplierController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Middleware/Authenticate.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Middleware/Authenticate.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Resources/Branch.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Resources/Branch.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Resources/Brand.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Resources/Brand.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Resources/Inventory.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Resources/Inventory.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Resources/InventoryProduct.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Resources/InventoryProduct.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Resources/InventoryProductDetail.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Resources/InventoryProductDetail.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Resources/Product.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Resources/Product.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Resources/Supplier.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Resources/Supplier.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Resources/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Resources/User.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Inventory.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Inventory.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/InventoryProduct.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/InventoryProduct.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/InventoryProductDetail.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/InventoryProductDetail.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/InventoryProductDetailTxnHistory.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/InventoryProductDetailTxnHistory.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Product.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Product.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Supplier.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Supplier.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/User.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/User.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/app.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2019_07_12_131532_create_suppliers_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_07_12_131532_create_suppliers_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2019_07_12_131820_create_brands_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_07_12_131820_create_brands_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2019_07_12_131830_create_products_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_07_12_131830_create_products_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2019_07_12_131907_create_branches_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_07_12_131907_create_branches_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2019_07_13_064222_create_inventories_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_07_13_064222_create_inventories_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2019_07_13_114005_create_inventory_products_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_07_13_114005_create_inventory_products_table.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/migrations/2019_07_13_114102_create_inventory_product_details_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_07_13_114102_create_inventory_product_details_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2019_07_15_092722_create_inventory_product_detail_txn_histories_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_07_15_092722_create_inventory_product_detail_txn_histories_table.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/user/Branch.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/Branch.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/user/Brand.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/Brand.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/user/InventoryAdd.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/InventoryAdd.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/user/ManageUser.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/ManageUser.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/user/Product.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/Product.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/user/Supplier.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/Supplier.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -226,7 +181,9 @@
       <workItem from="1564128082241" duration="73000" />
       <workItem from="1564128178804" duration="3135000" />
       <workItem from="1564142745022" duration="92000" />
-      <workItem from="1564203864630" duration="20737000" />
+      <workItem from="1564203864630" duration="22129000" />
+      <workItem from="1564376314804" duration="5992000" />
+      <workItem from="1564392154778" duration="8201000" />
     </task>
     <servers />
   </component>

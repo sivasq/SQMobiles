@@ -4,21 +4,60 @@ namespace App\Http\Controllers\MobileApi;
 
 use App\Http\Controllers\MobileApi\BaseController as BaseController;
 use App\Http\Resources\InventoryProductDetail as InventoryProductDetailResource;
+use App\InventoryProduct;
 use App\InventoryProductDetail;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Validator;
 
-
 class InventoryController extends BaseController
 {
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
+    public function addStock(Request $request)
+    {
+        if (Auth::user()->email != 'stock@sqindia.net') {
+            return response()->json(['status' => 'false', 'message' => 'unAuthorized'], 401);
+        }
+        $validator = Validator::make($request->all(), [
+            'brand_id' => 'required',
+            'product_id' => 'required',
+            'branch_id' => 'required',
+            'imei_number' => 'required|unique:inventory_product_details',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $inventoryProduct = InventoryProduct::updateOrCreate(
+                ['inventory_id' => 5, 'product_id' => $request->product_id],
+                ['inventory_product_qty' => \DB::raw('inventory_product_qty + 1'), 'purchase_price_per_qty' => 0]
+            );
+
+            // Inventory_imei_records to be saved
+            $inventory_imei_records[] = [
+                'inventory_product_id' => $inventoryProduct->id,
+                'imei_number' => $request['imei_number'],
+                'branch_id' => $request->branch_id,
+                'product_id' => $request->product_id
+            ];
+
+            InventoryProductDetail::insert($inventory_imei_records);
+            DB::commit();
+            return response()->json(['status' => 'success'], 200);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json(['status' => 'false'], 400);
+        }
+    }
+
     public function getImeiBasedStockDetailsByBranch($branch_id)
     {
         if ($branch_id == 0) {

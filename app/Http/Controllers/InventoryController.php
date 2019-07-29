@@ -41,7 +41,6 @@ class InventoryController extends Controller
             ], 422);
         }
 
-        dd($request->all());
         try {
             DB::beginTransaction();
 

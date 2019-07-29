@@ -124,6 +124,9 @@ Route::prefix('mobile')->group(function () {
 
         // Below mention routes are available only for the authenticated users.
         Route::middleware('auth:mobileapi')->group(function () {
+
+            Route::post('addStock', 'MobileApi\InventoryController@addStock');
+
             // Get user info
             Route::get('user', 'MobileApi\Auth\LoginController@details');
 
@@ -144,6 +147,9 @@ Route::prefix('mobile')->group(function () {
 
             // Get Branches
             Route::get('getBranches', 'MobileApi\BranchController@index');
+
+            // Get Brands
+            Route::get('getBrands', 'MobileApi\BrandController@index');
         });
     });
 });

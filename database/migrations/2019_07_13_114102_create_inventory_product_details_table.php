@@ -21,6 +21,7 @@ class CreateInventoryProductDetailsTable extends Migration
             $table->foreign('product_id')->references('id')->on('products');
             $table->string('imei_number');
             $table->integer('branch_id');
+            $table->timestamp('received_at')->nullable();
             $table->foreign('branch_id')->references('id')->on('branches');
             $table->string('sales_invoice')->nullable();
             $table->timestamp('sales_at')->nullable();
