@@ -3,12 +3,27 @@
 namespace App\Http\Controllers\MobileApi;
 
 use App\Http\Controllers\MobileApi\BaseController as BaseController;
+use App\Http\Resources\Product as ProductResource;
+use App\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Validator;
 
 class ProductController extends BaseController
 {
+    public function getProductsByBrand($brand_id)
+    {
+        $data = DB::table('products')
+            ->where('brand_id', $brand_id)
+            ->get();
+        $parsedData = collect($data);
+
+        $collection = $parsedData->map(function ($item) {
+            return ['id' => $item->id, 'product_name' => $item->product_name];
+        });
+        $collection[0] = ['id' => '0', 'product_name' => 'Select Product'];
+        return $this->sendResponse($collection, 'Product Retrieved Successfully.');
+    }
     /**
      * Display a listing of the resource.
      *

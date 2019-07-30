@@ -148,6 +148,9 @@ Route::prefix('mobile')->group(function () {
             // Get Branches
             Route::get('getBranches', 'MobileApi\BranchController@index');
 
+            // Get Products
+            Route::get('getProducts/{brand_id}', 'MobileApi\ProductController@getProductsByBrand');
+
             // Get Brands
             Route::get('getBrands', 'MobileApi\BrandController@index');
         });

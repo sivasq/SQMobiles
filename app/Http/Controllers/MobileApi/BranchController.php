@@ -24,6 +24,7 @@ class BranchController extends BaseController
         $collection = $parsedData->map(function ($item) {
             return ['id' => $item->id, 'branch_name' => $item->branch_name . '-' . $item->branch_location];
         });
+        $collection[0] = ['id' => '0', 'branch_name' => 'Select Branch'];
         return $this->sendResponse($collection, 'Branch Retrieved Successfully.');
     }
 }

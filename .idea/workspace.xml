@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="709d9296-8614-44dd-b467-9892832cbb06" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/.editorconfig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/InventoryController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/InventoryController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/BranchController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/BranchController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/InventoryController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/InventoryController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/migrations/2019_07_13_114102_create_inventory_product_details_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_07_13_114102_create_inventory_product_details_table.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/BrandController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/BrandController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/ProductController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/ProductController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -20,6 +20,9 @@
     <execution>
       <executable />
     </execution>
+  </component>
+  <component name="EditorConfigPreviewManager">
+    <editorConfig file="$PROJECT_DIR$/.editorconfig" previewFile="$PROJECT_DIR$/package.json" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -123,7 +126,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="editor.config.ad.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/Http/Controllers/MobileApi" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../laravel-vuetify-spa-starter-master" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -183,7 +186,12 @@
       <workItem from="1564142745022" duration="92000" />
       <workItem from="1564203864630" duration="22129000" />
       <workItem from="1564376314804" duration="5992000" />
-      <workItem from="1564392154778" duration="8201000" />
+      <workItem from="1564392154778" duration="8825000" />
+      <workItem from="1564462040882" duration="3963000" />
+      <workItem from="1564473399060" duration="41000" />
+      <workItem from="1564478012481" duration="836000" />
+      <workItem from="1564480716788" duration="152000" />
+      <workItem from="1564483234775" duration="5896000" />
     </task>
     <servers />
   </component>
