@@ -3488,10 +3488,10 @@ __webpack_require__.r(__webpack_exports__);
           name: "Add Inventory",
           path: "addinventory"
         }, {
-          name: "IMEI Stock Details",
+          name: "IMEI Stock By Location",
           path: "imeistockdetail"
         }, {
-          name: "IMEI Sales Details",
+          name: "IMEI Sales By Location",
           path: "imeisalesdetail"
         }, {
           name: "Product Stock Details",
@@ -3998,7 +3998,10 @@ __webpack_require__.r(__webpack_exports__);
       this.fetchProductsByBrand(event.target.value);
     },
     onProductQtyChange: function onProductQtyChange(event) {
-      console.log(event.target.value);
+      if (event.target.value > 100) {
+        return false;
+      }
+
       this.addIMEI(event.target.value); // this.fetchProductsByBrand(event.target.value);
     },
     fetchProductsByBrand: function fetchProductsByBrand(brandId) {
@@ -4011,8 +4014,39 @@ __webpack_require__.r(__webpack_exports__);
         return console.error(err);
       });
     },
-    addInventory: function addInventory() {
+    addInventory: function addInventory(event) {
       var _this4 = this;
+
+      // const found = this.inventory.product_serial_numbers.filter(el => el.imei_number === event.target.value);
+      // if (found.length > 1) {
+      //     Vue.$toast.error("Duplicate IMEI Numbered");
+      //     return false;
+      // }
+      var valueArr = this.inventory.product_serial_numbers.filter(function (el) {
+        return el.imei_number != "";
+      }).map(function (item) {
+        if (item.imei_number != '') {
+          return item.imei_number;
+        }
+      });
+      var isDuplicate = valueArr.some(function (item, idx) {
+        return valueArr.indexOf(item) != idx;
+      });
+
+      if (isDuplicate) {
+        Vue.$toast.error("Duplicate IMEI Numbered");
+        return false;
+      }
+
+      if (event.which == '10' || event.which == '13') {
+        $('#imei #' + (Number(event.target.id) + 1)).focus();
+        return false;
+      }
+
+      if (event.keyCode == '10' || event.keyCode == '13') {
+        $('#imei #' + (Number(event.target.id) + 1)).focus();
+        return false;
+      }
 
       var app = this;
       app.has_error = false;
@@ -4024,8 +4058,8 @@ __webpack_require__.r(__webpack_exports__);
           _this4.inventory.supplier_id = '';
           _this4.inventory.brand_id = '';
           _this4.inventory.product_id = '';
-          _this4.inventory.product_qty = '';
-          _this4.inventory.purchase_price = '';
+          _this4.inventory.product_qty = ''; // this.inventory.purchase_price = '';
+
           _this4.inventory.product_serial_numbers = []; // this.fetchBranches();
         }
       })["catch"](function (res) {
@@ -4033,6 +4067,33 @@ __webpack_require__.r(__webpack_exports__);
         app.error = res.response.data.error;
         app.errors = res.response.data.errors || {};
       });
+    },
+    chckImei: function chckImei(event) {
+      var valueArr = this.inventory.product_serial_numbers.filter(function (el) {
+        return el.imei_number != "";
+      }).map(function (item) {
+        if (item.imei_number != '') {
+          return item.imei_number;
+        }
+      });
+      var isDuplicate = valueArr.some(function (item, idx) {
+        return valueArr.indexOf(item) != idx;
+      });
+
+      if (isDuplicate) {
+        Vue.$toast.error("Duplicate IMEI Numbered");
+        return false;
+      }
+
+      if (event.which == '10' || event.which == '13') {
+        $('#imei #' + (Number(event.target.id) + 1)).focus();
+        return false;
+      }
+
+      if (event.keyCode == '10' || event.keyCode == '13') {
+        $('#imei #' + (Number(event.target.id) + 1)).focus();
+        return false;
+      }
     }
   },
   components: {//
@@ -4228,7 +4289,7 @@ __webpack_require__.r(__webpack_exports__);
         password: app.password,
         password_confirmation: app.password_confirmation
       }).then(function (response) {
-        if (response.data.status === 'success') {
+        if (response.data.success) {
           Vue.$toast.success("User Added Successfully");
           _this3.name = '';
           _this3.email = '';
@@ -4288,7 +4349,7 @@ __webpack_require__.r(__webpack_exports__);
         password: app.password,
         password_confirmation: app.password_confirmation
       }).then(function (response) {
-        if (response.data.status === 'success') {
+        if (response.data.success) {
           Vue.$toast.success("User Updated Successfully");
           _this4.isUpdate = false;
           _this4.action = 'addUser';
@@ -4350,6 +4411,7 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
 //
 //
 //
@@ -4477,6 +4539,22 @@ __webpack_require__.r(__webpack_exports__);
         console.log(_this3.products);
       })["catch"](function (err) {
         return console.error(err);
+      });
+    },
+    exportData: function exportData() {
+      axios({
+        url: window.base_url + '/api/v1/auth/fetchProductsExcel',
+        method: 'GET',
+        responseType: 'blob' // important
+
+      }).then(function (response) {
+        var url = window.URL.createObjectURL(new Blob([response.data]));
+        var link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'file.xlsx'); //or any other extension
+
+        document.body.appendChild(link);
+        link.click();
       });
     },
     editProduct: function editProduct(product) {
@@ -4613,22 +4691,43 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       stocksDetails: [],
       branches: [],
-      activeTab: 0
+      brands: [],
+      activeTab: 0,
+      activeBrand: 0
     };
   },
   created: function created() {
     this.fetchBranches();
-    this.fetchProducts(this.activeTab); // this.fetchDownload();
+    this.fetchBrands();
+    this.fetchProducts(this.activeTab, this.activeBrand); // this.fetchDownload();
   },
   methods: {
+    onBrandChange: function onBrandChange(event) {
+      console.log(event.target.value);
+      this.fetchProducts(this.activeTab, event.target.value);
+    },
     exportData: function exportData() {
       axios({
-        url: window.base_url + '/api/v1/auth/getProductStockExcel/' + this.activeTab,
+        url: window.base_url + '/api/v1/auth/getProductStockExcel/' + this.activeTab + '/' + this.activeBrand,
         method: 'GET',
         responseType: 'blob' // important
 
@@ -4652,13 +4751,24 @@ __webpack_require__.r(__webpack_exports__);
         return console.error(err);
       });
     },
-    fetchProducts: function fetchProducts(branchId) {
+    fetchBrands: function fetchBrands() {
       var _this2 = this;
 
+      axios.get(window.base_url + '/api/v1/auth/fetchBrands').then(function (response) {
+        _this2.brands = response.data.data;
+        console.log(_this2.brands);
+      })["catch"](function (err) {
+        return console.error(err);
+      });
+    },
+    fetchProducts: function fetchProducts(branchId, brandId) {
+      var _this3 = this;
+
       this.activeTab = branchId;
-      axios.get(window.base_url + '/api/v1/auth/getProductStock/' + branchId).then(function (response) {
-        _this2.stocksDetails = response.data;
-        console.log(_this2.stocksDetails);
+      this.activeBrand = brandId;
+      axios.get(window.base_url + '/api/v1/auth/getProductStock/' + branchId + '/' + brandId).then(function (response) {
+        _this3.stocksDetails = response.data;
+        console.log(_this3.stocksDetails);
       })["catch"](function (err) {
         return console.error(err);
       });
@@ -43129,7 +43239,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "row justify-content-center" }, [
-      _c("h4", [_vm._v("IMEI Number Based Sales Details")])
+      _c("h4", [_vm._v("IMEI Based Sales Details")])
     ])
   },
   function() {
@@ -43140,7 +43250,7 @@ var staticRenderFns = [
       _c("tr", [
         _c("th", [_vm._v("IMEI")]),
         _vm._v(" "),
-        _c("th", [_vm._v("Purchase Invoice")]),
+        _c("th", [_vm._v("Purchase Bill")]),
         _vm._v(" "),
         _c("th", [_vm._v("Sales Invoice")]),
         _vm._v(" "),
@@ -43350,7 +43460,7 @@ var render = function() {
               _vm._v(" "),
               _c("th", [_vm._v("IMEI")]),
               _vm._v(" "),
-              _c("th", [_vm._v("Invoice")]),
+              _c("th", [_vm._v("Bill")]),
               _vm._v(" "),
               _c("th", [_vm._v("Supplier")]),
               _vm._v(" "),
@@ -43471,7 +43581,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "row justify-content-center" }, [
-      _c("h4", [_vm._v("IMEI Number Based Stock Details")])
+      _c("h4", [_vm._v("IMEI Based Stock Details")])
     ])
   }
 ]
@@ -43947,11 +44057,9 @@ var render = function() {
                     _vm.inventory.product_serial_numbers.length > 0
                       ? _c(
                           "div",
-                          { staticClass: "form-group" },
+                          { staticClass: "form-group", attrs: { id: "imei" } },
                           [
-                            _c("label", { attrs: { for: "imei_number" } }, [
-                              _vm._v("IMEI No.")
-                            ]),
+                            _c("label", [_vm._v("IMEI No.")]),
                             _vm._v(" "),
                             _vm._l(
                               _vm.inventory.product_serial_numbers,
@@ -43968,12 +44076,29 @@ var render = function() {
                                     ],
                                     staticClass: "form-control",
                                     attrs: {
-                                      id: "imei_number",
                                       placeholder: "IMEI No.",
-                                      type: "text"
+                                      type: "text",
+                                      id: index
                                     },
                                     domProps: { value: imei.imei_number },
                                     on: {
+                                      keydown: function($event) {
+                                        if (
+                                          !$event.type.indexOf("key") &&
+                                          _vm._k(
+                                            $event.keyCode,
+                                            "enter",
+                                            13,
+                                            $event.key,
+                                            "Enter"
+                                          )
+                                        ) {
+                                          return null
+                                        }
+                                        $event.preventDefault()
+                                        return _vm.addInventory($event)
+                                      },
+                                      blur: _vm.chckImei,
                                       input: function($event) {
                                         if ($event.target.composing) {
                                           return
@@ -44601,7 +44726,7 @@ var render = function() {
                         }
                       },
                       [
-                        _c("label", { attrs: { for: "product_name" } }, [
+                        _c("label", { attrs: { for: "brand_id" } }, [
                           _vm._v("Brand Name")
                         ]),
                         _vm._v(" "),
@@ -44764,7 +44889,22 @@ var render = function() {
             _c(
               "li",
               { staticClass: "list-group-item text-center text-primary" },
-              [_vm._v(" List Of Products")]
+              [
+                _vm._v(" Products List    "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-sm btn-outline-secondary",
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        return _vm.exportData($event)
+                      }
+                    }
+                  },
+                  [_vm._v("Export As Excel")]
+                )
+              ]
             ),
             _vm._v(" "),
             _vm.products.length === 0
@@ -44885,7 +45025,7 @@ var render = function() {
               on: {
                 click: function($event) {
                   $event.preventDefault()
-                  return _vm.fetchProducts(0)
+                  return _vm.fetchProducts(0, _vm.activeBrand)
                 }
               }
             },
@@ -44920,7 +45060,7 @@ var render = function() {
                 on: {
                   click: function($event) {
                     $event.preventDefault()
-                    return _vm.fetchProducts(branch.id)
+                    return _vm.fetchProducts(branch.id, _vm.activeBrand)
                   }
                 }
               },
@@ -44956,6 +45096,66 @@ var render = function() {
     ]),
     _vm._v(" "),
     _c("div", { staticClass: "row justify-content-center mt-3" }, [
+      _c("div", { staticClass: "form-group" }, [
+        _c("label", { attrs: { for: "brand_id" } }, [_vm._v("Brand Name")]),
+        _vm._v(" "),
+        _c(
+          "select",
+          {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.activeBrand,
+                expression: "activeBrand"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: { id: "brand_id" },
+            on: {
+              change: [
+                function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
+                    })
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.activeBrand = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                },
+                function($event) {
+                  return _vm.onBrandChange($event)
+                }
+              ]
+            }
+          },
+          [
+            _c("option", { attrs: { selected: "", value: "0" } }, [
+              _vm._v("All")
+            ]),
+            _vm._v(" "),
+            _vm._l(_vm.brands, function(brand, index) {
+              return _c(
+                "option",
+                {
+                  key: brand.id,
+                  staticClass: "list-group-item",
+                  domProps: { value: brand.id }
+                },
+                [_vm._v(_vm._s(brand.brand_name) + "\n                ")]
+              )
+            })
+          ],
+          2
+        )
+      ])
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "row justify-content-center mt-3" }, [
       _c(
         "button",
         {
@@ -44979,17 +45179,28 @@ var render = function() {
           _c(
             "tbody",
             _vm._l(_vm.stocksDetails, function(stocksDetail, index) {
-              return _c("tr", { key: stocksDetail.id }, [
-                _c("td", [
-                  _vm._v(
-                    _vm._s(stocksDetail.brand_name) +
-                      " " +
-                      _vm._s(stocksDetail.product_name)
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", [_vm._v(_vm._s(stocksDetail.available_stock))])
-              ])
+              return _c(
+                "tr",
+                {
+                  key: stocksDetail.id,
+                  style: [
+                    stocksDetail.available_stock == 0
+                      ? { background: "#ec1e1e4f" }
+                      : { background: "" }
+                  ]
+                },
+                [
+                  _c("td", [
+                    _vm._v(
+                      _vm._s(stocksDetail.brand_name) +
+                        " " +
+                        _vm._s(stocksDetail.product_name)
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(stocksDetail.available_stock))])
+                ]
+              )
             }),
             0
           )

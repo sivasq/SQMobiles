@@ -2,7 +2,7 @@
     <div class="container-fluid">
 
         <div class="row justify-content-center">
-            <h4>IMEI Number Based Sales Details</h4>
+            <h4>IMEI Based Sales Details</h4>
         </div>
 
         <!-- Branch Buttons -->
@@ -28,7 +28,7 @@
                     <thead>
                     <tr>
                         <th>IMEI</th>
-                        <th>Purchase Invoice</th>
+                        <th>Purchase Bill</th>
                         <th>Sales Invoice</th>
                         <th>Sales Date</th>
                         <th>Supplier</th>

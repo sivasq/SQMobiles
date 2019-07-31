@@ -10,7 +10,7 @@
                               v-on:submit.prevent="handle_function_call(action)">
 
                             <div class="form-group" v-bind:class="{ 'has-error': has_error && errors.brand_id }">
-                                <label for="product_name">Brand Name</label>
+                                <label for="brand_id">Brand Name</label>
 
                                 <select class="form-control" id="brand_id" v-model="product.brand_id">
                                     <option disabled selected value="">Select Brand</option>
@@ -39,7 +39,8 @@
 
             <div class="col-12 mt-5">
                 <ul class="list-group">
-                    <li class="list-group-item text-center text-primary"> List Of Products</li>
+                    <li class="list-group-item text-center text-primary"> Products List &nbsp;&nbsp;&nbsp;<button
+                        @click.prevent="exportData" class="btn btn-sm btn-outline-secondary">Export As Excel</button></li>
                     <li class="list-group-item text-center text-danger" v-if='products.length === 0'>There are no
                         Product yet!
                     </li>
@@ -121,6 +122,20 @@
                         console.log(this.products);
                     })
                     .catch((err) => console.error(err));
+            },
+            exportData() {
+                axios({
+                    url: window.base_url + '/api/v1/auth/fetchProductsExcel',
+                    method: 'GET',
+                    responseType: 'blob', // important
+                }).then((response) => {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'file.xlsx'); //or any other extension
+                    document.body.appendChild(link);
+                    link.click();
+                });
             },
             editProduct(product) {
                 this.has_error = false;

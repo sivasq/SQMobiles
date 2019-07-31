@@ -2,7 +2,7 @@
     <div class="container-fluid">
 
         <div class="row justify-content-center">
-            <h4>IMEI Number Based Stock Details</h4>
+            <h4>IMEI Based Stock Details</h4>
         </div>
 
         <!-- Branch Buttons -->
@@ -53,7 +53,7 @@
                         <th v-if="activeTab != 0">
                         </th>
                         <th>IMEI</th>
-                        <th>Invoice</th>
+                        <th>Bill</th>
                         <th>Supplier</th>
                         <th>Product</th>
                         <th>Located At</th>

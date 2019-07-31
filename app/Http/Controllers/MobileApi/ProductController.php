@@ -20,10 +20,11 @@ class ProductController extends BaseController
 
         $collection = $parsedData->map(function ($item) {
             return ['id' => $item->id, 'product_name' => $item->product_name];
-        });
-        $collection[0] = ['id' => '0', 'product_name' => 'Select Product'];
+        })->toArray();
+        array_unshift($collection, ['id' => '0', 'product_name' => 'Select Product']);
         return $this->sendResponse($collection, 'Product Retrieved Successfully.');
     }
+
     /**
      * Display a listing of the resource.
      *

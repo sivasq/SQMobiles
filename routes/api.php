@@ -97,8 +97,11 @@ Route::prefix('v1')->group(function () {
             Route::post('unDeleteProduct/{product}', 'ProductController@un_destroy');
             // Get All Products
             Route::get('fetchProducts', 'ProductController@index');
+            // Get All Products Excel
+            Route::get('fetchProductsExcel', 'ProductController@getProductsExcel');
             // Get Products BY Brand Id
             Route::get('fetchProductsByBrand/{brand_id}', 'ProductController@getProductsByBrand');
+
 
             // Add Inventory
             Route::post('addInventory', 'InventoryController@store');
@@ -108,8 +111,8 @@ Route::prefix('v1')->group(function () {
 
             Route::get('getImeiBasedSalesDetails/{branch_id}', 'InventoryController@getImeiBasedSalesDetailsByBranch');
 
-            Route::get('getProductStock/{branch_id}', 'ProductController@getProductStock');
-            Route::get('getProductStockExcel/{branch_id}', 'ProductController@getProductStockExcel');
+            Route::get('getProductStock/{branch_id}/{brand_id}', 'ProductController@getProductStock');
+            Route::get('getProductStockExcel/{branch_id}/{brand_id}', 'ProductController@getProductStockExcel');
 
             Route::post('transferStock', 'InventoryController@transferStock');
         });
@@ -147,6 +150,9 @@ Route::prefix('mobile')->group(function () {
 
             // Get Branches
             Route::get('getBranches', 'MobileApi\BranchController@index');
+
+            // Get All Branches for Add Stock
+            Route::get('getBranchesForAddStock', 'MobileApi\BranchController@getBranchesForAddStock');
 
             // Get Products
             Route::get('getProducts/{brand_id}', 'MobileApi\ProductController@getProductsByBrand');

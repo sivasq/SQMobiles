@@ -42,7 +42,7 @@ class LoginController extends BaseController
         }
 
         // Check Email Exist and get user
-        $user = User::where('email', $request->email)->where('roles', 'user')->first();
+        $user = User::where('email', $request->email)->whereIn('roles', ['user','stockuser'])->first();
 
         if ($user) {
             // Check Password Match

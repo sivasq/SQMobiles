@@ -16,9 +16,10 @@ class InventoryController extends BaseController
 {
     public function addStock(Request $request)
     {
-        if (Auth::user()->email != 'stock@sqindia.net') {
+        if (Auth::user()->roles != 'stockuser') {
             return response()->json(['status' => 'false', 'message' => 'unAuthorized'], 401);
         }
+
         $validator = Validator::make($request->all(), [
             'brand_id' => 'required',
             'product_id' => 'required',

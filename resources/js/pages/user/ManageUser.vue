@@ -172,7 +172,7 @@
                     password_confirmation: app.password_confirmation
                 })
                     .then(response => {
-                        if (response.data.status === 'success') {
+                        if (response.data.success) {
                             Vue.$toast.success("User Added Successfully");
                             this.name = '';
                             this.email = '';
@@ -231,7 +231,7 @@
                     password_confirmation: app.password_confirmation
                 })
                     .then(response => {
-                        if (response.data.status === 'success') {
+                        if (response.data.success) {
                             Vue.$toast.success("User Updated Successfully");
                             this.isUpdate = false;
                             this.action = 'addUser';

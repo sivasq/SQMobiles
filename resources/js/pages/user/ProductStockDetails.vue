@@ -7,17 +7,30 @@
         <!-- Branch Buttons -->
         <div class="row justify-content-center mt-3">
             <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                <label @click.prevent="fetchProducts(0)" class="btn btn-outline-primary btn-toggle active">
+                <label @click.prevent="fetchProducts(0,activeBrand)" class="btn btn-outline-primary btn-toggle active">
                     <input autocomplete="off" checked type="radio" v-model="activeTab">
                     ALL
                 </label>
 
-                <label :key="branch.id" @click.prevent="fetchProducts(branch.id)"
+                <label :key="branch.id" @click.prevent="fetchProducts(branch.id, activeBrand)"
                        class="btn btn-outline-primary btn-toggle"
                        v-for="(branch, index) in branches">
                     <input autocomplete="off" type="radio" v-model="activeTab">
                     {{branch.branch_name}}
                 </label>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mt-3">
+            <div class="form-group">
+                <label for="brand_id">Brand Name</label>
+
+                <select @change="onBrandChange($event)" class="form-control" id="brand_id" v-model="activeBrand">
+                    <option selected value="0">All</option>
+                    <option :key="brand.id" :value="brand.id" class="list-group-item"
+                            v-for="(brand, index) in brands">{{brand.brand_name}}
+                    </option>
+                </select>
             </div>
         </div>
 
@@ -35,7 +48,8 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in stocksDetails">
+                    <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in stocksDetails"
+                        :style="[stocksDetail.available_stock == 0 ? {'background': '#ec1e1e4f'} : {'background': ''}]">
                         <td>{{stocksDetail.brand_name}} {{stocksDetail.product_name}}</td>
                         <td>{{stocksDetail.available_stock}}</td>
                     </tr>
@@ -51,18 +65,25 @@
             return {
                 stocksDetails: [],
                 branches: [],
+                brands: [],
                 activeTab: 0,
+                activeBrand: 0
             }
         },
         created() {
             this.fetchBranches();
-            this.fetchProducts(this.activeTab);
+            this.fetchBrands();
+            this.fetchProducts(this.activeTab, this.activeBrand);
             // this.fetchDownload();
         },
         methods: {
+            onBrandChange(event) {
+                console.log(event.target.value)
+                this.fetchProducts(this.activeTab, event.target.value);
+            },
             exportData() {
                 axios({
-                    url: window.base_url + '/api/v1/auth/getProductStockExcel/' + this.activeTab,
+                    url: window.base_url + '/api/v1/auth/getProductStockExcel/' + this.activeTab + '/' + this.activeBrand,
                     method: 'GET',
                     responseType: 'blob', // important
                 }).then((response) => {
@@ -82,9 +103,18 @@
                     })
                     .catch((err) => console.error(err));
             },
-            fetchProducts(branchId) {
+            fetchBrands() {
+                axios.get(window.base_url + '/api/v1/auth/fetchBrands')
+                    .then(response => {
+                        this.brands = response.data.data;
+                        console.log(this.brands);
+                    })
+                    .catch((err) => console.error(err));
+            },
+            fetchProducts(branchId, brandId) {
                 this.activeTab = branchId;
-                axios.get(window.base_url + '/api/v1/auth/getProductStock/' + branchId)
+                this.activeBrand = brandId
+                axios.get(window.base_url + '/api/v1/auth/getProductStock/' + branchId + '/' + brandId)
                     .then(response => {
                         this.stocksDetails = response.data;
                         console.log(this.stocksDetails);

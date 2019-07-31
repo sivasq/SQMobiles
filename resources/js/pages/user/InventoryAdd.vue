@@ -75,16 +75,16 @@
                                       v-if="has_error && errors.product_qty">{{ errors.product_qty[0] }}</span>
                             </div>
 
-                            <div class="form-group" v-if="inventory.product_serial_numbers.length > 0">
-                                <label for="imei_number">IMEI No.</label>
+                            <div class="form-group" id="imei" v-if="inventory.product_serial_numbers.length > 0">
+                                <label>IMEI No.</label>
                                 <div class="mb-1" v-for="(imei, index) in inventory.product_serial_numbers">
-                                    <input class="form-control" id="imei_number" placeholder="IMEI No." type="text"
-                                           v-model="imei.imei_number">
+                                    <input class="form-control" placeholder="IMEI No." type="text"
+                                           v-bind:id="index"
+                                           v-model="imei.imei_number" v-on:keydown.enter.prevent='addInventory' v-on:blur="chckImei">
                                     <span class="help-block"
                                           v-if="has_error && errors['product_serial_numbers.'+index+'.imei_number']">{{errors['product_serial_numbers.'+index+'.imei_number'][0]}}
                                     </span>
                                 </div>
-
                             </div>
 
                             <button class="btn btn-primary" type="submit">Submit</button>
@@ -170,7 +170,10 @@
                 this.fetchProductsByBrand(event.target.value);
             },
             onProductQtyChange(event) {
-                console.log(event.target.value);
+                if (event.target.value > 100) {
+                    return false;
+                }
+
                 this.addIMEI(event.target.value);
                 // this.fetchProductsByBrand(event.target.value);
             },
@@ -182,7 +185,37 @@
                     })
                     .catch((err) => console.error(err));
             },
-            addInventory() {
+            addInventory(event) {
+                // const found = this.inventory.product_serial_numbers.filter(el => el.imei_number === event.target.value);
+                // if (found.length > 1) {
+                //     Vue.$toast.error("Duplicate IMEI Numbered");
+                //     return false;
+                // }
+
+                var valueArr = this.inventory.product_serial_numbers.filter(el => el.imei_number != "").map(function
+                    (item) {
+                    if (item.imei_number != '') {
+                        return item.imei_number;
+                    }
+                });
+
+                var isDuplicate = valueArr.some(function (item, idx) {
+                    return valueArr.indexOf(item) != idx
+                });
+                if (isDuplicate) {
+                    Vue.$toast.error("Duplicate IMEI Numbered");
+                    return false;
+                }
+
+                if (event.which == '10' || event.which == '13') {
+                    $('#imei #' + (Number(event.target.id) + 1)).focus();
+                    return false;
+                }
+                if (event.keyCode == '10' || event.keyCode == '13') {
+                    $('#imei #' + (Number(event.target.id) + 1)).focus();
+                    return false;
+                }
+
                 var app = this;
                 app.has_error = false;
                 app.errors = {};
@@ -195,7 +228,7 @@
                             this.inventory.brand_id = '';
                             this.inventory.product_id = '';
                             this.inventory.product_qty = '';
-                            this.inventory.purchase_price = '';
+                            // this.inventory.purchase_price = '';
                             this.inventory.product_serial_numbers = [];
                             // this.fetchBranches();
                         }
@@ -205,6 +238,31 @@
                         app.error = res.response.data.error;
                         app.errors = res.response.data.errors || {};
                     });
+            },
+            chckImei(event){
+                var valueArr = this.inventory.product_serial_numbers.filter(el => el.imei_number != "").map(function
+                    (item) {
+                    if (item.imei_number != '') {
+                        return item.imei_number;
+                    }
+                });
+
+                var isDuplicate = valueArr.some(function (item, idx) {
+                    return valueArr.indexOf(item) != idx
+                });
+                if (isDuplicate) {
+                    Vue.$toast.error("Duplicate IMEI Numbered");
+                    return false;
+                }
+
+                if (event.which == '10' || event.which == '13') {
+                    $('#imei #' + (Number(event.target.id) + 1)).focus();
+                    return false;
+                }
+                if (event.keyCode == '10' || event.keyCode == '13') {
+                    $('#imei #' + (Number(event.target.id) + 1)).focus();
+                    return false;
+                }
             }
         },
         components: {
