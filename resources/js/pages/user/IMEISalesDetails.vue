@@ -37,6 +37,9 @@
                     </tr>
                     </thead>
                     <tbody>
+                    <tr>
+                        <td align="center" colspan="6" v-if="loading"> Loading...</td>
+                    </tr>
                     <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in stockSalesDetails">
                         <td>{{stocksDetail.imei_number}}</td>
                         <td>{{stocksDetail.inventory_product_detail.inventory_detail.invoice_number}}</td>
@@ -67,6 +70,8 @@
                 stockSalesDetails: [],
                 branches: [],
                 activeTab: 0,
+                loading: false,
+                request_source: ''
             }
         },
         created() {
@@ -83,8 +88,15 @@
                     .catch((err) => console.error(err));
             },
             fetchProducts(branchId) {
-                axios.get(window.base_url + '/api/v1/auth/getImeiBasedSalesDetails/' + branchId)
+                var CancelToken1 = axios.CancelToken;
+                var source = CancelToken1.source();
+                if (this.request_source != '')
+                    this.request_source.cancel('Operation canceled by the user.');
+                this.request_source = source;
+                axios.get(window.base_url + '/api/v1/auth/getImeiBasedSalesDetails/' + branchId, {cancelToken1:
+                    this.request_source.token})
                     .then(response => {
+                        this.loading = false;
                         this.stockSalesDetails = response.data.data;
                         console.log(this.stockSalesDetails);
                     })

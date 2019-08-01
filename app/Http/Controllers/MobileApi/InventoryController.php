@@ -38,7 +38,7 @@ class InventoryController extends BaseController
             DB::beginTransaction();
 
             $inventoryProduct = InventoryProduct::updateOrCreate(
-                ['inventory_id' => 5, 'product_id' => $request->product_id],
+                ['inventory_id' => 2, 'product_id' => $request->product_id],
                 ['inventory_product_qty' => \DB::raw('inventory_product_qty + 1'), 'purchase_price_per_qty' => 0]
             );
 
@@ -47,7 +47,8 @@ class InventoryController extends BaseController
                 'inventory_product_id' => $inventoryProduct->id,
                 'imei_number' => $request['imei_number'],
                 'branch_id' => $request->branch_id,
-                'product_id' => $request->product_id
+                'product_id' => $request->product_id,
+                'received_at' => now(),
             ];
 
             InventoryProductDetail::insert($inventory_imei_records);
@@ -108,7 +109,10 @@ class InventoryController extends BaseController
         $transferred = DB::table('inventory_product_details')
             ->where('id', $request->get('imei_id'))
             ->where('branch_id', $branch_id)
-            ->update(['branch_id' => $request->get('transfer_to')]);
+            // ->where('received_at', '!=', null)
+            // ->update(['branch_id' => $request->get('transfer_to')]);
+            // ->update(['branch_id' => $request->get('transfer_to'), 'received_at' => now()]);
+            ->update(['branch_id' => $request->get('transfer_to'), 'received_at' => now()]);
         if ($transferred) {
             return $this->sendResponse('', 'Stock Transferred Successfully.');
         } else {
@@ -123,10 +127,28 @@ class InventoryController extends BaseController
             ->where('id', $request->get('imei_id'))
             ->where('inventory_product_details.sales_invoice', null)
             ->where('branch_id', $branch_id)
+            // ->where('received_at', '!=', null)
             ->update(['sales_invoice' => $request->get('invoice_number'), 'sales_at' => now(), 'sale_by' =>
                 Auth::user()->id]);
         if ($sales) {
             return $this->sendResponse('', 'Sales Completed Successfully.');
+        } else {
+            return $this->sendResponse('', 'No Stock or Already Sold This IMEI Number.');
+        }
+    }
+
+    public function receiveStock(Request $request)
+    {
+        $branch_id = Auth::user()->branch_id;
+        $transferred = DB::table('inventory_product_details')
+            ->where('id', $request->get('imei_id'))
+            ->where('branch_id', $branch_id)
+            // ->where('received_at', null)
+            // ->update(['branch_id' => $request->get('transfer_to')]);
+            // ->update(['branch_id' => $request->get('transfer_to'), 'received_at' => now()]);
+            ->update(['received_at' => now()]);
+        if ($transferred) {
+            return $this->sendResponse('', 'Stock Received Successfully.');
         } else {
             return $this->sendResponse('', 'No Stock or Already Sold This IMEI Number.');
         }

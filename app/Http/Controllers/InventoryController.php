@@ -69,7 +69,8 @@ class InventoryController extends Controller
                         'inventory_product_id' => $inventoryProduct->id,
                         'imei_number' => $product_serial_number['imei_number'],
                         'branch_id' => 1,
-                        'product_id' => $request->product_id
+                        'product_id' => $request->product_id,
+                        'received_at' => now(),
                     ];
                 }
             }
@@ -158,5 +159,4 @@ class InventoryController extends Controller
             return response()->json(['success' => true], 200);
         }
     }
-
 }

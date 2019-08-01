@@ -3581,12 +3581,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       stockSalesDetails: [],
       branches: [],
-      activeTab: 0
+      activeTab: 0,
+      loading: false,
+      request_source: ''
     };
   },
   created: function created() {
@@ -3607,7 +3612,14 @@ __webpack_require__.r(__webpack_exports__);
     fetchProducts: function fetchProducts(branchId) {
       var _this2 = this;
 
-      axios.get(window.base_url + '/api/v1/auth/getImeiBasedSalesDetails/' + branchId).then(function (response) {
+      var CancelToken1 = axios.CancelToken;
+      var source = CancelToken1.source();
+      if (this.request_source != '') this.request_source.cancel('Operation canceled by the user.');
+      this.request_source = source;
+      axios.get(window.base_url + '/api/v1/auth/getImeiBasedSalesDetails/' + branchId, {
+        cancelToken1: this.request_source.token
+      }).then(function (response) {
+        _this2.loading = false;
         _this2.stockSalesDetails = response.data.data;
         console.log(_this2.stockSalesDetails);
       })["catch"](function (err) {
@@ -3716,6 +3728,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3725,7 +3741,9 @@ __webpack_require__.r(__webpack_exports__);
       selectAll: false,
       activeTab: 0,
       showTransfer: false,
-      transferTo: ''
+      transferTo: '',
+      loading: false,
+      request_source: ''
     };
   },
   created: function created() {
@@ -3771,12 +3789,22 @@ __webpack_require__.r(__webpack_exports__);
     fetchProducts: function fetchProducts(branchId) {
       var _this2 = this;
 
+      var CancelToken = axios.CancelToken; // var call1 = CancelToken.source();
+      // call1.cancel('cancelled');
+
       this.activeTab = branchId;
-      axios.get(window.base_url + '/api/v1/auth/getImeiBasedStockDetails/' + branchId).then(function (response) {
+      this.stocksDetails = [];
+      this.loading = true;
+      var source = CancelToken.source();
+      if (this.request_source != '') this.request_source.cancel('Operation canceled by the user.');
+      this.request_source = source;
+      axios.get(window.base_url + '/api/v1/auth/getImeiBasedStockDetails/' + branchId, {
+        cancelToken: this.request_source.token
+      }).then(function (response) {
         _this2.selected = [];
+        _this2.loading = false;
         _this2.showTransfer = false;
-        _this2.stocksDetails = response.data.data;
-        console.log(_this2.stocksDetails);
+        _this2.stocksDetails = response.data.data; // console.log(this.stocksDetails);
       })["catch"](function (err) {
         return console.error(err);
       });
@@ -43166,67 +43194,77 @@ var render = function() {
           _vm._v(" "),
           _c(
             "tbody",
-            _vm._l(_vm.stockSalesDetails, function(stocksDetail, index) {
-              return _c("tr", { key: stocksDetail.id }, [
-                _c("td", [_vm._v(_vm._s(stocksDetail.imei_number))]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    _vm._s(
-                      stocksDetail.inventory_product_detail.inventory_detail
-                        .invoice_number
+            [
+              _c("tr", [
+                _vm.loading
+                  ? _c("td", { attrs: { align: "center", colspan: "6" } }, [
+                      _vm._v(" Loading...")
+                    ])
+                  : _vm._e()
+              ]),
+              _vm._v(" "),
+              _vm._l(_vm.stockSalesDetails, function(stocksDetail, index) {
+                return _c("tr", { key: stocksDetail.id }, [
+                  _c("td", [_vm._v(_vm._s(stocksDetail.imei_number))]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _vm._v(
+                      _vm._s(
+                        stocksDetail.inventory_product_detail.inventory_detail
+                          .invoice_number
+                      )
                     )
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    _vm._s(stocksDetail.sales_invoice) +
-                      "\n                    "
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    _vm._s(stocksDetail.sales_at) + "\n                    "
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    _vm._s(
-                      stocksDetail.inventory_product_detail.inventory_detail
-                        .supplier_details.supplier_name
-                    ) + "\n                    "
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    _vm._s(
-                      stocksDetail.inventory_product_detail.product_details
-                        .brand_details.brand_name
-                    ) +
-                      " - " +
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _vm._v(
+                      _vm._s(stocksDetail.sales_invoice) +
+                        "\n                    "
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _vm._v(
+                      _vm._s(stocksDetail.sales_at) + "\n                    "
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _vm._v(
+                      _vm._s(
+                        stocksDetail.inventory_product_detail.inventory_detail
+                          .supplier_details.supplier_name
+                      ) + "\n                    "
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _vm._v(
                       _vm._s(
                         stocksDetail.inventory_product_detail.product_details
-                          .product_name
+                          .brand_details.brand_name
                       ) +
-                      "\n                    "
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    _vm._s(stocksDetail.branch_detail.branch_name) +
-                      " -\n                        " +
-                      _vm._s(stocksDetail.branch_detail.branch_location) +
-                      "\n                    "
-                  )
+                        " - " +
+                        _vm._s(
+                          stocksDetail.inventory_product_detail.product_details
+                            .product_name
+                        ) +
+                        "\n                    "
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _vm._v(
+                      _vm._s(stocksDetail.branch_detail.branch_name) +
+                        " -\n                        " +
+                        _vm._s(stocksDetail.branch_detail.branch_location) +
+                        "\n                    "
+                    )
+                  ])
                 ])
-              ])
-            }),
-            0
+              })
+            ],
+            2
           )
         ])
       ])
@@ -43428,7 +43466,7 @@ var render = function() {
                       }
                     }
                   },
-                  [_vm._v("Transfer\n                Now")]
+                  [_vm._v("Transfer\n                Now\n            ")]
                 )
               : _vm._e()
           ])
@@ -43472,103 +43510,115 @@ var render = function() {
           _vm._v(" "),
           _c(
             "tbody",
-            _vm._l(_vm.stocksDetails, function(stocksDetail, index) {
-              return _c("tr", { key: stocksDetail.id }, [
-                _vm.activeTab != 0
-                  ? _c("td", [
-                      _c("div", { staticClass: "form-check" }, [
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.selected,
-                              expression: "selected"
-                            }
-                          ],
-                          attrs: { type: "checkbox" },
-                          domProps: {
-                            value: stocksDetail.id,
-                            checked: Array.isArray(_vm.selected)
-                              ? _vm._i(_vm.selected, stocksDetail.id) > -1
-                              : _vm.selected
-                          },
-                          on: {
-                            change: [
-                              function($event) {
-                                var $$a = _vm.selected,
-                                  $$el = $event.target,
-                                  $$c = $$el.checked ? true : false
-                                if (Array.isArray($$a)) {
-                                  var $$v = stocksDetail.id,
-                                    $$i = _vm._i($$a, $$v)
-                                  if ($$el.checked) {
-                                    $$i < 0 &&
-                                      (_vm.selected = $$a.concat([$$v]))
-                                  } else {
-                                    $$i > -1 &&
-                                      (_vm.selected = $$a
-                                        .slice(0, $$i)
-                                        .concat($$a.slice($$i + 1)))
+            [
+              _c("tr", [
+                _vm.loading
+                  ? _c("td", { attrs: { colspan: "6", align: "center" } }, [
+                      _vm._v(" Loading...")
+                    ])
+                  : _vm._e()
+              ]),
+              _vm._v(" "),
+              _vm._l(_vm.stocksDetails, function(stocksDetail, index) {
+                return _vm.stocksDetails.length > 0
+                  ? _c("tr", { key: stocksDetail.id }, [
+                      _vm.activeTab != 0
+                        ? _c("td", [
+                            _c("div", { staticClass: "form-check" }, [
+                              _c("input", {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.selected,
+                                    expression: "selected"
                                   }
-                                } else {
-                                  _vm.selected = $$c
+                                ],
+                                attrs: { type: "checkbox" },
+                                domProps: {
+                                  value: stocksDetail.id,
+                                  checked: Array.isArray(_vm.selected)
+                                    ? _vm._i(_vm.selected, stocksDetail.id) > -1
+                                    : _vm.selected
+                                },
+                                on: {
+                                  change: [
+                                    function($event) {
+                                      var $$a = _vm.selected,
+                                        $$el = $event.target,
+                                        $$c = $$el.checked ? true : false
+                                      if (Array.isArray($$a)) {
+                                        var $$v = stocksDetail.id,
+                                          $$i = _vm._i($$a, $$v)
+                                        if ($$el.checked) {
+                                          $$i < 0 &&
+                                            (_vm.selected = $$a.concat([$$v]))
+                                        } else {
+                                          $$i > -1 &&
+                                            (_vm.selected = $$a
+                                              .slice(0, $$i)
+                                              .concat($$a.slice($$i + 1)))
+                                        }
+                                      } else {
+                                        _vm.selected = $$c
+                                      }
+                                    },
+                                    _vm.selectChange
+                                  ]
                                 }
-                              },
-                              _vm.selectChange
-                            ]
-                          }
-                        })
+                              })
+                            ])
+                          ])
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _c("td", [_vm._v(_vm._s(stocksDetail.imei_number))]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _vm._v(
+                          _vm._s(
+                            stocksDetail.inventory_product_detail
+                              .inventory_detail.invoice_number
+                          )
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _vm._v(
+                          _vm._s(
+                            stocksDetail.inventory_product_detail
+                              .inventory_detail.supplier_details.supplier_name
+                          ) + "\n                    "
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _vm._v(
+                          _vm._s(
+                            stocksDetail.inventory_product_detail
+                              .product_details.brand_details.brand_name
+                          ) +
+                            " -\n                        " +
+                            _vm._s(
+                              stocksDetail.inventory_product_detail
+                                .product_details.product_name
+                            ) +
+                            "\n                    "
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _vm._v(
+                          _vm._s(stocksDetail.branch_detail.branch_name) +
+                            " -\n                        " +
+                            _vm._s(stocksDetail.branch_detail.branch_location) +
+                            "\n                    "
+                        )
                       ])
                     ])
-                  : _vm._e(),
-                _vm._v(" "),
-                _c("td", [_vm._v(_vm._s(stocksDetail.imei_number))]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    _vm._s(
-                      stocksDetail.inventory_product_detail.inventory_detail
-                        .invoice_number
-                    )
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    _vm._s(
-                      stocksDetail.inventory_product_detail.inventory_detail
-                        .supplier_details.supplier_name
-                    ) + "\n                    "
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    _vm._s(
-                      stocksDetail.inventory_product_detail.product_details
-                        .brand_details.brand_name
-                    ) +
-                      " -\n                        " +
-                      _vm._s(
-                        stocksDetail.inventory_product_detail.product_details
-                          .product_name
-                      ) +
-                      "\n                    "
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    _vm._s(stocksDetail.branch_detail.branch_name) +
-                      " -\n                        " +
-                      _vm._s(stocksDetail.branch_detail.branch_location) +
-                      "\n                    "
-                  )
-                ])
-              ])
-            }),
-            0
+                  : _vm._e()
+              })
+            ],
+            2
           )
         ])
       ])

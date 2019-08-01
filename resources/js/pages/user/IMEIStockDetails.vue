@@ -34,9 +34,10 @@
                         {{branch.branch_name}}
                     </label>
                 </div>
-                <button class="btn btn-sm btn-success" type="button" v-if="transferTo!=''"
-                        @click.prevent="transferStock()">Transfer
-                    Now</button>
+                <button @click.prevent="transferStock()" class="btn btn-sm btn-success" type="button"
+                        v-if="transferTo!=''">Transfer
+                    Now
+                </button>
             </div>
         </div>
 
@@ -50,8 +51,7 @@
                 <table class="table table-striped table-hover">
                     <thead>
                     <tr>
-                        <th v-if="activeTab != 0">
-                        </th>
+                        <th v-if="activeTab != 0"></th>
                         <th>IMEI</th>
                         <th>Bill</th>
                         <th>Supplier</th>
@@ -60,7 +60,11 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in stocksDetails">
+                    <tr>
+                        <td colspan="6" v-if="loading" align="center"> Loading...</td>
+                    </tr>
+                    <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in
+                    stocksDetails" v-if="stocksDetails.length > 0">
                         <td v-if="activeTab != 0">
                             <div class="form-check">
                                 <input :value="stocksDetail.id" @change="selectChange"
@@ -94,7 +98,9 @@
                 selectAll: false,
                 activeTab: 0,
                 showTransfer: false,
-                transferTo: ''
+                transferTo: '',
+                loading: false,
+                request_source : ''
             }
         },
         created() {
@@ -133,13 +139,26 @@
                     .catch((err) => console.error(err));
             },
             fetchProducts(branchId) {
+                var CancelToken = axios.CancelToken;
+                // var call1 = CancelToken.source();
+                // call1.cancel('cancelled');
                 this.activeTab = branchId;
-                axios.get(window.base_url + '/api/v1/auth/getImeiBasedStockDetails/' + branchId)
+                this.stocksDetails = [];
+                this.loading = true;
+
+                var source = CancelToken.source();
+                if(this.request_source != '')
+                    this.request_source.cancel('Operation canceled by the user.');
+                this.request_source = source;
+
+                axios.get(window.base_url + '/api/v1/auth/getImeiBasedStockDetails/' + branchId,
+                    {cancelToken: this.request_source.token})
                     .then(response => {
                         this.selected = [];
+                        this.loading = false;
                         this.showTransfer = false;
                         this.stocksDetails = response.data.data;
-                        console.log(this.stocksDetails);
+                        // console.log(this.stocksDetails);
                     })
                     .catch((err) => console.error(err));
             },
@@ -155,14 +174,14 @@
                 console.log(this.transferTo);
                 console.log(this.activeTab);
                 console.log(this.selected);
-                var app = this
+                var app = this;
                 axios.post(window.base_url + '/api/v1/auth/transferStock', {
-                    transfer_to : app.transferTo,
-                    transfer_from : app.activeTab,
-                    transfer_items : app.selected
+                    transfer_to: app.transferTo,
+                    transfer_from: app.activeTab,
+                    transfer_items: app.selected
                 })
                     .then(response => {
-                        if(response.data.success) {
+                        if (response.data.success) {
                             this.fetchProducts(app.activeTab);
                         }
                     })
