@@ -48,8 +48,11 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in stocksDetails"
-                        :style="[stocksDetail.available_stock == 0 ? {'background': '#ec1e1e4f'} : {'background': ''}]">
+                    <tr>
+                        <td align="center" colspan="6" v-if="loading"> Loading...</td>
+                    </tr>
+                    <tr :key="stocksDetail.id" :style="[stocksDetail.available_stock == 0 ? {'background': '#ec1e1e4f'} : {'background': ''}]"
+                        v-for="(stocksDetail, index) in stocksDetails">
                         <td>{{stocksDetail.brand_name}} {{stocksDetail.product_name}}</td>
                         <td>{{stocksDetail.available_stock}}</td>
                     </tr>
@@ -67,7 +70,9 @@
                 branches: [],
                 brands: [],
                 activeTab: 0,
-                activeBrand: 0
+                activeBrand: 0,
+                loading: false,
+                request_source: ''
             }
         },
         created() {
@@ -113,9 +118,23 @@
             },
             fetchProducts(branchId, brandId) {
                 this.activeTab = branchId;
-                this.activeBrand = brandId
-                axios.get(window.base_url + '/api/v1/auth/getProductStock/' + branchId + '/' + brandId)
+                this.activeBrand = brandId;
+
+                var CancelToken = axios.CancelToken;
+                // var call1 = CancelToken.source();
+                // call1.cancel('cancelled');
+                this.activeTab = branchId;
+                this.stocksDetails = [];
+                this.loading = true;
+
+                var source = CancelToken.source();
+                if (this.request_source != '')
+                    this.request_source.cancel('Operation canceled by the user.');
+                this.request_source = source;
+
+                axios.get(window.base_url + '/api/v1/auth/getProductStock/' + branchId + '/' + brandId, {cancelToken: this.request_source.token})
                     .then(response => {
+                        this.loading = false;
                         this.stocksDetails = response.data;
                         console.log(this.stocksDetails);
                     })

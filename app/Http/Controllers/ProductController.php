@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Branch;
 use App\Brand;
 use App\Exports\ProductExport;
+use App\Exports\StockExport;
 use App\Http\Resources\Product as ProductResource;
 use App\InventoryProductDetail;
 use App\Product;
