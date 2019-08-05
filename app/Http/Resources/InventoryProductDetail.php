@@ -25,7 +25,8 @@ class InventoryProductDetail extends JsonResource
             'sales_at' => $this->sales_at,
             'branch_detail' => $this->branch_details($this->branch_id),
             'inventory_product_detail' => $this->inventory_product_details($this->inventory_product_id),
-            'seller_detail' => $this->seller_details($this->sale_by)
+            'seller_detail' => $this->seller_details($this->sale_by),
+            'received_at' => $this->received_at
         ];
     }
 

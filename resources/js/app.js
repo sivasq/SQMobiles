@@ -17,6 +17,10 @@ import auth from './auth'
 import router from './router'
 import VueToast from 'vue-toast-notification';
 import 'vue-toast-notification/dist/index.css';
+import VModal from 'vue-js-modal'
+import VMdDateRangePicker from "v-md-date-range-picker";
+
+import VueMoment from 'vue-moment';
 
 // Set Vue globally
 window.Vue = require('vue');
@@ -28,12 +32,14 @@ Vue.use(VueToast, {
     // One of options
     position: 'top'
 });
-
+Vue.use(VModal);
 // Set Vue authentication
 Vue.use(VueAxios, axios);
 // axios.defaults.baseURL = `${process.env.MIX_APP_URL}/api/v1`
 axios.defaults.baseURL = window.base_url + '/api/v1';
 Vue.use(VueAuth, auth);
+Vue.use(VMdDateRangePicker);
+Vue.use(VueMoment)
 
 // Load Index
 Vue.component('index', Index);

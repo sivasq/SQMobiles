@@ -51,15 +51,38 @@
                     <tr>
                         <td align="center" colspan="6" v-if="loading"> Loading...</td>
                     </tr>
-                    <tr :key="stocksDetail.id" :style="[stocksDetail.available_stock == 0 ? {'background': '#ec1e1e4f'} : {'background': ''}]"
+                    <tr :key="stocksDetail.id"
+                        :style="[stocksDetail.available_stock == 0 ? {'background': '#ec1e1e4f'} : {'background': ''}]"
+                        @click.prevent="fetchProductStockDetails(stocksDetail.id)"
+                        style="cursor: pointer"
                         v-for="(stocksDetail, index) in stocksDetails">
                         <td>{{stocksDetail.brand_name}} {{stocksDetail.product_name}}</td>
-                        <td>{{stocksDetail.available_stock}}</td>
+                        <td>{{stocksDetail
+                            .available_stock}}
+                        </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </div>
+
+        <modal @before-open="beforeOpen" name="stock-details">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Branch Name</th>
+                    <th>Available Stock</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr :key="branchStock.id"
+                    v-for="(branchStock, index) in branchStocks">
+                    <td>{{branchStock.branch}}</td>
+                    <td>{{branchStock.available_stock}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </modal>
     </div>
 </template>
 <script>
@@ -72,7 +95,8 @@
                 activeTab: 0,
                 activeBrand: 0,
                 loading: false,
-                request_source: ''
+                request_source: '',
+                branchStocks: [],
             }
         },
         created() {
@@ -136,6 +160,27 @@
                     .then(response => {
                         this.loading = false;
                         this.stocksDetails = response.data;
+                        console.log(this.stocksDetails);
+                    })
+                    .catch((err) => console.error(err));
+            },
+            beforeOpen(event) {
+                // console.log(event.params.stockData);
+                this.branchStocks = event.params.stockData;
+            },
+            fetchProductStockDetails(productId) {
+                var CancelToken = axios.CancelToken;
+                // var call1 = CancelToken.source();
+                // call1.cancel('cancelled');
+
+                var source = CancelToken.source();
+                if (this.request_source != '')
+                    this.request_source.cancel('Operation canceled by the user.');
+                this.request_source = source;
+
+                axios.get(window.base_url + '/api/v1/auth/getBranchWiseProductStock/' + productId, {cancelToken: this.request_source.token})
+                    .then(response => {
+                        this.$modal.show('stock-details', {stockData: response.data})
                         console.log(this.stocksDetails);
                     })
                     .catch((err) => console.error(err));

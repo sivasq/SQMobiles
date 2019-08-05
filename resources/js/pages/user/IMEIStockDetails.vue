@@ -61,7 +61,7 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <td colspan="6" v-if="loading" align="center"> Loading...</td>
+                        <td align="center" colspan="6" v-if="loading"> Loading...</td>
                     </tr>
                     <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in
                     stocksDetails" v-if="stocksDetails.length > 0">
@@ -72,14 +72,13 @@
                             </div>
                         </td>
                         <td>{{stocksDetail.imei_number}}</td>
-                        <td>{{stocksDetail.inventory_product_detail.inventory_detail.invoice_number}}</td>
-                        <td>{{stocksDetail.inventory_product_detail.inventory_detail.supplier_details .supplier_name}}
+                        <td>{{stocksDetail.invoice_number}}</td>
+                        <td>{{stocksDetail.supplier_name}}
                         </td>
-                        <td>{{stocksDetail.inventory_product_detail.product_details.brand_details .brand_name}} -
-                            {{stocksDetail.inventory_product_detail.product_details.product_name}}
+                        <td>{{stocksDetail.brand_name}} -
+                            {{stocksDetail.product_name}}
                         </td>
-                        <td>{{stocksDetail.branch_detail.branch_name}} -
-                            {{stocksDetail.branch_detail.branch_location}}
+                        <td>{{stocksDetail.branch_location}}
                         </td>
                     </tr>
                     </tbody>
@@ -100,7 +99,7 @@
                 showTransfer: false,
                 transferTo: '',
                 loading: false,
-                request_source : ''
+                request_source: ''
             }
         },
         created() {
@@ -147,7 +146,7 @@
                 this.loading = true;
 
                 var source = CancelToken.source();
-                if(this.request_source != '')
+                if (this.request_source != '')
                     this.request_source.cancel('Operation canceled by the user.');
                 this.request_source = source;
 
@@ -157,7 +156,7 @@
                         this.selected = [];
                         this.loading = false;
                         this.showTransfer = false;
-                        this.stocksDetails = response.data.data;
+                        this.stocksDetails = response.data;
                         // console.log(this.stocksDetails);
                     })
                     .catch((err) => console.error(err));

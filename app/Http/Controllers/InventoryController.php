@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Branch;
 use App\Exports\ImeiStockExport;
-use App\Http\Resources\InventoryProductDetail as InventoryProductDetailResource;
 use App\Inventory;
 use App\InventoryProduct;
 use App\InventoryProductDetail;
-use App\Product;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -86,9 +84,60 @@ class InventoryController extends Controller
     public function getImeiBasedStockDetailsByBranch($branch_id)
     {
         if ($branch_id == 0) {
-            return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', null)->get());
+            //            return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', null)->get());
+            $data = DB::table('inventory_product_details')
+                ->where('inventory_product_details.sales_invoice', null)
+                ->leftJoin('products', function ($join) {
+                    $join->on('products.id', '=', 'inventory_product_details.product_id');
+                })
+                ->join('brands', function ($join) {
+                    $join->on('products.brand_id', '=', 'brands.id');
+                })
+                ->join('branches', function ($join) {
+                    $join->on('inventory_product_details.branch_id', '=', 'branches.id');
+                })
+                ->join('inventory_products', function ($join) {
+                    $join->on('inventory_product_details.inventory_product_id', '=', 'inventory_products.id');
+                })
+                ->join('inventories', function ($join) {
+                    $join->on('inventory_products.inventory_id', '=', 'inventories.id');
+                })
+                ->join('suppliers', function ($join) {
+                    $join->on('inventories.supplier_id', '=', 'suppliers.id');
+                })
+                ->select('inventory_product_details.*', 'suppliers.*', 'inventories.*', 'inventory_products.*', 'branches.*', 'brands.*', 'products.*',
+                    'inventory_product_details.id as id')
+                ->get()->toArray();
+
+            return $data;
         } else if ($branch_id > 0) {
-            return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', null)->where('branch_id', $branch_id)->get());
+            //            return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', null)->where('branch_id', $branch_id)->get());
+            $data = DB::table('inventory_product_details')
+                ->where('inventory_product_details.branch_id', $branch_id)
+                ->where('inventory_product_details.sales_invoice', null)
+                ->leftJoin('products', function ($join) {
+                    $join->on('products.id', '=', 'inventory_product_details.product_id');
+                })
+                ->join('brands', function ($join) {
+                    $join->on('products.brand_id', '=', 'brands.id');
+                })
+                ->join('branches', function ($join) {
+                    $join->on('inventory_product_details.branch_id', '=', 'branches.id');
+                })
+                ->join('inventory_products', function ($join) {
+                    $join->on('inventory_product_details.inventory_product_id', '=', 'inventory_products.id');
+                })
+                ->join('inventories', function ($join) {
+                    $join->on('inventory_products.inventory_id', '=', 'inventories.id');
+                })
+                ->join('suppliers', function ($join) {
+                    $join->on('inventories.supplier_id', '=', 'suppliers.id');
+                })
+                ->select('inventory_product_details.*', 'suppliers.*', 'inventories.*', 'inventory_products.*', 'branches.*', 'brands.*', 'products.*',
+                    'inventory_product_details.id as id')
+                ->get()->toArray();
+
+            return $data;
         }
 
         // return InventoryProductDetailResource::collection(InventoryProductDetail::where('branch_id', auth()->user()->branch_id)->get());
@@ -135,19 +184,75 @@ class InventoryController extends Controller
         }
     }
 
-    public function getImeiBasedSalesDetailsByBranch($branch_id)
+    public function getImeiBasedSalesDetailsByBranch($branch_id, Request $request)
     {
+        $from = $request->get('from');
+        $to = $request->get('to');
         if ($branch_id == 0) {
-            return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', '!=', null)->get());
+//            DB::enableQueryLog();
+            //            return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', '!=', null)->get());
+            $data = DB::table('inventory_product_details')
+                ->where('inventory_product_details.sales_invoice', '!=', null)
+                ->whereBetween('inventory_product_details.sales_at', [$from . ' 00:00:00', $to . ' 23:59:59'])
+                ->leftJoin('products', function ($join) {
+                    $join->on('products.id', '=', 'inventory_product_details.product_id');
+                })
+                ->join('brands', function ($join) {
+                    $join->on('products.brand_id', '=', 'brands.id');
+                })
+                ->join('branches', function ($join) {
+                    $join->on('inventory_product_details.branch_id', '=', 'branches.id');
+                })
+                ->join('inventory_products', function ($join) {
+                    $join->on('inventory_product_details.inventory_product_id', '=', 'inventory_products.id');
+                })
+                ->join('inventories', function ($join) {
+                    $join->on('inventory_products.inventory_id', '=', 'inventories.id');
+                })
+                ->join('suppliers', function ($join) {
+                    $join->on('inventories.supplier_id', '=', 'suppliers.id');
+                })
+                ->join('users', function ($join) {
+                    $join->on('inventory_product_details.sale_by', '=', 'users.id');
+                })
+                ->select('inventory_product_details.*', 'suppliers.*', 'inventories.*', 'inventory_products.*', 'branches.*', 'brands.*', 'products.*',
+                    'inventory_product_details.id as id', 'users.name')
+                ->get()->toArray();
+//            dd(DB::getQueryLog());
+            return $data;
         } else if ($branch_id > 0) {
-            return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', '!=', null)->where('branch_id', $branch_id)->get());
-        }
-    }
+            //            return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', '!=', null)->where('branch_id', $branch_id)->get());
+            $data = DB::table('inventory_product_details')
+                ->where('inventory_product_details.branch_id', $branch_id)
+                ->where('inventory_product_details.sales_invoice', '!=', null)
+                ->whereBetween('inventory_product_details.sales_at', [$from . ' 00:00:00', $to . ' 23:59:59'])
+                ->leftJoin('products', function ($join) {
+                    $join->on('products.id', '=', 'inventory_product_details.product_id');
+                })
+                ->join('brands', function ($join) {
+                    $join->on('products.brand_id', '=', 'brands.id');
+                })
+                ->join('branches', function ($join) {
+                    $join->on('inventory_product_details.branch_id', '=', 'branches.id');
+                })
+                ->join('inventory_products', function ($join) {
+                    $join->on('inventory_product_details.inventory_product_id', '=', 'inventory_products.id');
+                })
+                ->join('inventories', function ($join) {
+                    $join->on('inventory_products.inventory_id', '=', 'inventories.id');
+                })
+                ->join('suppliers', function ($join) {
+                    $join->on('inventories.supplier_id', '=', 'suppliers.id');
+                })
+                ->join('users', function ($join) {
+                    $join->on('inventory_product_details.sale_by', '=', 'users.id');
+                })
+                ->select('inventory_product_details.*', 'suppliers.*', 'inventories.*', 'inventory_products.*', 'branches.*', 'brands.*', 'products.*',
+                    'inventory_product_details.id as id', 'users.name')
+                ->get()->toArray();
 
-    public function getProductStock($branch_id)
-    {
-        $products = Product::find(1);
-        dd($products);
+            return $data;
+        }
     }
 
     public function transferStock(Request $request)

@@ -1,12 +1,22 @@
 // Fonts
 @import url('https://fonts.googleapis.com/css?family=Nunito');
-
 // Variables
 @import 'variables';
-
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
-.help-block{
+.help-block {
     color: red;
+}
+
+.mdrp__activator .activator-wrapper .bar {
+    width: 225px !important;
+}
+
+.mdrp__activator .activator-wrapper .text-field {
+    font-size: 16px !important;
+    padding: 4px 10px 5px 5px !important;
+    width: 225px !important;
+    border: none;
+    border-bottom: 1px solid #757575;
 }

@@ -22,6 +22,11 @@
             </div>
         </div>
 
+        <div class="row justify-content-left mt-5 ml-3">
+            <v-md-date-range-picker :auto-apply=false @change="handleChange" show-year-select></v-md-date-range-picker>
+        </div>
+
+
         <div class="row justify-content-center mt-3">
             <div class="col-12">
                 <table class="table table-striped table-hover">
@@ -31,6 +36,7 @@
                         <th>Purchase Bill</th>
                         <th>Sales Invoice</th>
                         <th>Sales Date</th>
+                        <th>Sale By</th>
                         <th>Supplier</th>
                         <th>Product</th>
                         <th>Located At</th>
@@ -42,19 +48,18 @@
                     </tr>
                     <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in stockSalesDetails">
                         <td>{{stocksDetail.imei_number}}</td>
-                        <td>{{stocksDetail.inventory_product_detail.inventory_detail.invoice_number}}</td>
+                        <td>{{stocksDetail.invoice_number}}</td>
                         <td>{{stocksDetail.sales_invoice}}
                         </td>
                         <td>{{stocksDetail.sales_at}}
                         </td>
-                        <td>{{stocksDetail.inventory_product_detail.inventory_detail.supplier_details
-                            .supplier_name}}
+                        <td>{{stocksDetail.name}}</td>
+                        <td>{{stocksDetail.supplier_name}}
                         </td>
-                        <td>{{stocksDetail.inventory_product_detail.product_details.brand_details
-                            .brand_name}} - {{stocksDetail.inventory_product_detail.product_details.product_name}}
+                        <td>{{stocksDetail.brand_name}} -
+                            {{stocksDetail.product_name}}
                         </td>
-                        <td>{{stocksDetail.branch_detail.branch_name}} -
-                            {{stocksDetail.branch_detail.branch_location}}
+                        <td>{{stocksDetail.branch_location}}
                         </td>
                     </tr>
                     </tbody>
@@ -63,7 +68,9 @@
         </div>
     </div>
 </template>
+
 <script>
+
     export default {
         data() {
             return {
@@ -71,14 +78,24 @@
                 branches: [],
                 activeTab: 0,
                 loading: false,
-                request_source: ''
+                request_source: '',
+                start_date: '',
+                end_date: ''
             }
         },
+        // components: { DateRangePicker },
         created() {
+            this.start_date = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
+            this.end_date = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
             this.fetchBranches();
             this.fetchProducts(0);
         },
         methods: {
+            handleChange(values) {
+                this.start_date = values[0].format('YYYY-MM-DD');
+                this.end_date = values[1].format('YYYY-MM-DD');
+                this.fetchProducts(this.activeTab);
+            },
             fetchBranches() {
                 axios.get(window.base_url + '/api/v1/auth/fetchBranches')
                     .then(response => {
@@ -93,11 +110,14 @@
                 if (this.request_source != '')
                     this.request_source.cancel('Operation canceled by the user.');
                 this.request_source = source;
-                axios.get(window.base_url + '/api/v1/auth/getImeiBasedSalesDetails/' + branchId, {cancelToken1:
-                    this.request_source.token})
+                axios.post(window.base_url + '/api/v1/auth/getImeiBasedSalesDetails/' + branchId,
+                    {'from': this.start_date, 'to': this.end_date}, {
+                        cancelToken1:
+                        this.request_source.token
+                    })
                     .then(response => {
                         this.loading = false;
-                        this.stockSalesDetails = response.data.data;
+                        this.stockSalesDetails = response.data;
                         console.log(this.stockSalesDetails);
                     })
                     .catch((err) => console.error(err));

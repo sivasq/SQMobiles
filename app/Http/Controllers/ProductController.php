@@ -105,11 +105,10 @@ class ProductController extends Controller
 
             $brandName = "All Products";
             if ($brand_id > 0) {
-                $brand = Brand::where('id', 2)->first();
+                $brand = Brand::where('id', $brand_id)->first();
                 $brandName = $brand->brand_name;
             }
-            return Excel::download(new StockExport($data, [[$brandName . ' Stock Report - All Branch'], [date('d-M-Y')], [],
-                ['Product Name', 'Available Stock']]), 'stock.xlsx');
+            return Excel::download(new StockExport($data, [[$brandName . ' Stock Report - All Branch'], [date('d-M-Y')], [], ['Product Name', 'Available Stock']]), 'stock.xlsx');
 
         } else if ($branch_id > 0) {
             $data = DB::table('products')
@@ -135,10 +134,24 @@ class ProductController extends Controller
                 $brandName = $brand->brand_name;
             }
 
-            return Excel::download(new StockExport($data, [[$brandName . ' Stock Report - ' . $branch->branch_name
-                . ' ' .
-                $branch->branch_location], [date('d-M-Y')], [], ['Product Name', 'Available Stock']]), 'stock.xlsx');
+            return Excel::download(new StockExport($data, [[$brandName . ' Stock Report - ' . $branch->branch_name . ' ' . $branch->branch_location], [date('d-M-Y')], [], ['Product Name', 'Available Stock']]), 'stock.xlsx');
         }
+    }
+
+    public function getBranchWiseProductStock($product_id)
+    {
+        $data = DB::table('inventory_product_details')
+            ->where('inventory_product_details.product_id', $product_id)
+            ->where('inventory_product_details.sales_invoice', null)
+            ->join('branches', function ($join) {
+                $join->on('inventory_product_details.branch_id', '=', 'branches.id');
+            })
+            ->select('branches.id', DB::raw("CONCAT(branches.branch_name, '-', branches.branch_location) as branch"),
+                DB::raw("IFNULL(sum(inventory_product_details.imei_qty),0) as available_stock"))
+            ->groupBy('inventory_product_details.branch_id')
+            ->get();
+        return $data;
+
     }
 
     public function getProductsByBrand($brand_id)

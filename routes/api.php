@@ -109,7 +109,9 @@ Route::prefix('v1')->group(function () {
             Route::get('getImeiBasedStockDetails/{branch_id}', 'InventoryController@getImeiBasedStockDetailsByBranch');
             Route::get('getImeiBasedStockDetailsExcel/{branch_id}', 'InventoryController@getImeiBasedStockDetailsByBranchExcel');
 
-            Route::get('getImeiBasedSalesDetails/{branch_id}', 'InventoryController@getImeiBasedSalesDetailsByBranch');
+            Route::post('getImeiBasedSalesDetails/{branch_id}', 'InventoryController@getImeiBasedSalesDetailsByBranch');
+
+            Route::get('getBranchWiseProductStock/{product_id}', 'ProductController@getBranchWiseProductStock');
 
             Route::get('getProductStock/{branch_id}/{brand_id}', 'ProductController@getProductStock');
             Route::get('getProductStockExcel/{branch_id}/{brand_id}', 'ProductController@getProductStockExcel');
@@ -144,6 +146,9 @@ Route::prefix('mobile')->group(function () {
 
             // Transfer Stock
             Route::post('transferStock', 'MobileApi\InventoryController@transferStock');
+
+            // Receive Stock
+            Route::post('receiveStock', 'MobileApi\InventoryController@receiveStock');
 
             // Make Sales Entry
             Route::post('salesEntry', 'MobileApi\InventoryController@salesEntry');
