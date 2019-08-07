@@ -63957,7 +63957,7 @@ var render = function() {
       _c(
         "modal",
         {
-          attrs: { name: "stock-details" },
+          attrs: { name: "stock-details", height: "auto", scrollable: true },
           on: { "before-open": _vm.beforeOpen }
         },
         [

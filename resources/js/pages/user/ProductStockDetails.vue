@@ -66,7 +66,7 @@
             </div>
         </div>
 
-        <modal @before-open="beforeOpen" name="stock-details">
+        <modal @before-open="beforeOpen" name="stock-details" height="auto" :scrollable="true">
             <table class="table table-striped table-hover">
                 <thead>
                 <tr>
