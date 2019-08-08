@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\MobileApi;
 
+use App\Branch;
 use App\Http\Controllers\MobileApi\BaseController as BaseController;
 use App\Http\Resources\InventoryProductDetail as InventoryProductDetailResource;
 use App\InventoryProduct;
 use App\InventoryProductDetail;
+use App\InventoryProductDetailTxnHistory;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -43,20 +45,35 @@ class InventoryController extends BaseController
             );
 
             // Inventory_imei_records to be saved
-            $inventory_imei_records[] = [
+            $inventory_imei_records = [
                 'inventory_product_id' => $inventoryProduct->id,
                 'imei_number' => $request['imei_number'],
                 'branch_id' => $request->branch_id,
                 'product_id' => $request->product_id,
+                'received_from' => null,
                 'received_at' => now(),
             ];
 
-            InventoryProductDetail::insert($inventory_imei_records);
+            $imeiEntryId = InventoryProductDetail::create($inventory_imei_records)->id;
+
+            if ($imeiEntryId) {
+                $auth_user = Auth::user();
+                $user_id = $auth_user->id;
+                $user_name = $auth_user->name;
+
+                $txn_histories[] = [
+                    'inventory_product_detail_id' => $imeiEntryId,
+                    'txn_details' => "stock added to warehouse by " . $user_name,
+                    'txn_by' => $user_id,
+                    'created_at' => now()
+                ];
+                $imeiTxnLog = InventoryProductDetailTxnHistory::insert($txn_histories);
+            }
             DB::commit();
             return response()->json(['status' => 'success'], 200);
         } catch (Exception $e) {
             DB::rollback();
-            return response()->json(['status' => 'false'], 400);
+            return response()->json(['status' => 'false', 'msg' => $e], 400);
         }
     }
 
@@ -128,8 +145,7 @@ class InventoryController extends BaseController
             return $this->sendError('This Product Already Sold');
         }
 
-        if (($Imei_product_details->branch_id !== $user_branch_id))
-        {
+        if (($Imei_product_details->branch_id !== $user_branch_id)) {
             return $this->sendError('You have No Stock');
         }
 
@@ -204,6 +220,9 @@ class InventoryController extends BaseController
         if ($Imei_product_details->branch_id !== $user_branch_id) {
             return $this->sendError('No Stock in your Branch');
         }
+        if ($Imei_product_details->branch_id == $request->get('transfer_to')) {
+            return $this->sendError('This Product Already in your Branch');
+        }
         if (is_null($Imei_product_details->received_at)) {
             return $this->sendError('Please Receive This Product');
         }
@@ -211,11 +230,31 @@ class InventoryController extends BaseController
             return $this->sendError('This Product Already Sold');
         }
 
+        $from = Branch::select(DB::raw("CONCAT(branches.branch_name, '-', branches.branch_location) as branch"))->where
+        ('id', $Imei_product_details->getOriginal('branch_id'))->first();
+
+        $from_branch = $Imei_product_details->branch_id;
         $Imei_product_details->branch_id = $request->get('transfer_to');
+        $Imei_product_details->received_from = $from_branch;
         $Imei_product_details->received_at = null;
         $Imei_product_details->save();
 
         if ($Imei_product_details->getChanges()) {
+            $to = Branch::select(DB::raw("CONCAT(branches.branch_name, '-', branches.branch_location) as branch"))->where
+            ('id', $request->get('transfer_to'))->first();
+
+            $auth_user = Auth::user();
+            $user_id = $auth_user->id;
+            $user_name = $auth_user->name;
+
+            $txn_histories[] = [
+                'inventory_product_detail_id' => $request->get('imei_id'),
+                'txn_details' => "stock transferred to " . $to->branch . " from " . $from->branch . " by " . $user_name,
+                'txn_by' => $user_id,
+                'created_at' => now()
+            ];
+            $imeiTxnLog = InventoryProductDetailTxnHistory::insert($txn_histories);
+
             return $this->sendResponse([], 'Stock Transferred Successfully.');
         }
         return $this->sendError('Unknown Error Occurred');
@@ -269,12 +308,26 @@ class InventoryController extends BaseController
             return $this->sendError('This Product Already Sold');
         }
 
+        $from = Branch::select(DB::raw("CONCAT(branches.branch_name, '-', branches.branch_location) as branch"))->where
+        ('id', $Imei_product_details->getOriginal('branch_id'))->first();
+
         $Imei_product_details->sales_invoice = $request->get('invoice_number');
         $Imei_product_details->sales_at = now();
         $Imei_product_details->sale_by = Auth::user()->id;
         $Imei_product_details->save();
 
         if ($Imei_product_details->getChanges()) {
+            $auth_user = Auth::user();
+            $user_id = $auth_user->id;
+            $user_name = $auth_user->name;
+
+            $txn_histories[] = [
+                'inventory_product_detail_id' => $request->get('imei_id'),
+                'txn_details' => "stock sold from " . $from->branch . " by " . $user_name,
+                'txn_by' => $user_id,
+                'created_at' => now()
+            ];
+            $imeiTxnLog = InventoryProductDetailTxnHistory::insert($txn_histories);
             return $this->sendResponse([], 'Sales Completed Successfully.');
         }
         return $this->sendError('Unknown Error Occurred');
@@ -314,6 +367,25 @@ class InventoryController extends BaseController
         $Imei_product_details->save();
 
         if ($Imei_product_details->getChanges()) {
+
+            $from = Branch::select(DB::raw("CONCAT(branches.branch_name, '-', branches.branch_location) as branch"))->where
+            ('id', $Imei_product_details->getOriginal('received_from'))->first();
+
+            $to = Branch::select(DB::raw("CONCAT(branches.branch_name, '-', branches.branch_location) as branch"))->where
+            ('id', $Imei_product_details->getOriginal('branch_id'))->first();
+
+            $auth_user = Auth::user();
+            $user_id = $auth_user->id;
+            $user_name = $auth_user->name;
+
+            $txn_histories[] = [
+                'inventory_product_detail_id' => $request->get('imei_id'),
+                'txn_details' => "stock received from " . $from->branch . " to" . $to->branch . "by " . $user_name,
+                'txn_by' => $user_id,
+                'created_at' => now()
+            ];
+            $imeiTxnLog = InventoryProductDetailTxnHistory::insert($txn_histories);
+
             return $this->sendResponse([], 'Stock Received Successfully.');
         }
         return $this->sendError('Unknown Error Occurred');

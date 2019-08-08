@@ -53,12 +53,12 @@
                     },
                     success: function () {
                         // handle redirection
-                        app.success = true
-                        const redirectTo = 'dashboard'
+                        app.success = true;
+                        const redirectTo = 'dashboard';
                         this.$router.push({name: redirectTo})
                     },
                     error: function (res) {
-                        app.has_error = true
+                        app.has_error = true;
                         app.error = res.response.data.message
                     },
                     rememberMe: true,

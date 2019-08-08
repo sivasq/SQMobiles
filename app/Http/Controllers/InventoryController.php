@@ -7,8 +7,10 @@ use App\Exports\ImeiStockExport;
 use App\Inventory;
 use App\InventoryProduct;
 use App\InventoryProductDetail;
+use App\InventoryProductDetailTxnHistory;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Validator;
@@ -68,16 +70,37 @@ class InventoryController extends Controller
                         'imei_number' => $product_serial_number['imei_number'],
                         'branch_id' => 1,
                         'product_id' => $request->product_id,
+                        'received_from' => null,
                         'received_at' => now(),
                     ];
                 }
             }
-            InventoryProductDetail::insert($inventory_imei_records);
+            $imeiEntry = InventoryProductDetail::insert($inventory_imei_records);
+
+            if ($imeiEntry) {
+                $imeiEntryIds = InventoryProductDetail::orderBy('id', 'desc')->take(count($inventory_imei_records))
+                    ->pluck('id')->toArray();
+
+                $auth_user = Auth::user();
+                $user_id = $auth_user->id;
+                $user_name = $auth_user->name;
+                $txn_histories = [];
+                $imeiEntryIds = array_reverse($imeiEntryIds);
+                foreach ($imeiEntryIds as $imeiEntryId) {
+                    $txn_histories[] = [
+                        'inventory_product_detail_id' => $imeiEntryId,
+                        'txn_details' => "stock added to warehouse by " . $user_name,
+                        'txn_by' => $user_id,
+                        'created_at' => now()
+                    ];
+                }
+                $imeiTxnLog = InventoryProductDetailTxnHistory::insert($txn_histories);
+            }
             DB::commit();
             return response()->json(['status' => 'success'], 200);
         } catch (Exception $e) {
             DB::rollback();
-            return response()->json(['status' => 'false'], 400);
+            return response()->json(['status' => 'false', 'msg' => $e->getMessage()], 400);
         }
     }
 
@@ -189,7 +212,7 @@ class InventoryController extends Controller
         $from = $request->get('from');
         $to = $request->get('to');
         if ($branch_id == 0) {
-//            DB::enableQueryLog();
+            //            DB::enableQueryLog();
             //            return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', '!=', null)->get());
             $data = DB::table('inventory_product_details')
                 ->where('inventory_product_details.sales_invoice', '!=', null)
@@ -218,7 +241,7 @@ class InventoryController extends Controller
                 ->select('inventory_product_details.*', 'suppliers.*', 'inventories.*', 'inventory_products.*', 'branches.*', 'brands.*', 'products.*',
                     'inventory_product_details.id as id', 'users.name')
                 ->get()->toArray();
-//            dd(DB::getQueryLog());
+            //            dd(DB::getQueryLog());
             return $data;
         } else if ($branch_id > 0) {
             //            return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', '!=', null)->where('branch_id', $branch_id)->get());
@@ -258,9 +281,31 @@ class InventoryController extends Controller
     public function transferStock(Request $request)
     {
         $transfered = DB::table('inventory_product_details')->whereIn('id', $request->get('transfer_items'))->update
-        (['branch_id' => $request->get('transfer_to')]);
+        (['branch_id' => $request->get('transfer_to'), 'received_from' => $request->get('transfer_from'), 'received_at'
+        => null]);
+
+        $from = Branch::select(DB::raw("CONCAT(branches.branch_name, '-', branches.branch_location) as branch"))->where
+        ('id', $request->get('transfer_from'))->first();
+
+        $to = Branch::select(DB::raw("CONCAT(branches.branch_name, '-', branches.branch_location) as branch"))->where
+        ('id', $request->get('transfer_to'))->first();
 
         if ($transfered) {
+            $auth_user = Auth::user();
+            $user_id = $auth_user->id;
+            $user_name = $auth_user->name;
+            $txn_histories = [];
+            $imeiEntryIds = $request->get('transfer_items');
+            foreach ($imeiEntryIds as $imeiEntryId) {
+                $txn_histories[] = [
+                    'inventory_product_detail_id' => $imeiEntryId,
+                    'txn_details' => "stock transferred to " . $to->branch . " from " . $from->branch . " by " . $user_name,
+                    'txn_by' => $user_id,
+                    'created_at' => now()
+                ];
+            }
+            $imeiTxnLog = InventoryProductDetailTxnHistory::insert($txn_histories);
+
             return response()->json(['success' => true], 200);
         }
     }

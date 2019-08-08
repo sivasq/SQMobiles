@@ -21,6 +21,7 @@ import VModal from 'vue-js-modal'
 import VMdDateRangePicker from "v-md-date-range-picker";
 
 import VueMoment from 'vue-moment';
+// import vuetify from './plugins/vuetify';
 
 // Set Vue globally
 window.Vue = require('vue');
@@ -39,10 +40,12 @@ Vue.use(VueAxios, axios);
 axios.defaults.baseURL = window.base_url + '/api/v1';
 Vue.use(VueAuth, auth);
 Vue.use(VMdDateRangePicker);
-Vue.use(VueMoment)
+Vue.use(VueMoment);
 
+
+// Vue.use(Vuetify);
 // Load Index
-Vue.component('index', Index);
+// Vue.component('index', Index);
 
 /**
  * The following block of code may be used to automatically register your
@@ -63,7 +66,14 @@ Vue.component('index', Index);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-const app = new Vue({
-    el: '#app',
-    router
-});
+// const app = new Vue({
+//     el: '#app',
+//     router,
+//     vuetify,
+//     render: h => h(Index)
+// });
+export const app = new Vue({
+    router,
+    // vuetify,
+    render: h => h(Index)
+}).$mount('#app')

@@ -2887,6 +2887,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -60853,16 +60855,23 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { attrs: { id: "main" } }, [
-    _c("header", { attrs: { id: "header" } }, [_c("Menu")], 1),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticStyle: { "margin-top": "100px" }, attrs: { id: "content" } },
-      [_c("router-view")],
-      1
-    )
-  ])
+  return _c(
+    "div",
+    { attrs: { id: "app" } },
+    [
+      _c("header", { attrs: { id: "header" } }, [_c("Menu")], 1),
+      _vm._v(" "),
+      _c("transition", { attrs: { mode: "out-in", name: "fade" } }, [
+        _c(
+          "div",
+          { staticStyle: { "margin-top": "100px" }, attrs: { id: "content" } },
+          [_c("router-view")],
+          1
+        )
+      ])
+    ],
+    1
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -83884,11 +83893,12 @@ __webpack_require__.r(__webpack_exports__);
 /*!*****************************!*\
   !*** ./resources/js/app.js ***!
   \*****************************/
-/*! no exports provided */
+/*! exports provided: app */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "app", function() { return app; });
 /* harmony import */ var _bootstrap__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 /* harmony import */ var _bootstrap__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_bootstrap__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var es6_promise_auto__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! es6-promise/auto */ "./node_modules/es6-promise/auto.js");
@@ -83934,7 +83944,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
- // Set Vue globally
+ // import vuetify from './plugins/vuetify';
+// Set Vue globally
 
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js"); // Set Vue router
 
@@ -83951,9 +83962,10 @@ vue__WEBPACK_IMPORTED_MODULE_3___default.a.use(vue_axios__WEBPACK_IMPORTED_MODUL
 axios__WEBPACK_IMPORTED_MODULE_2___default.a.defaults.baseURL = window.base_url + '/api/v1';
 vue__WEBPACK_IMPORTED_MODULE_3___default.a.use(_websanova_vue_auth__WEBPACK_IMPORTED_MODULE_4___default.a, _auth__WEBPACK_IMPORTED_MODULE_8__["default"]);
 vue__WEBPACK_IMPORTED_MODULE_3___default.a.use(v_md_date_range_picker__WEBPACK_IMPORTED_MODULE_13___default.a);
-vue__WEBPACK_IMPORTED_MODULE_3___default.a.use(vue_moment__WEBPACK_IMPORTED_MODULE_14___default.a); // Load Index
+vue__WEBPACK_IMPORTED_MODULE_3___default.a.use(vue_moment__WEBPACK_IMPORTED_MODULE_14___default.a); // Vue.use(Vuetify);
+// Load Index
+// Vue.component('index', Index);
 
-vue__WEBPACK_IMPORTED_MODULE_3___default.a.component('index', _Index__WEBPACK_IMPORTED_MODULE_7__["default"]);
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -83970,11 +83982,20 @@ vue__WEBPACK_IMPORTED_MODULE_3___default.a.component('index', _Index__WEBPACK_IM
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
+// const app = new Vue({
+//     el: '#app',
+//     router,
+//     vuetify,
+//     render: h => h(Index)
+// });
 
 var app = new vue__WEBPACK_IMPORTED_MODULE_3___default.a({
-  el: '#app',
-  router: _router__WEBPACK_IMPORTED_MODULE_9__["default"]
-});
+  router: _router__WEBPACK_IMPORTED_MODULE_9__["default"],
+  // vuetify,
+  render: function render(h) {
+    return h(_Index__WEBPACK_IMPORTED_MODULE_7__["default"]);
+  }
+}).$mount('#app');
 
 /***/ }),
 

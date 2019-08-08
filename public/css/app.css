@@ -10660,3 +10660,9 @@ a.text-dark:focus {
   border-bottom: 1px solid #757575;
 }
 
+.required label::after {
+  content: "*";
+  color: darkred;
+  margin-left: 0.25em;
+}
+

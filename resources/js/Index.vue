@@ -1,23 +1,26 @@
 <template>
-    <div id="main">
+    <div id="app">
         <header id="header">
             <Menu></Menu>
         </header>
-        <div id="content" style="margin-top: 100px;">
-            <router-view></router-view>
-        </div>
+        <transition mode="out-in" name="fade">
+            <div id="content" style="margin-top: 100px;">
+                <router-view></router-view>
+            </div>
+        </transition>
     </div>
 </template>
 <script>
-import Menu from './components/Menu.vue'
-  export default {
-    data() {
-      return {
-        //
-      }
-    },
-    components: {
-        Menu
+    import Menu from './components/Menu.vue'
+
+    export default {
+        data() {
+            return {
+                //
+            }
+        },
+        components: {
+            Menu
+        }
     }
-  }
 </script>

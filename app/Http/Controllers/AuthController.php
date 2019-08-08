@@ -84,9 +84,22 @@ class AuthController extends Controller
 
     /**
      * Login user and return a token
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function login(Request $request)
     {
+        $v = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+        if ($v->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $v->errors()
+            ], 422);
+        }
+
         $credentials = $request->only('email', 'password');
         if ($token = $this->guard()->attempt($credentials)) {
             return response()->json(['success' => true], 200)->header('Authorization', $token);
