@@ -46,7 +46,7 @@
                     <tr>
                         <td align="center" colspan="6" v-if="loading"> Loading...</td>
                     </tr>
-                    <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in stockSalesDetails">
+                    <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in stockSalesDetails" @click.prevent="fetchImeiTxnLogs(stocksDetail.id)">
                         <td>{{stocksDetail.imei_number}}</td>
                         <td>{{stocksDetail.invoice_number}}</td>
                         <td>{{stocksDetail.sales_invoice}}
@@ -66,6 +66,29 @@
                 </table>
             </div>
         </div>
+
+        <modal :scrollable="true" @before-open="beforeOpen" height="auto" name="log-details">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Txn Date</th>
+                    <th>Txn Detail</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-if="imeiTxnLogs.length === 0">
+                    <td colspan="2" style="text-align:center">No Txn Logs Found</td>
+                </tr>
+
+                <tr :key="imeiTxnLog.id"
+                    v-for="(imeiTxnLog, index) in imeiTxnLogs" v-if="imeiTxnLogs.length > 0">
+                    <td>{{imeiTxnLog.created_at}}</td>
+                    <td>{{imeiTxnLog.txn_details}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </modal>
+
     </div>
 </template>
 
@@ -80,7 +103,8 @@
                 loading: false,
                 request_source: '',
                 start_date: '',
-                end_date: ''
+                end_date: '',
+                imeiTxnLogs: [],
             }
         },
         // components: { DateRangePicker },
@@ -119,6 +143,26 @@
                         this.loading = false;
                         this.stockSalesDetails = response.data;
                         console.log(this.stockSalesDetails);
+                    })
+                    .catch((err) => console.error(err));
+            },
+            beforeOpen(event) {
+                // console.log(event.params.stockData);
+                this.imeiTxnLogs = event.params.logData;
+            },
+            fetchImeiTxnLogs(imeiId) {
+                var CancelToken = axios.CancelToken;
+                // var call1 = CancelToken.source();
+                // call1.cancel('cancelled');
+
+                var source = CancelToken.source();
+                if (this.request_source != '')
+                    this.request_source.cancel('Operation canceled by the user.');
+                this.request_source = source;
+
+                axios.get(window.base_url + '/api/v1/auth/getImeiTxnLog/' + imeiId, {cancelToken: this.request_source.token})
+                    .then(response => {
+                        this.$modal.show('log-details', {logData: response.data})
                     })
                     .catch((err) => console.error(err));
             },

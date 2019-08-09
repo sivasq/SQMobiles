@@ -117,6 +117,8 @@ Route::prefix('v1')->group(function () {
             Route::get('getProductStockExcel/{branch_id}/{brand_id}', 'ProductController@getProductStockExcel');
 
             Route::post('transferStock', 'InventoryController@transferStock');
+
+            Route::get('getImeiTxnLog/{imei_id}', 'InventoryProductDetailTxnHistoryController@getImeiTxnLog');
         });
     });
 });
@@ -164,6 +166,9 @@ Route::prefix('mobile')->group(function () {
 
             // Get Brands
             Route::get('getBrands', 'MobileApi\BrandController@index');
+
+            // Get Not received Stocks List
+            Route::post('getNotReceivedProductStock', 'MobileApi\ProductController@getReceivingProductStock');
         });
     });
 });

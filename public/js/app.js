@@ -3592,6 +3592,29 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3601,7 +3624,8 @@ __webpack_require__.r(__webpack_exports__);
       loading: false,
       request_source: '',
       start_date: '',
-      end_date: ''
+      end_date: '',
+      imeiTxnLogs: []
     };
   },
   // components: { DateRangePicker },
@@ -3643,6 +3667,29 @@ __webpack_require__.r(__webpack_exports__);
         _this2.loading = false;
         _this2.stockSalesDetails = response.data;
         console.log(_this2.stockSalesDetails);
+      })["catch"](function (err) {
+        return console.error(err);
+      });
+    },
+    beforeOpen: function beforeOpen(event) {
+      // console.log(event.params.stockData);
+      this.imeiTxnLogs = event.params.logData;
+    },
+    fetchImeiTxnLogs: function fetchImeiTxnLogs(imeiId) {
+      var _this3 = this;
+
+      var CancelToken = axios.CancelToken; // var call1 = CancelToken.source();
+      // call1.cancel('cancelled');
+
+      var source = CancelToken.source();
+      if (this.request_source != '') this.request_source.cancel('Operation canceled by the user.');
+      this.request_source = source;
+      axios.get(window.base_url + '/api/v1/auth/getImeiTxnLog/' + imeiId, {
+        cancelToken: this.request_source.token
+      }).then(function (response) {
+        _this3.$modal.show('log-details', {
+          logData: response.data
+        });
       })["catch"](function (err) {
         return console.error(err);
       });
@@ -3752,6 +3799,32 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3763,7 +3836,8 @@ __webpack_require__.r(__webpack_exports__);
       showTransfer: false,
       transferTo: '',
       loading: false,
-      request_source: ''
+      request_source: '',
+      imeiTxnLogs: []
     };
   },
   created: function created() {
@@ -3853,6 +3927,29 @@ __webpack_require__.r(__webpack_exports__);
           _this3.fetchProducts(app.activeTab);
         }
       })["catch"](function (res) {});
+    },
+    beforeOpen: function beforeOpen(event) {
+      // console.log(event.params.stockData);
+      this.imeiTxnLogs = event.params.logData;
+    },
+    fetchImeiTxnLogs: function fetchImeiTxnLogs(imeiId) {
+      var _this4 = this;
+
+      var CancelToken = axios.CancelToken; // var call1 = CancelToken.source();
+      // call1.cancel('cancelled');
+
+      var source = CancelToken.source();
+      if (this.request_source != '') this.request_source.cancel('Operation canceled by the user.');
+      this.request_source = source;
+      axios.get(window.base_url + '/api/v1/auth/getImeiTxnLog/' + imeiId, {
+        cancelToken: this.request_source.token
+      }).then(function (response) {
+        _this4.$modal.show('log-details', {
+          logData: response.data
+        });
+      })["catch"](function (err) {
+        return console.error(err);
+      });
     }
   },
   watch: {},
@@ -61797,60 +61894,28 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container-fluid" }, [
-    _vm._m(0),
-    _vm._v(" "),
-    _c("div", { staticClass: "row justify-content-center mt-3" }, [
-      _c(
-        "div",
-        {
-          staticClass: "btn-group btn-group-toggle",
-          attrs: { "data-toggle": "buttons" }
-        },
-        [
-          _c(
-            "label",
-            {
-              staticClass: "btn btn-outline-primary btn-toggle active",
-              on: {
-                click: function($event) {
-                  $event.preventDefault()
-                  return _vm.fetchProducts(0)
-                }
-              }
-            },
-            [
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.activeTab,
-                    expression: "activeTab"
-                  }
-                ],
-                attrs: { autocomplete: "off", checked: "", type: "radio" },
-                domProps: { checked: _vm._q(_vm.activeTab, null) },
-                on: {
-                  change: function($event) {
-                    _vm.activeTab = null
-                  }
-                }
-              }),
-              _vm._v("\n                ALL\n            ")
-            ]
-          ),
-          _vm._v(" "),
-          _vm._l(_vm.branches, function(branch, index) {
-            return _c(
+  return _c(
+    "div",
+    { staticClass: "container-fluid" },
+    [
+      _vm._m(0),
+      _vm._v(" "),
+      _c("div", { staticClass: "row justify-content-center mt-3" }, [
+        _c(
+          "div",
+          {
+            staticClass: "btn-group btn-group-toggle",
+            attrs: { "data-toggle": "buttons" }
+          },
+          [
+            _c(
               "label",
               {
-                key: branch.id,
-                staticClass: "btn btn-outline-primary btn-toggle",
+                staticClass: "btn btn-outline-primary btn-toggle active",
                 on: {
                   click: function($event) {
                     $event.preventDefault()
-                    return _vm.fetchProducts(branch.id)
+                    return _vm.fetchProducts(0)
                   }
                 }
               },
@@ -61864,7 +61929,7 @@ var render = function() {
                       expression: "activeTab"
                     }
                   ],
-                  attrs: { autocomplete: "off", type: "radio" },
+                  attrs: { autocomplete: "off", checked: "", type: "radio" },
                   domProps: { checked: _vm._q(_vm.activeTab, null) },
                   on: {
                     change: function($event) {
@@ -61872,99 +61937,197 @@ var render = function() {
                     }
                   }
                 }),
-                _vm._v(
-                  "\n                " +
-                    _vm._s(branch.branch_name) +
-                    "\n            "
-                )
+                _vm._v("\n                ALL\n            ")
               ]
-            )
+            ),
+            _vm._v(" "),
+            _vm._l(_vm.branches, function(branch, index) {
+              return _c(
+                "label",
+                {
+                  key: branch.id,
+                  staticClass: "btn btn-outline-primary btn-toggle",
+                  on: {
+                    click: function($event) {
+                      $event.preventDefault()
+                      return _vm.fetchProducts(branch.id)
+                    }
+                  }
+                },
+                [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.activeTab,
+                        expression: "activeTab"
+                      }
+                    ],
+                    attrs: { autocomplete: "off", type: "radio" },
+                    domProps: { checked: _vm._q(_vm.activeTab, null) },
+                    on: {
+                      change: function($event) {
+                        _vm.activeTab = null
+                      }
+                    }
+                  }),
+                  _vm._v(
+                    "\n                " +
+                      _vm._s(branch.branch_name) +
+                      "\n            "
+                  )
+                ]
+              )
+            })
+          ],
+          2
+        )
+      ]),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "row justify-content-left mt-5 ml-3" },
+        [
+          _c("v-md-date-range-picker", {
+            attrs: { "auto-apply": false, "show-year-select": "" },
+            on: { change: _vm.handleChange }
           })
         ],
-        2
-      )
-    ]),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "row justify-content-left mt-5 ml-3" },
-      [
-        _c("v-md-date-range-picker", {
-          attrs: { "auto-apply": false, "show-year-select": "" },
-          on: { change: _vm.handleChange }
-        })
-      ],
-      1
-    ),
-    _vm._v(" "),
-    _c("div", { staticClass: "row justify-content-center mt-3" }, [
-      _c("div", { staticClass: "col-12" }, [
-        _c("table", { staticClass: "table table-striped table-hover" }, [
-          _vm._m(1),
-          _vm._v(" "),
-          _c(
-            "tbody",
-            [
-              _c("tr", [
-                _vm.loading
-                  ? _c("td", { attrs: { align: "center", colspan: "6" } }, [
-                      _vm._v(" Loading...")
-                    ])
-                  : _vm._e()
-              ]),
-              _vm._v(" "),
-              _vm._l(_vm.stockSalesDetails, function(stocksDetail, index) {
-                return _c("tr", { key: stocksDetail.id }, [
-                  _c("td", [_vm._v(_vm._s(stocksDetail.imei_number))]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(stocksDetail.invoice_number))]),
-                  _vm._v(" "),
-                  _c("td", [
-                    _vm._v(
-                      _vm._s(stocksDetail.sales_invoice) +
-                        "\n                    "
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("td", [
-                    _vm._v(
-                      _vm._s(stocksDetail.sales_at) + "\n                    "
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(stocksDetail.name))]),
-                  _vm._v(" "),
-                  _c("td", [
-                    _vm._v(
-                      _vm._s(stocksDetail.supplier_name) +
-                        "\n                    "
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("td", [
-                    _vm._v(
-                      _vm._s(stocksDetail.brand_name) +
-                        " -\n                        " +
-                        _vm._s(stocksDetail.product_name) +
-                        "\n                    "
-                    )
-                  ]),
-                  _vm._v(" "),
-                  _c("td", [
-                    _vm._v(
-                      _vm._s(stocksDetail.branch_location) +
-                        "\n                    "
-                    )
-                  ])
-                ])
-              })
-            ],
-            2
-          )
+        1
+      ),
+      _vm._v(" "),
+      _c("div", { staticClass: "row justify-content-center mt-3" }, [
+        _c("div", { staticClass: "col-12" }, [
+          _c("table", { staticClass: "table table-striped table-hover" }, [
+            _vm._m(1),
+            _vm._v(" "),
+            _c(
+              "tbody",
+              [
+                _c("tr", [
+                  _vm.loading
+                    ? _c("td", { attrs: { align: "center", colspan: "6" } }, [
+                        _vm._v(" Loading...")
+                      ])
+                    : _vm._e()
+                ]),
+                _vm._v(" "),
+                _vm._l(_vm.stockSalesDetails, function(stocksDetail, index) {
+                  return _c(
+                    "tr",
+                    {
+                      key: stocksDetail.id,
+                      on: {
+                        click: function($event) {
+                          $event.preventDefault()
+                          return _vm.fetchImeiTxnLogs(stocksDetail.id)
+                        }
+                      }
+                    },
+                    [
+                      _c("td", [_vm._v(_vm._s(stocksDetail.imei_number))]),
+                      _vm._v(" "),
+                      _c("td", [_vm._v(_vm._s(stocksDetail.invoice_number))]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _vm._v(
+                          _vm._s(stocksDetail.sales_invoice) +
+                            "\n                    "
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _vm._v(
+                          _vm._s(stocksDetail.sales_at) +
+                            "\n                    "
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("td", [_vm._v(_vm._s(stocksDetail.name))]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _vm._v(
+                          _vm._s(stocksDetail.supplier_name) +
+                            "\n                    "
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _vm._v(
+                          _vm._s(stocksDetail.brand_name) +
+                            " -\n                        " +
+                            _vm._s(stocksDetail.product_name) +
+                            "\n                    "
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _vm._v(
+                          _vm._s(stocksDetail.branch_location) +
+                            "\n                    "
+                        )
+                      ])
+                    ]
+                  )
+                })
+              ],
+              2
+            )
+          ])
         ])
-      ])
-    ])
-  ])
+      ]),
+      _vm._v(" "),
+      _c(
+        "modal",
+        {
+          attrs: { scrollable: true, height: "auto", name: "log-details" },
+          on: { "before-open": _vm.beforeOpen }
+        },
+        [
+          _c("table", { staticClass: "table table-striped table-hover" }, [
+            _c("thead", [
+              _c("tr", [
+                _c("th", [_vm._v("Txn Date")]),
+                _vm._v(" "),
+                _c("th", [_vm._v("Txn Detail")])
+              ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "tbody",
+              [
+                _vm.imeiTxnLogs.length === 0
+                  ? _c("tr", [
+                      _c(
+                        "td",
+                        {
+                          staticStyle: { "text-align": "center" },
+                          attrs: { colspan: "2" }
+                        },
+                        [_vm._v("No Txn Logs Found")]
+                      )
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm._l(_vm.imeiTxnLogs, function(imeiTxnLog, index) {
+                  return _vm.imeiTxnLogs.length > 0
+                    ? _c("tr", { key: imeiTxnLog.id }, [
+                        _c("td", [_vm._v(_vm._s(imeiTxnLog.created_at))]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(imeiTxnLog.txn_details))])
+                      ])
+                    : _vm._e()
+                })
+              ],
+              2
+            )
+          ])
+        ]
+      )
+    ],
+    1
+  )
 }
 var staticRenderFns = [
   function() {
@@ -62021,60 +62184,28 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container-fluid" }, [
-    _vm._m(0),
-    _vm._v(" "),
-    _c("div", { staticClass: "row justify-content-center mt-3" }, [
-      _c(
-        "div",
-        {
-          staticClass: "btn-group btn-group-toggle",
-          attrs: { "data-toggle": "buttons" }
-        },
-        [
-          _c(
-            "label",
-            {
-              staticClass: "btn btn-outline-primary btn-toggle active",
-              on: {
-                click: function($event) {
-                  $event.preventDefault()
-                  return _vm.fetchProducts(0)
-                }
-              }
-            },
-            [
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.activeTab,
-                    expression: "activeTab"
-                  }
-                ],
-                attrs: { autocomplete: "off", checked: "", type: "radio" },
-                domProps: { checked: _vm._q(_vm.activeTab, null) },
-                on: {
-                  change: function($event) {
-                    _vm.activeTab = null
-                  }
-                }
-              }),
-              _vm._v("\n                ALL\n            ")
-            ]
-          ),
-          _vm._v(" "),
-          _vm._l(_vm.branches, function(branch, index) {
-            return _c(
+  return _c(
+    "div",
+    { staticClass: "container-fluid" },
+    [
+      _vm._m(0),
+      _vm._v(" "),
+      _c("div", { staticClass: "row justify-content-center mt-3" }, [
+        _c(
+          "div",
+          {
+            staticClass: "btn-group btn-group-toggle",
+            attrs: { "data-toggle": "buttons" }
+          },
+          [
+            _c(
               "label",
               {
-                key: branch.id,
-                staticClass: "btn btn-outline-primary btn-toggle",
+                staticClass: "btn btn-outline-primary btn-toggle active",
                 on: {
                   click: function($event) {
                     $event.preventDefault()
-                    return _vm.fetchProducts(branch.id)
+                    return _vm.fetchProducts(0)
                   }
                 }
               },
@@ -62088,7 +62219,7 @@ var render = function() {
                       expression: "activeTab"
                     }
                   ],
-                  attrs: { autocomplete: "off", type: "radio" },
+                  attrs: { autocomplete: "off", checked: "", type: "radio" },
                   domProps: { checked: _vm._q(_vm.activeTab, null) },
                   on: {
                     change: function($event) {
@@ -62096,214 +62227,329 @@ var render = function() {
                     }
                   }
                 }),
-                _vm._v(
-                  "\n                " +
-                    _vm._s(branch.branch_name) +
-                    "\n            "
-                )
+                _vm._v("\n                ALL\n            ")
               ]
-            )
-          })
-        ],
-        2
-      )
-    ]),
-    _vm._v(" "),
-    _vm.showTransfer
-      ? _c("div", { staticClass: "row justify-content-center mt-3" }, [
-          _c("span", [_vm._v("Transfer To")]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-12 text-center" }, [
-            _c(
-              "div",
-              {
-                staticClass: "btn-group btn-group-toggle",
-                attrs: { "data-toggle": "buttons" }
-              },
-              _vm._l(_vm.branches, function(branch, index) {
-                return branch.id !== _vm.activeTab
-                  ? _c(
-                      "label",
-                      {
-                        key: branch.id,
-                        staticClass: "btn btn-sm btn-outline-info",
-                        on: {
-                          click: function($event) {
-                            $event.preventDefault()
-                            _vm.transferTo = branch.id
-                          }
-                        }
-                      },
-                      [
-                        _c("input", {
-                          attrs: { autocomplete: "off", type: "radio" }
-                        }),
-                        _vm._v(
-                          "\n                    " +
-                            _vm._s(branch.branch_name) +
-                            "\n                "
-                        )
-                      ]
-                    )
-                  : _vm._e()
-              }),
-              0
             ),
             _vm._v(" "),
-            _vm.transferTo != ""
-              ? _c(
-                  "button",
-                  {
-                    staticClass: "btn btn-sm btn-success",
-                    attrs: { type: "button" },
+            _vm._l(_vm.branches, function(branch, index) {
+              return _c(
+                "label",
+                {
+                  key: branch.id,
+                  staticClass: "btn btn-outline-primary btn-toggle",
+                  on: {
+                    click: function($event) {
+                      $event.preventDefault()
+                      return _vm.fetchProducts(branch.id)
+                    }
+                  }
+                },
+                [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.activeTab,
+                        expression: "activeTab"
+                      }
+                    ],
+                    attrs: { autocomplete: "off", type: "radio" },
+                    domProps: { checked: _vm._q(_vm.activeTab, null) },
                     on: {
-                      click: function($event) {
-                        $event.preventDefault()
-                        return _vm.transferStock()
+                      change: function($event) {
+                        _vm.activeTab = null
                       }
                     }
-                  },
-                  [_vm._v("Transfer\n                Now\n            ")]
-                )
-              : _vm._e()
+                  }),
+                  _vm._v(
+                    "\n                " +
+                      _vm._s(branch.branch_name) +
+                      "\n            "
+                  )
+                ]
+              )
+            })
+          ],
+          2
+        )
+      ]),
+      _vm._v(" "),
+      _vm.showTransfer
+        ? _c("div", { staticClass: "row justify-content-center mt-3" }, [
+            _c("span", [_vm._v("Transfer To")]),
+            _vm._v(" "),
+            _c("div", { staticClass: "col-12 text-center" }, [
+              _c(
+                "div",
+                {
+                  staticClass: "btn-group btn-group-toggle",
+                  attrs: { "data-toggle": "buttons" }
+                },
+                _vm._l(_vm.branches, function(branch, index) {
+                  return branch.id !== _vm.activeTab
+                    ? _c(
+                        "label",
+                        {
+                          key: branch.id,
+                          staticClass: "btn btn-sm btn-outline-info",
+                          on: {
+                            click: function($event) {
+                              $event.preventDefault()
+                              _vm.transferTo = branch.id
+                            }
+                          }
+                        },
+                        [
+                          _c("input", {
+                            attrs: { autocomplete: "off", type: "radio" }
+                          }),
+                          _vm._v(
+                            "\n                    " +
+                              _vm._s(branch.branch_name) +
+                              "\n                "
+                          )
+                        ]
+                      )
+                    : _vm._e()
+                }),
+                0
+              ),
+              _vm._v(" "),
+              _vm.transferTo != ""
+                ? _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-sm btn-success",
+                      attrs: { type: "button" },
+                      on: {
+                        click: function($event) {
+                          $event.preventDefault()
+                          return _vm.transferStock()
+                        }
+                      }
+                    },
+                    [_vm._v("Transfer\n                Now\n            ")]
+                  )
+                : _vm._e()
+            ])
+          ])
+        : _vm._e(),
+      _vm._v(" "),
+      _c("div", { staticClass: "row justify-content-center mt-3" }, [
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-sm btn-outline-secondary",
+            on: {
+              click: function($event) {
+                $event.preventDefault()
+                return _vm.exportData($event)
+              }
+            }
+          },
+          [_vm._v("Export As Excel")]
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "row justify-content-center mt-3" }, [
+        _c("div", { staticClass: "col-12" }, [
+          _c("table", { staticClass: "table table-striped table-hover" }, [
+            _c("thead", [
+              _c("tr", [
+                _vm.activeTab != 0 ? _c("th") : _vm._e(),
+                _vm._v(" "),
+                _c("th", [_vm._v("IMEI")]),
+                _vm._v(" "),
+                _c("th", [_vm._v("Bill")]),
+                _vm._v(" "),
+                _c("th", [_vm._v("Supplier")]),
+                _vm._v(" "),
+                _c("th", [_vm._v("Product")]),
+                _vm._v(" "),
+                _c("th", [_vm._v("Located At")])
+              ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "tbody",
+              [
+                _c("tr", [
+                  _vm.loading
+                    ? _c("td", { attrs: { align: "center", colspan: "6" } }, [
+                        _vm._v(" Loading...")
+                      ])
+                    : _vm._e()
+                ]),
+                _vm._v(" "),
+                _vm._l(_vm.stocksDetails, function(stocksDetail, index) {
+                  return _vm.stocksDetails.length > 0
+                    ? _c("tr", { key: stocksDetail.id }, [
+                        _vm.activeTab != 0
+                          ? _c("td", [
+                              _c("div", { staticClass: "form-check" }, [
+                                _c("input", {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: _vm.selected,
+                                      expression: "selected"
+                                    }
+                                  ],
+                                  staticStyle: { cursor: "pointer" },
+                                  attrs: { type: "checkbox" },
+                                  domProps: {
+                                    value: stocksDetail.id,
+                                    checked: Array.isArray(_vm.selected)
+                                      ? _vm._i(_vm.selected, stocksDetail.id) >
+                                        -1
+                                      : _vm.selected
+                                  },
+                                  on: {
+                                    change: [
+                                      function($event) {
+                                        var $$a = _vm.selected,
+                                          $$el = $event.target,
+                                          $$c = $$el.checked ? true : false
+                                        if (Array.isArray($$a)) {
+                                          var $$v = stocksDetail.id,
+                                            $$i = _vm._i($$a, $$v)
+                                          if ($$el.checked) {
+                                            $$i < 0 &&
+                                              (_vm.selected = $$a.concat([$$v]))
+                                          } else {
+                                            $$i > -1 &&
+                                              (_vm.selected = $$a
+                                                .slice(0, $$i)
+                                                .concat($$a.slice($$i + 1)))
+                                          }
+                                        } else {
+                                          _vm.selected = $$c
+                                        }
+                                      },
+                                      _vm.selectChange
+                                    ]
+                                  }
+                                })
+                              ])
+                            ])
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _c(
+                          "td",
+                          {
+                            staticStyle: {
+                              "text-decoration-line": "underline",
+                              "text-decoration-style": "dashed",
+                              "text-decoration-color": "red",
+                              cursor: "pointer"
+                            },
+                            on: {
+                              click: function($event) {
+                                $event.preventDefault()
+                                return _vm.fetchImeiTxnLogs(stocksDetail.id)
+                              }
+                            }
+                          },
+                          [
+                            _vm._v(
+                              "\n                        " +
+                                _vm._s(stocksDetail.imei_number) +
+                                "\n                    "
+                            )
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(stocksDetail.invoice_number))]),
+                        _vm._v(" "),
+                        _c("td", [
+                          _vm._v(
+                            _vm._s(stocksDetail.supplier_name) +
+                              "\n                    "
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("td", [
+                          _vm._v(
+                            _vm._s(stocksDetail.brand_name) +
+                              " -\n                        " +
+                              _vm._s(stocksDetail.product_name) +
+                              "\n                    "
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("td", [
+                          _vm._v(
+                            _vm._s(stocksDetail.branch_location) +
+                              "\n                    "
+                          )
+                        ])
+                      ])
+                    : _vm._e()
+                })
+              ],
+              2
+            )
           ])
         ])
-      : _vm._e(),
-    _vm._v(" "),
-    _c("div", { staticClass: "row justify-content-center mt-3" }, [
+      ]),
+      _vm._v(" "),
       _c(
-        "button",
+        "modal",
         {
-          staticClass: "btn btn-sm btn-outline-secondary",
-          on: {
-            click: function($event) {
-              $event.preventDefault()
-              return _vm.exportData($event)
-            }
-          }
+          attrs: {
+            scrollable: true,
+            height: "auto",
+            name: "log-details",
+            width: "90%"
+          },
+          on: { "before-open": _vm.beforeOpen }
         },
-        [_vm._v("Export As Excel")]
-      )
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "row justify-content-center mt-3" }, [
-      _c("div", { staticClass: "col-12" }, [
-        _c("table", { staticClass: "table table-striped table-hover" }, [
-          _c("thead", [
-            _c("tr", [
-              _vm.activeTab != 0 ? _c("th") : _vm._e(),
-              _vm._v(" "),
-              _c("th", [_vm._v("IMEI")]),
-              _vm._v(" "),
-              _c("th", [_vm._v("Bill")]),
-              _vm._v(" "),
-              _c("th", [_vm._v("Supplier")]),
-              _vm._v(" "),
-              _c("th", [_vm._v("Product")]),
-              _vm._v(" "),
-              _c("th", [_vm._v("Located At")])
-            ])
-          ]),
-          _vm._v(" "),
-          _c(
-            "tbody",
-            [
+        [
+          _c("table", { staticClass: "table table-striped table-hover" }, [
+            _c("thead", [
               _c("tr", [
-                _vm.loading
-                  ? _c("td", { attrs: { align: "center", colspan: "6" } }, [
-                      _vm._v(" Loading...")
+                _c("th", [_vm._v("Txn Date")]),
+                _vm._v(" "),
+                _c("th", [_vm._v("Txn Detail")])
+              ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "tbody",
+              [
+                _vm.imeiTxnLogs.length === 0
+                  ? _c("tr", [
+                      _c(
+                        "td",
+                        {
+                          staticStyle: { "text-align": "center" },
+                          attrs: { colspan: "2" }
+                        },
+                        [_vm._v("No Txn Logs Found")]
+                      )
                     ])
-                  : _vm._e()
-              ]),
-              _vm._v(" "),
-              _vm._l(_vm.stocksDetails, function(stocksDetail, index) {
-                return _vm.stocksDetails.length > 0
-                  ? _c("tr", { key: stocksDetail.id }, [
-                      _vm.activeTab != 0
-                        ? _c("td", [
-                            _c("div", { staticClass: "form-check" }, [
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.selected,
-                                    expression: "selected"
-                                  }
-                                ],
-                                attrs: { type: "checkbox" },
-                                domProps: {
-                                  value: stocksDetail.id,
-                                  checked: Array.isArray(_vm.selected)
-                                    ? _vm._i(_vm.selected, stocksDetail.id) > -1
-                                    : _vm.selected
-                                },
-                                on: {
-                                  change: [
-                                    function($event) {
-                                      var $$a = _vm.selected,
-                                        $$el = $event.target,
-                                        $$c = $$el.checked ? true : false
-                                      if (Array.isArray($$a)) {
-                                        var $$v = stocksDetail.id,
-                                          $$i = _vm._i($$a, $$v)
-                                        if ($$el.checked) {
-                                          $$i < 0 &&
-                                            (_vm.selected = $$a.concat([$$v]))
-                                        } else {
-                                          $$i > -1 &&
-                                            (_vm.selected = $$a
-                                              .slice(0, $$i)
-                                              .concat($$a.slice($$i + 1)))
-                                        }
-                                      } else {
-                                        _vm.selected = $$c
-                                      }
-                                    },
-                                    _vm.selectChange
-                                  ]
-                                }
-                              })
-                            ])
-                          ])
-                        : _vm._e(),
-                      _vm._v(" "),
-                      _c("td", [_vm._v(_vm._s(stocksDetail.imei_number))]),
-                      _vm._v(" "),
-                      _c("td", [_vm._v(_vm._s(stocksDetail.invoice_number))]),
-                      _vm._v(" "),
-                      _c("td", [
-                        _vm._v(
-                          _vm._s(stocksDetail.supplier_name) +
-                            "\n                    "
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c("td", [
-                        _vm._v(
-                          _vm._s(stocksDetail.brand_name) +
-                            " -\n                        " +
-                            _vm._s(stocksDetail.product_name) +
-                            "\n                    "
-                        )
-                      ]),
-                      _vm._v(" "),
-                      _c("td", [
-                        _vm._v(
-                          _vm._s(stocksDetail.branch_location) +
-                            "\n                    "
-                        )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm._l(_vm.imeiTxnLogs, function(imeiTxnLog, index) {
+                  return _vm.imeiTxnLogs.length > 0
+                    ? _c("tr", { key: imeiTxnLog.id }, [
+                        _c("td", [_vm._v(_vm._s(imeiTxnLog.created_at))]),
+                        _vm._v(" "),
+                        _c("td", [_vm._v(_vm._s(imeiTxnLog.txn_details))])
                       ])
-                    ])
-                  : _vm._e()
-              })
-            ],
-            2
-          )
-        ])
-      ])
-    ])
-  ])
+                    : _vm._e()
+                })
+              ],
+              2
+            )
+          ])
+        ]
+      )
+    ],
+    1
+  )
 }
 var staticRenderFns = [
   function() {

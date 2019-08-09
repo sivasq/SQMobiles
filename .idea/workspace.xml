@@ -2,24 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="709d9296-8614-44dd-b467-9892832cbb06" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqindia.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/DB.sql" beforeDir="false" afterPath="$PROJECT_DIR$/DB.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AuthController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/InventoryController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/InventoryController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/InventoryProductDetailTxnHistoryController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/InventoryProductDetailTxnHistoryController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/InventoryController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/InventoryController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/InventoryProductDetailTxnHistory.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/InventoryProductDetailTxnHistory.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/css/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/css/app.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/ProductController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/MobileApi/ProductController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/Index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/Index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/Login.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/sass/app.scss" beforeDir="false" afterPath="$PROJECT_DIR$/resources/sass/app.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/welcome.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/welcome.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webpack.mix.js" beforeDir="false" afterPath="$PROJECT_DIR$/webpack.mix.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/pages/user/IMEISalesDetails.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/IMEISalesDetails.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/pages/user/IMEIStockDetails.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/IMEIStockDetails.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -216,7 +208,8 @@
       <workItem from="1565017243726" duration="92000" />
       <workItem from="1565065390791" duration="4058000" />
       <workItem from="1565154049794" duration="13897000" />
-      <workItem from="1565239979691" duration="31284000" />
+      <workItem from="1565239979691" duration="32006000" />
+      <workItem from="1565336440668" duration="7589000" />
     </task>
     <servers />
   </component>

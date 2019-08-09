@@ -52,18 +52,23 @@ class InventoryController extends BaseController
                 'product_id' => $request->product_id,
                 'received_from' => null,
                 'received_at' => now(),
+                'created_at' => now(),
             ];
 
             $imeiEntryId = InventoryProductDetail::create($inventory_imei_records)->id;
 
             if ($imeiEntryId) {
+
+                $to = Branch::select(DB::raw("CONCAT(branches.branch_name, '-', branches.branch_location) as branch"))->where
+                ('id', $request->get('branch_id'))->first();
+
                 $auth_user = Auth::user();
                 $user_id = $auth_user->id;
                 $user_name = $auth_user->name;
 
                 $txn_histories[] = [
                     'inventory_product_detail_id' => $imeiEntryId,
-                    'txn_details' => "stock added to warehouse by " . $user_name,
+                    'txn_details' => "stock added to " . $to->branch . " by " . $user_name,
                     'txn_by' => $user_id,
                     'created_at' => now()
                 ];

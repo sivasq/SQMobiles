@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\MobileApi;
 
 use App\Http\Controllers\MobileApi\BaseController as BaseController;
-use App\Http\Resources\Product as ProductResource;
-use App\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Validator;
@@ -46,5 +44,26 @@ class ProductController extends BaseController
             ->groupBy('products.id')
             ->get();
         return $this->sendResponse($data, 'Stock Details Retrieved Successfully.');
+    }
+
+    public function getReceivingProductStock()
+    {
+        $branch_id = Auth::user()->branch_id;
+        $data = DB::table('inventory_product_details')
+            ->where('inventory_product_details.branch_id', $branch_id)
+            ->where('inventory_product_details.received_at', null)
+            ->leftJoin('products', function ($join) {
+                $join->on('inventory_product_details.product_id', '=', 'products.id');
+            })
+            ->join('branches', function ($join) {
+                $join->on('inventory_product_details.received_from', '=', 'branches.id');
+            })
+            ->join('brands', function ($join) {
+                $join->on('products.brand_id', '=', 'brands.id');
+            })
+            ->select('inventory_product_details.imei_number', 'brands.brand_name', 'products.product_name',
+                DB::raw("CONCAT(branches.branch_name, '-', branches.branch_location) as sent_from"))
+            ->get();
+        return $this->sendResponse($data, 'NotReceived Stock Details Retrieved Successfully.');
     }
 }

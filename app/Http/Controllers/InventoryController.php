@@ -71,7 +71,8 @@ class InventoryController extends Controller
                         'branch_id' => 1,
                         'product_id' => $request->product_id,
                         'received_from' => null,
-                        'received_at' => now(),
+                        'received_at' => null,
+                        'created_at' => now(),
                     ];
                 }
             }
@@ -282,7 +283,8 @@ class InventoryController extends Controller
     {
         $transfered = DB::table('inventory_product_details')->whereIn('id', $request->get('transfer_items'))->update
         (['branch_id' => $request->get('transfer_to'), 'received_from' => $request->get('transfer_from'), 'received_at'
-        => null]);
+        => null, 'updated_at'
+        => now()]);
 
         $from = Branch::select(DB::raw("CONCAT(branches.branch_name, '-', branches.branch_location) as branch"))->where
         ('id', $request->get('transfer_from'))->first();

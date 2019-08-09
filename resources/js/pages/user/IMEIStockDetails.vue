@@ -68,10 +68,13 @@
                         <td v-if="activeTab != 0">
                             <div class="form-check">
                                 <input :value="stocksDetail.id" @change="selectChange"
-                                       type="checkbox" v-model="selected">
+                                       style="cursor: pointer" type="checkbox" v-model="selected">
                             </div>
                         </td>
-                        <td>{{stocksDetail.imei_number}}</td>
+                        <td @click.prevent="fetchImeiTxnLogs(stocksDetail.id)"
+                            style="text-decoration-line: underline; text-decoration-style: dashed; text-decoration-color: red; cursor: pointer;">
+                            {{stocksDetail.imei_number}}
+                        </td>
                         <td>{{stocksDetail.invoice_number}}</td>
                         <td>{{stocksDetail.supplier_name}}
                         </td>
@@ -85,6 +88,29 @@
                 </table>
             </div>
         </div>
+
+        <modal :scrollable="true" @before-open="beforeOpen" height="auto" name="log-details" width="90%">
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>Txn Date</th>
+                    <th>Txn Detail</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-if="imeiTxnLogs.length === 0">
+                    <td colspan="2" style="text-align:center">No Txn Logs Found</td>
+                </tr>
+
+                <tr :key="imeiTxnLog.id"
+                    v-for="(imeiTxnLog, index) in imeiTxnLogs" v-if="imeiTxnLogs.length > 0">
+                    <td>{{imeiTxnLog.created_at}}</td>
+                    <td>{{imeiTxnLog.txn_details}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </modal>
+
     </div>
 </template>
 <script>
@@ -99,7 +125,8 @@
                 showTransfer: false,
                 transferTo: '',
                 loading: false,
-                request_source: ''
+                request_source: '',
+                imeiTxnLogs: [],
             }
         },
         created() {
@@ -187,7 +214,27 @@
                     .catch((res) => {
 
                     });
-            }
+            },
+            beforeOpen(event) {
+                // console.log(event.params.stockData);
+                this.imeiTxnLogs = event.params.logData;
+            },
+            fetchImeiTxnLogs(imeiId) {
+                var CancelToken = axios.CancelToken;
+                // var call1 = CancelToken.source();
+                // call1.cancel('cancelled');
+
+                var source = CancelToken.source();
+                if (this.request_source != '')
+                    this.request_source.cancel('Operation canceled by the user.');
+                this.request_source = source;
+
+                axios.get(window.base_url + '/api/v1/auth/getImeiTxnLog/' + imeiId, {cancelToken: this.request_source.token})
+                    .then(response => {
+                        this.$modal.show('log-details', {logData: response.data})
+                    })
+                    .catch((err) => console.error(err));
+            },
         },
         watch: {},
         components: {
