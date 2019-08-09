@@ -3615,6 +3615,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3625,7 +3629,8 @@ __webpack_require__.r(__webpack_exports__);
       request_source: '',
       start_date: '',
       end_date: '',
-      imeiTxnLogs: []
+      imeiTxnLogs: [],
+      searchStock: ''
     };
   },
   // components: { DateRangePicker },
@@ -3635,6 +3640,15 @@ __webpack_require__.r(__webpack_exports__);
     this.fetchBranches();
     this.fetchProducts(0);
   },
+  computed: {
+    filterStocks: function filterStocks() {
+      var _this = this;
+
+      return this.stockSalesDetails.filter(function (stock) {
+        return !_this.searchStock || stock.imei_number.indexOf(_this.searchStock.trim()) > -1 || stock.sales_invoice.toLowerCase().indexOf(_this.searchStock.toLowerCase().trim()) > -1; // return client.imei_number.indexOf(this.searchClient) > -1;
+      });
+    }
+  },
   methods: {
     handleChange: function handleChange(values) {
       this.start_date = values[0].format('YYYY-MM-DD');
@@ -3642,17 +3656,17 @@ __webpack_require__.r(__webpack_exports__);
       this.fetchProducts(this.activeTab);
     },
     fetchBranches: function fetchBranches() {
-      var _this = this;
+      var _this2 = this;
 
       axios.get(window.base_url + '/api/v1/auth/fetchBranches').then(function (response) {
-        _this.branches = response.data.data;
-        console.log(_this.branches);
+        _this2.branches = response.data.data;
+        console.log(_this2.branches);
       })["catch"](function (err) {
         return console.error(err);
       });
     },
     fetchProducts: function fetchProducts(branchId) {
-      var _this2 = this;
+      var _this3 = this;
 
       var CancelToken1 = axios.CancelToken;
       var source = CancelToken1.source();
@@ -3664,9 +3678,9 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         cancelToken1: this.request_source.token
       }).then(function (response) {
-        _this2.loading = false;
-        _this2.stockSalesDetails = response.data;
-        console.log(_this2.stockSalesDetails);
+        _this3.loading = false;
+        _this3.stockSalesDetails = response.data;
+        console.log(_this3.stockSalesDetails);
       })["catch"](function (err) {
         return console.error(err);
       });
@@ -3676,7 +3690,7 @@ __webpack_require__.r(__webpack_exports__);
       this.imeiTxnLogs = event.params.logData;
     },
     fetchImeiTxnLogs: function fetchImeiTxnLogs(imeiId) {
-      var _this3 = this;
+      var _this4 = this;
 
       var CancelToken = axios.CancelToken; // var call1 = CancelToken.source();
       // call1.cancel('cancelled');
@@ -3687,7 +3701,7 @@ __webpack_require__.r(__webpack_exports__);
       axios.get(window.base_url + '/api/v1/auth/getImeiTxnLog/' + imeiId, {
         cancelToken: this.request_source.token
       }).then(function (response) {
-        _this3.$modal.show('log-details', {
+        _this4.$modal.show('log-details', {
           logData: response.data
         });
       })["catch"](function (err) {
@@ -3825,6 +3839,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3837,12 +3852,22 @@ __webpack_require__.r(__webpack_exports__);
       transferTo: '',
       loading: false,
       request_source: '',
-      imeiTxnLogs: []
+      imeiTxnLogs: [],
+      searchStock: ''
     };
   },
   created: function created() {
     this.fetchBranches();
     this.fetchProducts(0);
+  },
+  computed: {
+    filterStocks: function filterStocks() {
+      var _this = this;
+
+      return this.stocksDetails.filter(function (stock) {
+        return !_this.searchStock.trim() || stock.imei_number.indexOf(_this.searchStock.trim()) > -1 || stock.invoice_number.toLowerCase().indexOf(_this.searchStock.toLowerCase().trim()) > -1; // return client.imei_number.indexOf(this.searchClient) > -1;
+      });
+    }
   },
   methods: {
     exportData: function exportData() {
@@ -3871,23 +3896,24 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     fetchBranches: function fetchBranches() {
-      var _this = this;
+      var _this2 = this;
 
       axios.get(window.base_url + '/api/v1/auth/fetchBranches').then(function (response) {
-        _this.branches = response.data.data;
-        console.log(_this.branches);
+        _this2.branches = response.data.data;
+        console.log(_this2.branches);
       })["catch"](function (err) {
         return console.error(err);
       });
     },
     fetchProducts: function fetchProducts(branchId) {
-      var _this2 = this;
+      var _this3 = this;
 
       var CancelToken = axios.CancelToken; // var call1 = CancelToken.source();
       // call1.cancel('cancelled');
 
       this.activeTab = branchId;
       this.stocksDetails = [];
+      this.searchStock = '';
       this.loading = true;
       var source = CancelToken.source();
       if (this.request_source != '') this.request_source.cancel('Operation canceled by the user.');
@@ -3895,10 +3921,10 @@ __webpack_require__.r(__webpack_exports__);
       axios.get(window.base_url + '/api/v1/auth/getImeiBasedStockDetails/' + branchId, {
         cancelToken: this.request_source.token
       }).then(function (response) {
-        _this2.selected = [];
-        _this2.loading = false;
-        _this2.showTransfer = false;
-        _this2.stocksDetails = response.data; // console.log(this.stocksDetails);
+        _this3.selected = [];
+        _this3.loading = false;
+        _this3.showTransfer = false;
+        _this3.stocksDetails = response.data; // console.log(this.stocksDetails);
       })["catch"](function (err) {
         return console.error(err);
       });
@@ -3912,7 +3938,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     transferStock: function transferStock() {
-      var _this3 = this;
+      var _this4 = this;
 
       console.log(this.transferTo);
       console.log(this.activeTab);
@@ -3924,7 +3950,7 @@ __webpack_require__.r(__webpack_exports__);
         transfer_items: app.selected
       }).then(function (response) {
         if (response.data.success) {
-          _this3.fetchProducts(app.activeTab);
+          _this4.fetchProducts(app.activeTab);
         }
       })["catch"](function (res) {});
     },
@@ -3933,7 +3959,7 @@ __webpack_require__.r(__webpack_exports__);
       this.imeiTxnLogs = event.params.logData;
     },
     fetchImeiTxnLogs: function fetchImeiTxnLogs(imeiId) {
-      var _this4 = this;
+      var _this5 = this;
 
       var CancelToken = axios.CancelToken; // var call1 = CancelToken.source();
       // call1.cancel('cancelled');
@@ -3944,7 +3970,7 @@ __webpack_require__.r(__webpack_exports__);
       axios.get(window.base_url + '/api/v1/auth/getImeiTxnLog/' + imeiId, {
         cancelToken: this.request_source.token
       }).then(function (response) {
-        _this4.$modal.show('log-details', {
+        _this5.$modal.show('log-details', {
           logData: response.data
         });
       })["catch"](function (err) {
@@ -61992,6 +62018,31 @@ var render = function() {
           _c("v-md-date-range-picker", {
             attrs: { "auto-apply": false, "show-year-select": "" },
             on: { change: _vm.handleChange }
+          }),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.searchStock,
+                expression: "searchStock"
+              }
+            ],
+            staticClass: "form-control w-35 ml-3",
+            attrs: {
+              placeholder: "Filter By IMEI / Sales Invoice",
+              type: "search"
+            },
+            domProps: { value: _vm.searchStock },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.searchStock = $event.target.value
+              }
+            }
           })
         ],
         1
@@ -62013,7 +62064,7 @@ var render = function() {
                     : _vm._e()
                 ]),
                 _vm._v(" "),
-                _vm._l(_vm.stockSalesDetails, function(stocksDetail, index) {
+                _vm._l(_vm.filterStocks, function(stocksDetail, index) {
                   return _c(
                     "tr",
                     {
@@ -62352,6 +62403,28 @@ var render = function() {
         )
       ]),
       _vm._v(" "),
+      _c("input", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.searchStock,
+            expression: "searchStock"
+          }
+        ],
+        staticClass: "form-control w-25",
+        attrs: { placeholder: "Filter By IMEI / Bill", type: "search" },
+        domProps: { value: _vm.searchStock },
+        on: {
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.searchStock = $event.target.value
+          }
+        }
+      }),
+      _vm._v(" "),
       _c("div", { staticClass: "row justify-content-center mt-3" }, [
         _c("div", { staticClass: "col-12" }, [
           _c("table", { staticClass: "table table-striped table-hover" }, [
@@ -62382,7 +62455,7 @@ var render = function() {
                     : _vm._e()
                 ]),
                 _vm._v(" "),
-                _vm._l(_vm.stocksDetails, function(stocksDetail, index) {
+                _vm._l(_vm.filterStocks, function(stocksDetail, index) {
                   return _vm.stocksDetails.length > 0
                     ? _c("tr", { key: stocksDetail.id }, [
                         _vm.activeTab != 0

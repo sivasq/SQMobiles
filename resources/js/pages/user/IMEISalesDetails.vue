@@ -24,6 +24,9 @@
 
         <div class="row justify-content-left mt-5 ml-3">
             <v-md-date-range-picker :auto-apply=false @change="handleChange" show-year-select></v-md-date-range-picker>
+
+            <input class="form-control w-35 ml-3" placeholder="Filter By IMEI / Sales Invoice" type="search"
+                   v-model="searchStock">
         </div>
 
 
@@ -46,7 +49,8 @@
                     <tr>
                         <td align="center" colspan="6" v-if="loading"> Loading...</td>
                     </tr>
-                    <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in stockSalesDetails" @click.prevent="fetchImeiTxnLogs(stocksDetail.id)">
+                    <tr :key="stocksDetail.id" @click.prevent="fetchImeiTxnLogs(stocksDetail.id)"
+                        v-for="(stocksDetail, index) in filterStocks">
                         <td>{{stocksDetail.imei_number}}</td>
                         <td>{{stocksDetail.invoice_number}}</td>
                         <td>{{stocksDetail.sales_invoice}}
@@ -105,6 +109,7 @@
                 start_date: '',
                 end_date: '',
                 imeiTxnLogs: [],
+                searchStock: '',
             }
         },
         // components: { DateRangePicker },
@@ -113,6 +118,15 @@
             this.end_date = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
             this.fetchBranches();
             this.fetchProducts(0);
+        },
+        computed: {
+            filterStocks() {
+                return this.stockSalesDetails.filter(stock => {
+                    return !this.searchStock || stock.imei_number.indexOf(this.searchStock.trim()) > -1 ||
+                        stock.sales_invoice.toLowerCase().indexOf(this.searchStock.toLowerCase().trim()) > -1
+                    // return client.imei_number.indexOf(this.searchClient) > -1;
+                });
+            }
         },
         methods: {
             handleChange(values) {

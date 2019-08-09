@@ -45,6 +45,7 @@
             <button @click.prevent="exportData" class="btn btn-sm btn-outline-secondary">Export As Excel</button>
         </div>
 
+        <input class="form-control w-25" placeholder="Filter By IMEI / Bill" type="search" v-model="searchStock">
         <!-- Stock Details -->
         <div class="row justify-content-center mt-3">
             <div class="col-12">
@@ -64,7 +65,7 @@
                         <td align="center" colspan="6" v-if="loading"> Loading...</td>
                     </tr>
                     <tr :key="stocksDetail.id" v-for="(stocksDetail, index) in
-                    stocksDetails" v-if="stocksDetails.length > 0">
+                    filterStocks" v-if="stocksDetails.length > 0">
                         <td v-if="activeTab != 0">
                             <div class="form-check">
                                 <input :value="stocksDetail.id" @change="selectChange"
@@ -127,11 +128,21 @@
                 loading: false,
                 request_source: '',
                 imeiTxnLogs: [],
+                searchStock: '',
             }
         },
         created() {
             this.fetchBranches();
             this.fetchProducts(0);
+        },
+        computed: {
+            filterStocks() {
+                return this.stocksDetails.filter(stock => {
+                    return !this.searchStock.trim() || stock.imei_number.indexOf(this.searchStock.trim()) > -1 ||
+                        stock.invoice_number.toLowerCase().indexOf(this.searchStock.toLowerCase().trim()) > -1
+                    // return client.imei_number.indexOf(this.searchClient) > -1;
+                });
+            }
         },
         methods: {
             exportData() {
@@ -170,6 +181,7 @@
                 // call1.cancel('cancelled');
                 this.activeTab = branchId;
                 this.stocksDetails = [];
+                this.searchStock = '';
                 this.loading = true;
 
                 var source = CancelToken.source();
