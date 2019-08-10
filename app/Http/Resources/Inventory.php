@@ -17,7 +17,6 @@ class Inventory extends JsonResource
     {
 //        return parent::toArray($request);
         return [
-
             'invoice_number' => $this->invoice_number,
             'supplier_details' => $this->supplier_details($this->supplier_id),
         ];

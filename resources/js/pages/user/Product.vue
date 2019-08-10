@@ -37,14 +37,16 @@
                 </div>
             </div>
 
+
             <div class="col-12 mt-5">
+                <input class="form-control mb-1" placeholder="Filter By Brand" type="search" v-model="searchBrand">
                 <ul class="list-group">
                     <li class="list-group-item text-center text-primary"> Products List &nbsp;&nbsp;&nbsp;<button
                         @click.prevent="exportData" class="btn btn-sm btn-outline-secondary">Export As Excel</button></li>
                     <li class="list-group-item text-center text-danger" v-if='products.length === 0'>There are no
                         Product yet!
                     </li>
-                    <li :key="product.id" class="list-group-item" v-for="(product, index) in products">
+                    <li :key="product.id" class="list-group-item" v-for="(product, index) in filterProducts">
                         {{index + 1}}) {{product.brand_details.brand_name}} {{product.product_name}}
                         <button @click="editProduct(product)" class="btn btn-sm btn-outline-info">Edit</button>
                         <button @click="deleteProduct(product.id)" class="btn btn-sm btn-outline-danger"
@@ -75,12 +77,22 @@
                 products: [],
                 action: 'addProduct',
                 product_id: '',
-                isUpdate: false
+                isUpdate: false,
+                searchBrand: '',
             }
         },
         created() {
             this.fetchBrands();
             this.fetchProducts();
+        },
+        computed: {
+            filterProducts() {
+                return this.products.filter(stock => {
+                    return !this.searchBrand.trim() ||
+                        stock.brand_details.brand_name.toLowerCase().indexOf(this.searchBrand.toLowerCase().trim()) > -1
+                    // return client.imei_number.indexOf(this.searchClient) > -1;
+                });
+            }
         },
         methods: {
             handle_function_call(function_name) {

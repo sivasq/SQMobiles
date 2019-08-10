@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Validator;
 
-
 class InventoryController extends Controller
 {
     public function store(Request $request)

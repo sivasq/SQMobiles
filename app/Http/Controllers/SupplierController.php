@@ -20,6 +20,10 @@ class SupplierController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'supplier_name' => 'required|unique:suppliers',
+            'gstin' => 'required|unique:suppliers',
+            'email' => 'sometimes|unique:suppliers|nullable',
+            'phone' => 'required|unique:suppliers',
+            'address' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -31,6 +35,10 @@ class SupplierController extends Controller
 
         $supplier = new Supplier();
         $supplier->supplier_name = $request->supplier_name;
+        $supplier->gstin = $request->gstin;
+        $supplier->email = $request->email;
+        $supplier->phone = $request->phone;
+        $supplier->address = $request->address;
         $supplier->save();
 
         if ($supplier->exists()) {
@@ -42,6 +50,10 @@ class SupplierController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'supplier_name' => 'required|unique:suppliers,supplier_name,' . $supplier->id,
+            'gstin' => 'required|unique:suppliers,supplier_name,' . $supplier->id,
+            'email' => 'sometimes|nullable|unique:suppliers,supplier_name,' . $supplier->id,
+            'phone' => 'required|unique:suppliers,supplier_name,' . $supplier->id,
+            'address' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -52,6 +64,10 @@ class SupplierController extends Controller
         }
 
         $supplier->supplier_name = $request->supplier_name;
+        $supplier->gstin = $request->gstin;
+        $supplier->email = $request->email;
+        $supplier->phone = $request->phone;
+        $supplier->address = $request->address;
         $supplier->save();
         if ($supplier->exists()) {
             return response()->json(['status' => 'success'], 200);

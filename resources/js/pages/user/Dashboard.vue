@@ -27,6 +27,7 @@
                         {name: "Brands", path: "brand"},
                         {name: "Products", path: "product"},
                         {name: "Add Inventory", path: "addinventory"},
+                        {name: "New Inventory", path: "inventory"},
                         {name: "IMEI Stock By Location", path: "imeistockdetail"},
                         {name: "IMEI Sales By Location", path: "imeisalesdetail"},
                         {name: "Product Stock Details", path: "productstockdetail"}
