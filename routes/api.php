@@ -106,6 +106,12 @@ Route::prefix('v1')->group(function () {
             // Add Inventory
             Route::post('addInventory', 'InventoryController@store');
 
+            // Add Inventory New
+            Route::post('addInventoryNew', 'InventoryController@addInventory');
+
+            // Add Inventory New
+            Route::post('addInventoryExtra', 'InventoryController@extraInventory');
+
             Route::get('getImeiBasedStockDetails/{branch_id}', 'InventoryController@getImeiBasedStockDetailsByBranch');
             Route::get('getImeiBasedStockDetailsExcel/{branch_id}', 'InventoryController@getImeiBasedStockDetailsByBranchExcel');
 

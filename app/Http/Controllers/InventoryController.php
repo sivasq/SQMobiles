@@ -17,6 +17,195 @@ use Validator;
 
 class InventoryController extends Controller
 {
+    public function extraInventory(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'invoice_number' => 'required',
+            'supplier_id' => 'required',
+            'products_details_list.*.brand_id' => 'required',
+            'products_details_list.*.product_id' => 'required',
+            'products_details_list.*.product_color' => 'required',
+            'products_details_list.*.imei_number' => 'required|unique:inventory_product_details',
+            'products_details_list.*.unit_price' => 'required',
+            'products_details_list.*.gst' => 'required',
+            'products_details_list.*.total_price' => 'required',
+        ],
+            [
+                'products_details_list.*.brand_id.required' => 'Brand Required',
+                'products_details_list.*.product_id.required' => 'Product Required',
+                'products_details_list.*.imei_number.required' => 'Imei Number Required',
+                'products_details_list.*.imei_number.unique' => 'This IMEI Number Already taken',
+                'products_details_list.*.product_color.required' => 'Color Required',
+                'products_details_list.*.unit_price.required' => 'Unit Price Required',
+                'products_details_list.*.gst.required' => 'GST Required',
+                'products_details_list.*.total_price.required' => 'Total Price Required',
+            ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $inventory = Inventory::firstOrCreate(
+                ['invoice_number' => $request->invoice_number],
+                ['supplier_id' => $request->supplier_id]
+            );
+
+            $filtered_imei_numbers = collect($request->products_details_list)->filter(function ($item) {
+                return $item['imei_number'] != null;
+            })->values()->toArray();
+
+            // Inventory_imei_records to be saved
+            $inventory_imei_records = [];
+            foreach ($request->products_details_list as $products_details) {
+                if (!empty($products_details['imei_number'])) {
+                    $inventory_imei_records[] = [
+                        'inventory_product_id' => $inventory->id,
+                        'imei_number' => $products_details['imei_number'],
+                        'branch_id' => 1,
+                        'product_id' => $products_details['product_id'],
+                        'product_color' => $products_details['product_id'],
+                        'unit_price' => $products_details['product_id'],
+                        'gst' => $products_details['product_id'],
+                        'total_price' => $products_details['total_price'],
+                        'received_from' => null,
+                        'received_at' => null,
+                        'created_at' => now(),
+                    ];
+                }
+            }
+            $imeiEntry = InventoryProductDetail::insert($inventory_imei_records);
+
+            if ($imeiEntry) {
+                $imeiEntryIds = InventoryProductDetail::orderBy('id', 'desc')->take(count($inventory_imei_records))
+                    ->pluck('id')->toArray();
+
+                $auth_user = Auth::user();
+                $user_id = $auth_user->id;
+                $user_name = $auth_user->name;
+                $txn_histories = [];
+                $imeiEntryIds = array_reverse($imeiEntryIds);
+                foreach ($imeiEntryIds as $imeiEntryId) {
+                    $txn_histories[] = [
+                        'inventory_product_detail_id' => $imeiEntryId,
+                        'txn_details' => "stock added to warehouse by " . $user_name,
+                        'txn_by' => $user_id,
+                        'created_at' => now()
+                    ];
+                }
+                $imeiTxnLog = InventoryProductDetailTxnHistory::insert($txn_histories);
+            }
+            DB::commit();
+            return response()->json(['status' => 'success'], 200);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json(['status' => 'false', 'msg' => $e->getMessage()], 400);
+        }
+    }
+
+    public function addInventory(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'invoice_number' => 'required',
+            'supplier_id' => 'required',
+            'brand_id' => 'required',
+            'product_id' => 'required',
+            'product_qty' => 'required',
+            'purchase_price' => 'required',
+            'product_serial_numbers.*.imei_number' => 'required|unique:inventory_product_details',
+            'product_serial_numbers.*.product_color' => 'required',
+            'product_serial_numbers.*.unit_price' => 'required',
+            'product_serial_numbers.*.gst' => 'required',
+            'product_serial_numbers.*.total_price' => 'required',
+        ],
+            [
+                'product_serial_numbers.*.imei_number.required' => 'Imei Number Required',
+                'product_serial_numbers.*.imei_number.unique' => 'This IMEI Number Already taken',
+                'product_serial_numbers.*.product_color.required' => 'Color Required',
+                'product_serial_numbers.*.unit_price.required' => 'Unit Price Required',
+                'product_serial_numbers.*.gst.required' => 'GST Required',
+                'product_serial_numbers.*.total_price.required' => 'Total Price Required',
+
+            ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        dd($request->all());
+
+        try {
+            DB::beginTransaction();
+
+            $inventory = Inventory::firstOrCreate(
+                ['invoice_number' => $request->invoice_number],
+                ['supplier_id' => $request->supplier_id]
+            );
+
+            $filtered_imei_numbers = collect($request->product_serial_numbers)->filter(function ($item) {
+                return $item['imei_number'] != null;
+            })->values()->toArray();
+
+            $inventoryProduct = new InventoryProduct();
+            $inventoryProduct->inventory_id = $inventory->id;
+            $inventoryProduct->product_id = $request->product_id;
+            $inventoryProduct->inventory_product_qty = ($request->product_qty != count($filtered_imei_numbers)) ? count
+            ($filtered_imei_numbers) : $request->product_qty;
+            $inventoryProduct->purchase_price_per_qty = $request->purchase_price;
+            $inventoryProduct->save();
+
+            // Inventory_imei_records to be saved
+            $inventory_imei_records = [];
+            foreach ($request->product_serial_numbers as $product_serial_number) {
+                if (!empty($product_serial_number['imei_number'])) {
+                    $inventory_imei_records[] = [
+                        'inventory_product_id' => $inventoryProduct->id,
+                        'imei_number' => $product_serial_number['imei_number'],
+                        'branch_id' => 1,
+                        'product_id' => $request->product_id,
+                        'received_from' => null,
+                        'received_at' => null,
+                        'created_at' => now(),
+                    ];
+                }
+            }
+            $imeiEntry = InventoryProductDetail::insert($inventory_imei_records);
+
+            if ($imeiEntry) {
+                $imeiEntryIds = InventoryProductDetail::orderBy('id', 'desc')->take(count($inventory_imei_records))
+                    ->pluck('id')->toArray();
+
+                $auth_user = Auth::user();
+                $user_id = $auth_user->id;
+                $user_name = $auth_user->name;
+                $txn_histories = [];
+                $imeiEntryIds = array_reverse($imeiEntryIds);
+                foreach ($imeiEntryIds as $imeiEntryId) {
+                    $txn_histories[] = [
+                        'inventory_product_detail_id' => $imeiEntryId,
+                        'txn_details' => "stock added to warehouse by " . $user_name,
+                        'txn_by' => $user_id,
+                        'created_at' => now()
+                    ];
+                }
+                $imeiTxnLog = InventoryProductDetailTxnHistory::insert($txn_histories);
+            }
+            DB::commit();
+            return response()->json(['status' => 'success'], 200);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json(['status' => 'false', 'msg' => $e->getMessage()], 400);
+        }
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

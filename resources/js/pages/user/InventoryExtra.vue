@@ -38,43 +38,9 @@
                     <div class="row mb-2 pb-2 pt-2" style="background-color: #efe9e9a6; border-radius: 4px;">
                         <div class="col">
                             <div class="row">
-                                <!-- Brand -->
-                                <div class="col-sm-3 form-group"
-                                     v-bind:class="{ 'has-error': has_error && errors.brand_id }">
-                                    <label for="brand_id">Brand Name</label>
-                                    <select @change="onBrandChange($event)" class="form-control custom-select"
-                                            id="brand_id"
-                                            v-model="inventory.brand_id">
-                                        <option disabled selected value="">Select Brand</option>
-                                        <option :key="brand.id" :value="brand.id"
-                                                class="list-group-item"
-                                                v-for="(brand, index) in brands">{{brand.brand_name}}
-                                        </option>
-                                    </select>
-                                    <span class="help-block"
-                                          v-if="has_error && errors.brand_id">Brand Required</span>
-                                </div>
-
-                                <!-- Product Name -->
-                                <div class="col-sm-7 form-group"
-                                     v-bind:class="{ 'has-error': has_error && errors.product_id }">
-                                    <label for="product_id">Product Name</label>
-                                    <select class="form-control custom-select" id="product_id"
-                                            v-model="inventory.product_id">
-                                        <option disabled selected value="">Select Product</option>
-                                        <option :key="product.id" :value="product.id"
-                                                class="list-group-item" v-for="(product, index) in products">
-                                            {{product.product_name}}
-                                        </option>
-                                    </select>
-                                    <span class="help-block"
-                                          v-if="has_error && errors.product_id">Product
-                                        Required</span>
-                                </div>
-
                                 <!-- Product Qty -->
-                                <div class="col-sm-2 form-group" v-bind:class="{ 'has-error': has_error && errors.product_qty
-                         }">
+                                <div class="col-sm-2 form-group"
+                                     v-bind:class="{ 'has-error': has_error && errors.product_qty }">
                                     <label for="product_qty">Product Qty</label>
                                     <input @keypress="isNumber($event)" class="form-control" id="product_qty" min="1"
                                            placeholder="Product Qty"
@@ -84,17 +50,20 @@
                                           v-if="has_error && errors.product_qty">{{ errors.product_qty[0] }}</span>
                                 </div>
                             </div>
+
                             <!-- Product Details -->
                             <div class="table-responsive-sm">
                                 <table class="table">
                                     <thead>
                                     <tr>
-                                        <th class="center">#</th>
-                                        <th>IMEI Number</th>
-                                        <th>Item Color</th>
-                                        <th class="right">Unit Rate</th>
-                                        <th class="center">GST</th>
-                                        <th class="right">Total Price</th>
+                                        <th>#</th>
+                                        <th style="width: 150px;">Brand</th>
+                                        <th style="width: 250px;">Product</th>
+                                        <th style="width: 150px;">Item Color</th>
+                                        <th style="width: auto;">IMEI Number</th>
+                                        <th style="width: 150px;">Unit Rate</th>
+                                        <th style="width: 150px;">GST</th>
+                                        <th style="width: 150px;">Total Price</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -102,54 +71,88 @@
                                         v-if="inventory.products_details_list.length > 0">
 
                                         <!-- Serial No. -->
-                                        <td class="center">{{index + 1}}</td>
+                                        <td>{{index + 1}}</td>
 
-                                        <!-- IMEI Number -->
-                                        <td class="left">
-                                            <input class="form-control" placeholder="Type or Scan IMEI" type="number"
-                                                   v-bind:id="index"
-                                                   v-model="imei.imei_number" v-on:blur="chckImei"
-                                                   v-on:keydown.enter.prevent='addInventory'>
+                                        <!-- Brand Name -->
+                                        <td style="width: 150px;">
+                                            <select @change="onBrandChange($event,index)"
+                                                    class="form-control custom-select"
+                                                    id="brand_id"
+                                                    v-model="imei.brand_id">
+                                                <option disabled selected value="">Select Brand</option>
+                                                <option :key="brand.id" :value="brand.id"
+                                                        class="list-group-item"
+                                                        v-for="(brand, index) in brands">{{brand.brand_name}}
+                                                </option>
+                                            </select>
                                             <span class="help-block"
-                                                  v-if="has_error && errors['products_details_list.'+index+'.imei_number']">{{errors['products_details_list.'+index+'.imei_number'][0]}}
-                                    </span>
+                                                  v-if="has_error && errors['products_details_list.'+index+'.brand_id']">{{errors['products_details_list.'+index+'.brand_id'][0]}}
+                                            </span>
+                                        </td>
+
+                                        <!-- Product Name -->
+                                        <td style="width: 250px;">
+                                            <select class="form-control custom-select" id="product_id"
+                                                    v-model="imei.product_id">
+                                                <option disabled selected value="">Select Product</option>
+                                                <option :key="product.id" :value="product.id"
+                                                        class="list-group-item" v-for="(product, index) in
+                                                        imei.products_in_brand">
+                                                    {{product.product_name}}
+                                                </option>
+                                            </select>
+                                            <span class="help-block"
+                                                  v-if="has_error && errors['products_details_list.'+index+'.product_id']">{{errors['products_details_list.'+index+'.product_id'][0]}}
+                                            </span>
                                         </td>
 
                                         <!-- Product Color -->
-                                        <td class="left strong">
+                                        <td style="width: 150px;">
                                             <input class="form-control" placeholder="Product Color" type="text"
                                                    v-bind:id="index"
                                                    v-model="imei.product_color">
                                             <span class="help-block"
                                                   v-if="has_error && errors['products_details_list.'+index+'.product_color']">{{errors['products_details_list.'+index+'.product_color'][0]}}
-                                    </span>
+                                            </span>
+                                        </td>
+
+                                        <!-- IMEI Number -->
+                                        <td style="width: auto;">
+                                            <input class="form-control" placeholder="Type or Scan IMEI" type="text"
+                                                   v-bind:id="index"
+                                                   v-model="imei.imei_number" v-on:blur="checkImei"
+                                                   v-on:keydown.enter.prevent='addInventory'>
+                                            <span class="help-block"
+                                                  v-if="has_error && errors['products_details_list.'+index+'.imei_number']">{{errors['products_details_list.'+index+'.imei_number'][0]}}
+                                            </span>
                                         </td>
 
                                         <!-- Unit Price -->
-                                        <td class="left">
+                                        <td style="width: 150px;">
                                             <input class="form-control" placeholder="Unit Price" type="number"
                                                    v-bind:id="index"
-                                                   v-model="imei.unit_price">
+                                                   v-model="imei.unit_price" v-on:input="onPriceChange($event, index)">
                                             <span class="help-block"
                                                   v-if="has_error && errors['products_details_list.'+index+'.unit_price']">{{errors['products_details_list.'+index+'.unit_price'][0]}}
-                                    </span>
+                                            </span>
                                         </td>
 
                                         <!-- GST -->
-                                        <td class="right">
+                                        <td style="width: 150px;">
                                             <input class="form-control" placeholder="GST" type="number"
                                                    v-bind:id="index"
-                                                   v-model="imei.gst">
+                                                   v-model="imei.gst" v-on:input="onPriceChange($event, index)">
                                             <span class="help-block"
                                                   v-if="has_error && errors['products_details_list.'+index+'.gst']">{{errors['products_details_list.'+index+'.gst'][0]}}
-                                    </span>
+                                            </span>
                                         </td>
 
                                         <!-- Total Price -->
-                                        <td class="right">
-                                            <input class="form-control" placeholder="Total Price" type="number"
-                                                   v-bind:id="index"
-                                                   v-model="imei.total_price">
+                                        <td style="width: 150px;">
+                                            <input class="form-control" placeholder="Total Price" readonly
+                                                   type="number"
+                                                   v-bind:id="index" v-model="imei.total_price" v-on:input="onPriceChange($event,
+                                                   index)">
                                             <span class="help-block"
                                                   v-if="has_error && errors['products_details_list.'+index+'.total_price']">{{errors['products_details_list.'+index+'.total_price'][0]}}
                                     </span>
@@ -163,7 +166,6 @@
                     <button class="btn btn-primary" type="submit">Submit</button>
                 </form>
 
-
                 <!-- Footer -->
                 <div class="row">
                     <div class="col-lg-4 col-sm-5">
@@ -175,26 +177,20 @@
                                 <td class="left">
                                     <strong>Subtotal</strong>
                                 </td>
-                                <td class="right">$8.497,00</td>
+                                <td class="right">{{inventory.total_unit_price}}</td>
                             </tr>
                             <tr>
                                 <td class="left">
-                                    <strong>Discount (20%)</strong>
+                                    <strong>GST</strong>
                                 </td>
-                                <td class="right">$1,699,40</td>
-                            </tr>
-                            <tr>
-                                <td class="left">
-                                    <strong>VAT (10%)</strong>
-                                </td>
-                                <td class="right">$679,76</td>
+                                <td class="right">{{inventory.total_gst}}</td>
                             </tr>
                             <tr>
                                 <td class="left">
                                     <strong>Total</strong>
                                 </td>
                                 <td class="right">
-                                    <strong>$7.477,36</strong>
+                                    <strong>{{inventory.total_price}}</strong>
                                 </td>
                             </tr>
                             </tbody>
@@ -214,9 +210,10 @@
                 inventory: {
                     invoice_number: '',
                     supplier_id: '',
-                    brand_id: '',
-                    product_id: '',
-                    product_qty: '',
+                    product_qty: 1,
+                    total_unit_price: '',
+                    total_gst: '',
+                    total_price: '',
                     products_details_list: []
                 },
                 has_error: false,
@@ -232,6 +229,16 @@
             this.fetchSuppliers();
             this.fetchBrands();
             // this.fetchProductsByBrand(6);
+            this.inventory.products_details_list.push({
+                brand_id: '',
+                product_id: '',
+                imei_number: '',
+                product_color: '',
+                unit_price: '',
+                gst: '',
+                total_price: '',
+                products_in_brand: []
+            });
         },
         methods: {
             isNumber: function (evt) {
@@ -246,14 +253,23 @@
             },
             addIMEI: function (nos) {
                 let filteredNonEmptyIMEI = this.inventory.products_details_list.filter(function (element, index, arr) {
-                    return element.imei_number != '';
+                    if (element.brand_id != '' || element.product_id != '' || element.imei_number != '' || element.product_color != '' || element.unit_price != '' || element.gst != '' || element.total_price != '') {
+                        return element;
+                    }
                 });
                 this.inventory.products_details_list = filteredNonEmptyIMEI;
 
                 let totalNonEmptyIMEI = nos - (this.inventory.products_details_list).length;
                 for (let i = 0; i < totalNonEmptyIMEI; i++) {
                     this.inventory.products_details_list.push({
-                        imei_number: '', product_color: '', unit_price: '', gst: '', total_price: ''
+                        brand_id: '',
+                        product_id: '',
+                        imei_number: '',
+                        product_color: '',
+                        unit_price: '',
+                        gst: '',
+                        total_price: '',
+                        products_in_brand: []
                     });
                 }
             },
@@ -277,9 +293,9 @@
                     })
                     .catch((err) => console.error(err));
             },
-            onBrandChange(event) {
-                console.log(event.target.value)
-                this.fetchProductsByBrand(event.target.value);
+            onBrandChange(event, index) {
+                // console.log(event.target.value)
+                this.fetchProductsByBrand(event.target.value, index);
             },
             onProductQtyChange(event) {
                 if (event.target.value > 100) {
@@ -289,11 +305,10 @@
                 this.addIMEI(event.target.value);
                 // this.fetchProductsByBrand(event.target.value);
             },
-            fetchProductsByBrand(brandId) {
+            fetchProductsByBrand(brandId, index) {
                 axios.get(window.base_url + '/api/v1/auth/fetchProductsByBrand/' + brandId)
                     .then(response => {
-                        this.products = response.data.data;
-                        console.log(this.products);
+                        this.inventory.products_details_list[index].products_in_brand = response.data.data;
                     })
                     .catch((err) => console.error(err));
             },
@@ -315,7 +330,7 @@
                     return valueArr.indexOf(item) != idx
                 });
                 if (isDuplicate) {
-                    Vue.$toast.error("Duplicate IMEI Numbered");
+                    Vue.$toast.error("Duplicate IMEI Number Found..");
                     return false;
                 }
 
@@ -331,7 +346,7 @@
                 var app = this;
                 app.has_error = false;
                 app.errors = {};
-                axios.post(window.base_url + '/api/v1/auth/addInventoryNew', this.inventory)
+                axios.post(window.base_url + '/api/v1/auth/addInventoryExtra', this.inventory)
                     .then(response => {
                         if (response.data.status === 'success') {
                             Vue.$toast.success("Product Stock Added Successfully");
@@ -350,7 +365,7 @@
                         app.errors = res.response.data.errors || {};
                     });
             },
-            chckImei(event) {
+            checkImei(event) {
                 var valueArr = this.inventory.products_details_list.filter(el => el.imei_number != "").map(function
                     (item) {
                     if (item.imei_number != '') {
@@ -378,6 +393,34 @@
             onBillNoChange(event) {
                 console.log(event.target.value);
             },
+            onPriceChange(event, index) {
+                this.inventory.total_unit_price = this.inventory.products_details_list.map(t => t.unit_price).reduce((previous, current) => {
+                    return parseFloat(previous) + parseFloat(current == '' ? 0 : current);
+                }, 0);
+
+                this.inventory.total_gst = this.inventory.products_details_list.map(t => t.gst).reduce((previous, current) => {
+                    return parseFloat(previous) + parseFloat(current == '' ? 0 : current);
+                }, 0);
+
+                this.inventory.total_price =
+                    this.inventory.products_details_list.map(t => t).reduce((previous, current) => {
+                        let tot = parseFloat(current.gst == '' ? 0 : current.gst) + parseFloat(current.unit_price ==
+                        '' ? 0 : current.unit_price);
+                        return parseFloat(previous) + parseFloat(tot);
+                    }, 0);
+
+                return this.inventory.products_details_list.map((element) => {
+                    element.brand_id = element.brand_id;
+                    element.product_id = element.product_id;
+                    element.imei_number = element.imei_number;
+                    element.product_color = element.product_color;
+                    element.unit_price = element.unit_price;
+                    element.gst = element.gst;
+                    element.total_price = parseFloat(element.unit_price == '' ? 0 :
+                        element.unit_price) + parseFloat(element.gst == '' ? 0 :
+                        element.gst);
+                });
+            }
         },
         components: {
             //

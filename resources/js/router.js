@@ -15,6 +15,7 @@ import ManageUser from "./pages/user/ManageUser";
 import IMEISalesDetails from "./pages/user/IMEISalesDetails";
 import ProductStockDetails from "./pages/user/ProductStockDetails";
 import Inventory from "./pages/user/Inventory";
+import InventoryExtra from "./pages/user/InventoryExtra";
 
 // Routes
 const routes = [
@@ -157,6 +158,19 @@ const routes = [
         path: '/inventory',
         name: 'inventory',
         component: Inventory,
+        meta: {
+            // auth: true,
+            auth: {
+                roles: 'admin',
+                redirect: { name: 'admin' },
+                forbiddenRedirect: '/admin/403'
+            }
+        }
+    },
+    {
+        path: '/inventoryExtra',
+        name: 'inventoryExtra',
+        component: InventoryExtra,
         meta: {
             // auth: true,
             auth: {
