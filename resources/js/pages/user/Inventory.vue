@@ -160,49 +160,10 @@
                             </div>
                         </div>
                     </div>
-                    <button class="btn btn-primary" type="submit">Submit</button>
+                    <div class="row">
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                    </div>
                 </form>
-
-
-                <!-- Footer -->
-                <div class="row">
-                    <div class="col-lg-4 col-sm-5">
-                    </div>
-                    <div class="col-lg-4 col-sm-5 ml-auto">
-                        <table class="table table-clear">
-                            <tbody>
-                            <tr>
-                                <td class="left">
-                                    <strong>Subtotal</strong>
-                                </td>
-                                <td class="right">$8.497,00</td>
-                            </tr>
-                            <tr>
-                                <td class="left">
-                                    <strong>Discount (20%)</strong>
-                                </td>
-                                <td class="right">$1,699,40</td>
-                            </tr>
-                            <tr>
-                                <td class="left">
-                                    <strong>VAT (10%)</strong>
-                                </td>
-                                <td class="right">$679,76</td>
-                            </tr>
-                            <tr>
-                                <td class="left">
-                                    <strong>Total</strong>
-                                </td>
-                                <td class="right">
-                                    <strong>$7.477,36</strong>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
@@ -232,6 +193,9 @@
             this.fetchSuppliers();
             this.fetchBrands();
             // this.fetchProductsByBrand(6);
+            this.inventory.products_details_list.push({
+                imei_number: '', product_color: '', unit_price: '', gst: '', total_price: ''
+            });
         },
         methods: {
             isNumber: function (evt) {

@@ -8,7 +8,6 @@
       <change beforePath="$PROJECT_DIR$/resources/js/pages/user/Dashboard.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/Dashboard.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/js/pages/user/Inventory.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/user/Inventory.vue" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/js/router.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/router.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -208,7 +207,9 @@
       <workItem from="1565239979691" duration="32006000" />
       <workItem from="1565336440668" duration="13750000" />
       <workItem from="1565412980685" duration="20265000" />
-      <workItem from="1565584904900" duration="22292000" />
+      <workItem from="1565584904900" duration="23178000" />
+      <workItem from="1565616788023" duration="35000" />
+      <workItem from="1565669711450" duration="12864000" />
     </task>
     <servers />
   </component>

@@ -3487,14 +3487,11 @@ __webpack_require__.r(__webpack_exports__);
           name: "Products",
           path: "product"
         }, {
-          name: "Add Inventory",
+          name: "Inventory Old",
           path: "addinventory"
         }, {
-          name: "New Inventory",
+          name: "Inventory New",
           path: "inventory"
-        }, {
-          name: "Extra Inventory",
-          path: "inventoryExtra"
         }, {
           name: "IMEI Stock By Location",
           path: "imeistockdetail"
@@ -4170,45 +4167,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -4232,6 +4190,14 @@ __webpack_require__.r(__webpack_exports__);
   created: function created() {
     this.fetchSuppliers();
     this.fetchBrands(); // this.fetchProductsByBrand(6);
+
+    this.inventory.products_details_list.push({
+      imei_number: '',
+      product_color: '',
+      unit_price: '',
+      gst: '',
+      total_price: ''
+    });
   },
   methods: {
     isNumber: function isNumber(evt) {
@@ -64377,16 +64343,10 @@ var render = function() {
                   ]
                 ),
                 _vm._v(" "),
-                _c(
-                  "button",
-                  { staticClass: "btn btn-primary", attrs: { type: "submit" } },
-                  [_vm._v("Submit")]
-                )
+                _vm._m(1)
               ]
             )
-          : _vm._e(),
-        _vm._v(" "),
-        _vm._m(1)
+          : _vm._e()
       ])
     ])
   ])
@@ -64417,47 +64377,11 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "col-lg-4 col-sm-5" }),
-      _vm._v(" "),
-      _c("div", { staticClass: "col-lg-4 col-sm-5 ml-auto" }, [
-        _c("table", { staticClass: "table table-clear" }, [
-          _c("tbody", [
-            _c("tr", [
-              _c("td", { staticClass: "left" }, [
-                _c("strong", [_vm._v("Subtotal")])
-              ]),
-              _vm._v(" "),
-              _c("td", { staticClass: "right" }, [_vm._v("$8.497,00")])
-            ]),
-            _vm._v(" "),
-            _c("tr", [
-              _c("td", { staticClass: "left" }, [
-                _c("strong", [_vm._v("Discount (20%)")])
-              ]),
-              _vm._v(" "),
-              _c("td", { staticClass: "right" }, [_vm._v("$1,699,40")])
-            ]),
-            _vm._v(" "),
-            _c("tr", [
-              _c("td", { staticClass: "left" }, [
-                _c("strong", [_vm._v("VAT (10%)")])
-              ]),
-              _vm._v(" "),
-              _c("td", { staticClass: "right" }, [_vm._v("$679,76")])
-            ]),
-            _vm._v(" "),
-            _c("tr", [
-              _c("td", { staticClass: "left" }, [
-                _c("strong", [_vm._v("Total")])
-              ]),
-              _vm._v(" "),
-              _c("td", { staticClass: "right" }, [
-                _c("strong", [_vm._v("$7.477,36")])
-              ])
-            ])
-          ])
-        ])
-      ])
+      _c(
+        "button",
+        { staticClass: "btn btn-primary", attrs: { type: "submit" } },
+        [_vm._v("Submit")]
+      )
     ])
   }
 ]
@@ -88685,20 +88609,6 @@ var routes = [{
 }, {
   path: '/inventory',
   name: 'inventory',
-  component: _pages_user_Inventory__WEBPACK_IMPORTED_MODULE_13__["default"],
-  meta: {
-    // auth: true,
-    auth: {
-      roles: 'admin',
-      redirect: {
-        name: 'admin'
-      },
-      forbiddenRedirect: '/admin/403'
-    }
-  }
-}, {
-  path: '/inventoryExtra',
-  name: 'inventoryExtra',
   component: _pages_user_InventoryExtra__WEBPACK_IMPORTED_MODULE_14__["default"],
   meta: {
     // auth: true,

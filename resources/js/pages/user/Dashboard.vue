@@ -26,9 +26,8 @@
                         {name: "Suppliers", path: "supplier"},
                         {name: "Brands", path: "brand"},
                         {name: "Products", path: "product"},
-                        {name: "Add Inventory", path: "addinventory"},
-                        {name: "New Inventory", path: "inventory"},
-                        {name: "Extra Inventory", path: "inventoryExtra"},
+                        {name: "Inventory Old", path: "addinventory"},
+                        {name: "Inventory New", path: "inventory"},
                         {name: "IMEI Stock By Location", path: "imeistockdetail"},
                         {name: "IMEI Sales By Location", path: "imeisalesdetail"},
                         {name: "Product Stock Details", path: "productstockdetail"}

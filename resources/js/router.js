@@ -157,19 +157,6 @@ const routes = [
     {
         path: '/inventory',
         name: 'inventory',
-        component: Inventory,
-        meta: {
-            // auth: true,
-            auth: {
-                roles: 'admin',
-                redirect: { name: 'admin' },
-                forbiddenRedirect: '/admin/403'
-            }
-        }
-    },
-    {
-        path: '/inventoryExtra',
-        name: 'inventoryExtra',
         component: InventoryExtra,
         meta: {
             // auth: true,
