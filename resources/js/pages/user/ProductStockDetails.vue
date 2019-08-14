@@ -45,6 +45,8 @@
                     <tr>
                         <th>Product Name</th>
                         <th>Available Stock</th>
+                        <th>Stock Value without GST</th>
+                        <th>Stock Value with GST</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -60,6 +62,8 @@
                         <td>{{stocksDetail
                             .available_stock}}
                         </td>
+                        <td>&#8377; {{stocksDetail.total_wo_gst}}</td>
+                        <td>&#8377; {{stocksDetail.total_w_gst}}</td>
                     </tr>
                     </tbody>
                 </table>

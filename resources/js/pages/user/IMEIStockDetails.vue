@@ -45,7 +45,23 @@
             <button @click.prevent="exportData" class="btn btn-sm btn-outline-secondary">Export As Excel</button>
         </div>
 
-        <input class="form-control w-25" placeholder="Filter By IMEI / Bill" type="search" v-model="searchStock">
+        <div class="row justify-content-left mt-5 mr-2">
+            <div class="col-sm-6 col-md-3">
+                <select @change="onBrandChange($event)" class="form-control" id="brand_id"
+                        v-model="activeBrand">
+                    <option selected value="0">All</option>
+                    <option :key="brand.id" :value="brand.id" class="list-group-item"
+                            v-for="(brand, index) in brands">{{brand.brand_name}}
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-sm-6 col-md-3">
+                <input class="form-control" placeholder="Filter By IMEI / Bill" type="search"
+                       v-model="searchStock">
+            </div>
+        </div>
+
         <!-- Stock Details -->
         <div class="row justify-content-center mt-3">
             <div class="col-12">
@@ -80,7 +96,7 @@
                         <td>{{stocksDetail.supplier_name}}
                         </td>
                         <td>{{stocksDetail.brand_name}} -
-                            {{stocksDetail.product_name}}
+                            {{stocksDetail.product_name}} - {{stocksDetail.product_color}}
                         </td>
                         <td>{{stocksDetail.branch_location}}
                         </td>
@@ -129,19 +145,32 @@
                 request_source: '',
                 imeiTxnLogs: [],
                 searchStock: '',
+                activeBrand: 0,
+                brands: []
             }
         },
         created() {
             this.fetchBranches();
             this.fetchProducts(0);
+            this.fetchBrands();
         },
         computed: {
             filterStocks() {
-                return this.stocksDetails.filter(stock => {
-                    return !this.searchStock.trim() || stock.imei_number.indexOf(this.searchStock.trim()) > -1 ||
-                        stock.invoice_number.toLowerCase().indexOf(this.searchStock.toLowerCase().trim()) > -1
-                    // return client.imei_number.indexOf(this.searchClient) > -1;
-                });
+                if (this.activeBrand == 0) {
+                    return this.stocksDetails.filter(stock => {
+                        return !this.searchStock.trim() || stock.imei_number.indexOf(this.searchStock.trim()) > -1 ||
+                            stock.invoice_number.toLowerCase().indexOf(this.searchStock.toLowerCase().trim()) > -1
+                        // return client.imei_number.indexOf(this.searchClient) > -1;
+                    });
+                } else if (this.activeBrand > 0) {
+                    return this.stocksDetails.filter(stock => {
+                        return (!this.searchStock.trim() || stock.imei_number.indexOf(this.searchStock.trim()) > -1 ||
+                            stock.invoice_number.toLowerCase().indexOf(this.searchStock.toLowerCase().trim()) > -1) &&
+                            stock.brand_id == this.activeBrand;
+
+                        // return client.imei_number.indexOf(this.searchClient) > -1;
+                    });
+                }
             }
         },
         methods: {
@@ -167,11 +196,26 @@
                     }
                 }
             },
+            onBrandChange(event) {
+                console.log(event.target.value);
+                // return this.stockSalesDetails.filter(stock => {
+                //     return stock.brand_id == event.target.value;
+                //     // return client.imei_number.indexOf(this.searchClient) > -1;
+                // });
+            },
             fetchBranches() {
                 axios.get(window.base_url + '/api/v1/auth/fetchBranches')
                     .then(response => {
                         this.branches = response.data.data;
                         console.log(this.branches);
+                    })
+                    .catch((err) => console.error(err));
+            },
+            fetchBrands() {
+                axios.get(window.base_url + '/api/v1/auth/fetchBrands')
+                    .then(response => {
+                        this.brands = response.data.data;
+                        console.log(this.brands);
                     })
                     .catch((err) => console.error(err));
             },

@@ -50,7 +50,7 @@ class ProductController extends Controller
                 ->join('brands', function ($join) {
                     $join->on('products.brand_id', '=', 'brands.id');
                 })
-                ->select('products.id', 'brands.brand_name', 'products.product_name', DB::raw("IFNULL(sum(inventory_product_details.imei_qty),0) as available_stock"))
+                ->select('products.id', 'brands.brand_name', 'products.product_name', DB::raw("IFNULL(sum(inventory_product_details.imei_qty),0) as available_stock"), DB::raw("IFNULL(sum(inventory_product_details.unit_price),0) as total_wo_gst"), DB::raw("IFNULL(sum(inventory_product_details.total_price),0) as total_w_gst"))
                 ->groupBy('products.id')
                 ->get();
             return $data;
@@ -68,7 +68,7 @@ class ProductController extends Controller
                 ->join('brands', function ($join) {
                     $join->on('products.brand_id', '=', 'brands.id');
                 })
-                ->select('products.id', 'brands.brand_name', 'products.product_name', DB::raw("IFNULL(sum(inventory_product_details.imei_qty),0) as available_stock"))
+                ->select('products.id', 'brands.brand_name', 'products.product_name', DB::raw("IFNULL(sum(inventory_product_details.imei_qty),0) as available_stock"), DB::raw("IFNULL(sum(inventory_product_details.unit_price),0) as total_wo_gst"), DB::raw("IFNULL(sum(inventory_product_details.total_price),0) as total_w_gst"))
                 ->groupBy('products.id')
                 ->get();
             return $data;
@@ -99,7 +99,7 @@ class ProductController extends Controller
                 ->join('brands', function ($join) {
                     $join->on('products.brand_id', '=', 'brands.id');
                 })
-                ->select('products.id', 'brands.brand_name', 'products.product_name', DB::raw("IFNULL(sum(inventory_product_details.imei_qty),0) as available_stock"))
+                ->select('products.id', 'brands.brand_name', 'products.product_name', DB::raw("IFNULL(sum(inventory_product_details.imei_qty),0) as available_stock"), DB::raw("IFNULL(sum(inventory_product_details.unit_price),0) as total_wo_gst"), DB::raw("IFNULL(sum(inventory_product_details.total_price),0) as total_w_gst"))
                 ->groupBy('products.id')
                 ->get()->toArray();
 
@@ -108,7 +108,7 @@ class ProductController extends Controller
                 $brand = Brand::where('id', $brand_id)->first();
                 $brandName = $brand->brand_name;
             }
-            return Excel::download(new StockExport($data, [[$brandName . ' Stock Report - All Branch'], [date('d-M-Y')], [], ['Product Name', 'Available Stock']]), 'stock.xlsx');
+            return Excel::download(new StockExport($data, [[$brandName . ' Stock Report - All Branch'], [date('d-M-Y')], [], ['Product Name', 'Available Stock', 'Stock Value Without GST', 'Stock Value with GST']]), 'stock.xlsx');
 
         } else if ($branch_id > 0) {
             $data = DB::table('products')
@@ -123,7 +123,7 @@ class ProductController extends Controller
                 ->join('brands', function ($join) {
                     $join->on('products.brand_id', '=', 'brands.id');
                 })
-                ->select('products.id', 'brands.brand_name', 'products.product_name', DB::raw("IFNULL(sum(inventory_product_details.imei_qty),0) as available_stock"))
+                ->select('products.id', 'brands.brand_name', 'products.product_name', DB::raw("IFNULL(sum(inventory_product_details.imei_qty),0) as available_stock"), DB::raw("IFNULL(sum(inventory_product_details.unit_price),0) as total_wo_gst"), DB::raw("IFNULL(sum(inventory_product_details.total_price),0) as total_w_gst"))
                 ->groupBy('products.id')
                 ->get()->toArray();
 
@@ -134,7 +134,7 @@ class ProductController extends Controller
                 $brandName = $brand->brand_name;
             }
 
-            return Excel::download(new StockExport($data, [[$brandName . ' Stock Report - ' . $branch->branch_name . ' ' . $branch->branch_location], [date('d-M-Y')], [], ['Product Name', 'Available Stock']]), 'stock.xlsx');
+            return Excel::download(new StockExport($data, [[$brandName . ' Stock Report - ' . $branch->branch_name . ' ' . $branch->branch_location], [date('d-M-Y')], [], ['Product Name', 'Available Stock', 'Stock Value Without GST', 'Stock Value with GST']]), 'stock.xlsx');
         }
     }
 

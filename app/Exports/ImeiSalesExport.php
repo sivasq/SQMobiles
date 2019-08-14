@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Events\AfterSheet;
 use Maatwebsite\Excel\Sheet;
 
-class StockExport implements FromArray, WithHeadings, WithMapping, ShouldAutoSize, WithEvents
+class ImeiSalesExport implements FromArray, WithMapping, WithHeadings, ShouldAutoSize, WithEvents
 {
     protected $bodyContents;
     protected $headings;
@@ -34,10 +34,14 @@ class StockExport implements FromArray, WithHeadings, WithMapping, ShouldAutoSiz
     public function map($product): array
     {
         return [
-            $product->brand_name . '-' . $product->product_name,
-            $product->available_stock,
-            $product->total_wo_gst,
-            $product->total_w_gst,
+            $product->imei_number,
+            $product->product_color,
+            $product->brand_name.' '.$product->product_name,
+            $product->sales_invoice,
+            $product->sales_at,
+            $product->name,
+            $product->branch_name,
+            $product->branch_location
         ];
     }
 
@@ -53,7 +57,7 @@ class StockExport implements FromArray, WithHeadings, WithMapping, ShouldAutoSiz
                 $event->sheet->getDelegate()->setTitle('stock on ' . date('d-M-Y'));
                 $event->sheet->getDelegate()->setMergeCells(['A1:D1', 'A2:D2']);
                 $event->sheet->styleCells(
-                    'A1:D2',
+                    'A1:B2',
                     [
                         'alignment' => [
                             'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,

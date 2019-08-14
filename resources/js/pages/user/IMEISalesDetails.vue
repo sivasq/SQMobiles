@@ -22,13 +22,30 @@
             </div>
         </div>
 
-        <div class="row justify-content-left mt-5 ml-3">
-            <v-md-date-range-picker :auto-apply=false @change="handleChange" show-year-select></v-md-date-range-picker>
-
-            <input class="form-control w-35 ml-3" placeholder="Filter By IMEI / Sales Invoice" type="search"
-                   v-model="searchStock">
+        <div class="row justify-content-left mt-5 mr-2">
+            <div class="col-sm-6 col-md-3">
+                <v-md-date-range-picker :auto-apply=false @change="handleChange"
+                                        show-year-select></v-md-date-range-picker>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <input class="form-control" placeholder="Filter By IMEI / Sales Invoice" type="search"
+                       v-model="searchStock">
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <select @change="onBrandChange($event)" class="form-control" id="brand_id"
+                        v-model="activeBrand">
+                    <option selected value="0">All</option>
+                    <option :key="brand.id" :value="brand.id" class="list-group-item"
+                            v-for="(brand, index) in brands">{{brand.brand_name}}
+                    </option>
+                </select>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <button @click.prevent="exportData" class="btn btn btn-outline-secondary" style="width: 100%">Export As
+                    Excel
+                </button>
+            </div>
         </div>
-
 
         <div class="row justify-content-center mt-3">
             <div class="col-12">
@@ -50,8 +67,10 @@
                         <td align="center" colspan="6" v-if="loading"> Loading...</td>
                     </tr>
                     <tr :key="stocksDetail.id" @click.prevent="fetchImeiTxnLogs(stocksDetail.id)"
-                        v-for="(stocksDetail, index) in filterStocks">
-                        <td>{{stocksDetail.imei_number}}</td>
+                        style="cursor: pointer;" v-for="(stocksDetail, index) in filterStocks">
+                        <td style="text-decoration-line: underline; text-decoration-style: dashed; text-decoration-color: red;">
+                            {{stocksDetail.imei_number}}
+                        </td>
                         <td>{{stocksDetail.invoice_number}}</td>
                         <td>{{stocksDetail.sales_invoice}}
                         </td>
@@ -61,9 +80,9 @@
                         <td>{{stocksDetail.supplier_name}}
                         </td>
                         <td>{{stocksDetail.brand_name}} -
-                            {{stocksDetail.product_name}}
+                            {{stocksDetail.product_name}} - {{stocksDetail.product_color}}
                         </td>
-                        <td>{{stocksDetail.branch_location}}
+                        <td>{{stocksDetail.branch_name}} - {{stocksDetail.branch_location}}
                         </td>
                     </tr>
                     </tbody>
@@ -103,6 +122,7 @@
             return {
                 stockSalesDetails: [],
                 branches: [],
+                brands: [],
                 activeTab: 0,
                 loading: false,
                 request_source: '',
@@ -110,6 +130,7 @@
                 end_date: '',
                 imeiTxnLogs: [],
                 searchStock: '',
+                activeBrand: 0,
             }
         },
         // components: { DateRangePicker },
@@ -118,21 +139,64 @@
             this.end_date = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
             this.fetchBranches();
             this.fetchProducts(0);
+            this.fetchBrands();
         },
         computed: {
             filterStocks() {
-                return this.stockSalesDetails.filter(stock => {
-                    return !this.searchStock || stock.imei_number.indexOf(this.searchStock.trim()) > -1 ||
-                        stock.sales_invoice.toLowerCase().indexOf(this.searchStock.toLowerCase().trim()) > -1
-                    // return client.imei_number.indexOf(this.searchClient) > -1;
-                });
+                // console.log(this.activeBrand);
+                if (this.activeBrand == 0) {
+                    return this.stockSalesDetails.filter(stock => {
+                        return !this.searchStock || stock.imei_number.indexOf(this.searchStock.trim()) > -1 ||
+                            stock.sales_invoice.toLowerCase().indexOf(this.searchStock.toLowerCase().trim()) > -1
+
+                        // return client.imei_number.indexOf(this.searchClient) > -1;
+                    });
+                } else if (this.activeBrand > 0) {
+                    return this.stockSalesDetails.filter(stock => {
+                        return (!this.searchStock || stock.imei_number.indexOf(this.searchStock.trim()) > -1 ||
+                            stock.sales_invoice.toLowerCase().indexOf(this.searchStock.toLowerCase().trim()) > -1) &&
+                            stock.brand_id == this.activeBrand;
+
+                        // return client.imei_number.indexOf(this.searchClient) > -1;
+                    });
+                }
             }
         },
         methods: {
+            exportData() {
+                axios({
+                    url: window.base_url + '/api/v1/auth/getImeiBasedSalesDetailsExcel/' + this.activeTab,
+                    data: {'from': this.start_date, 'to': this.end_date},
+                    method: 'POST',
+                    responseType: 'blob', // important
+                }).then((response) => {
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', 'file.xlsx'); //or any other extension
+                    document.body.appendChild(link);
+                    link.click();
+                });
+            },
+            onBrandChange(event) {
+                console.log(event.target.value);
+                // return this.stockSalesDetails.filter(stock => {
+                //     return stock.brand_id == event.target.value;
+                //     // return client.imei_number.indexOf(this.searchClient) > -1;
+                // });
+            },
             handleChange(values) {
                 this.start_date = values[0].format('YYYY-MM-DD');
                 this.end_date = values[1].format('YYYY-MM-DD');
                 this.fetchProducts(this.activeTab);
+            },
+            fetchBrands() {
+                axios.get(window.base_url + '/api/v1/auth/fetchBrands')
+                    .then(response => {
+                        this.brands = response.data.data;
+                        console.log(this.brands);
+                    })
+                    .catch((err) => console.error(err));
             },
             fetchBranches() {
                 axios.get(window.base_url + '/api/v1/auth/fetchBranches')
@@ -143,6 +207,7 @@
                     .catch((err) => console.error(err));
             },
             fetchProducts(branchId) {
+                this.activeTab = branchId;
                 var CancelToken1 = axios.CancelToken;
                 var source = CancelToken1.source();
                 if (this.request_source != '')

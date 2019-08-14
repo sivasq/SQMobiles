@@ -52,18 +52,19 @@
                             </div>
 
                             <!-- Product Details -->
-                            <div class="table-responsive-sm">
-                                <table class="table">
+                            <div class="table ">
+                                <table class="table table-responsive-lg">
                                     <thead>
                                     <tr>
                                         <th>#</th>
                                         <th style="width: 150px;">Brand</th>
                                         <th style="width: 250px;">Product</th>
                                         <th style="width: 150px;">Item Color</th>
-                                        <th style="width: auto;">IMEI Number</th>
-                                        <th style="width: 150px;">Unit Rate</th>
-                                        <th style="width: 150px;">GST</th>
-                                        <th style="width: 150px;">Total Price</th>
+                                        <th style="min-width: 250px;">IMEI Number</th>
+                                        <th style="width: 150px;">Unit Rate(&#8377;)</th>
+                                        <th style="width: 100px;">GST %</th>
+                                        <th style="width: 150px; display: none;">GST</th>
+                                        <th style="width: 150px;">Total Price(&#8377;)</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -117,7 +118,7 @@
                                         </td>
 
                                         <!-- IMEI Number -->
-                                        <td style="width: auto;">
+                                        <td style="min-width: 250px;">
                                             <input class="form-control" placeholder="Type or Scan IMEI" type="text"
                                                    v-bind:id="index"
                                                    v-model="imei.imei_number" v-on:blur="checkImei"
@@ -129,17 +130,34 @@
 
                                         <!-- Unit Price -->
                                         <td style="width: 150px;">
-                                            <input class="form-control" placeholder="Unit Price" type="number"
-                                                   v-bind:id="index"
+                                            <input class="form-control" min="0" placeholder="Unit Price"
+                                                   type="number" v-bind:id="index"
                                                    v-model="imei.unit_price" v-on:input="onPriceChange($event, index)">
                                             <span class="help-block"
                                                   v-if="has_error && errors['products_details_list.'+index+'.unit_price']">{{errors['products_details_list.'+index+'.unit_price'][0]}}
                                             </span>
                                         </td>
 
-                                        <!-- GST -->
+                                        <!-- GST Percentage -->
                                         <td style="width: 150px;">
-                                            <input class="form-control" placeholder="GST" type="number"
+                                            <select @change="onPriceChange($event,index)"
+                                                    class="form-control custom-select"
+                                                    v-model="imei.gst_percentage">
+                                                <option disabled selected value="">GST</option>
+                                                <option :key="gst_percentage" :value="gst_percentage"
+                                                        class="list-group-item" v-for="(gst_percentage, index) in
+                                                        gst_percentages">
+                                                    {{gst_percentage}}
+                                                </option>
+                                            </select>
+                                            <span class="help-block"
+                                                  v-if="has_error && errors['products_details_list.'+index+'.gst_percentage']">{{errors['products_details_list.'+index+'.gst_percentage'][0]}}
+                                            </span>
+                                        </td>
+
+                                        <!-- GST -->
+                                        <td style="width: 150px; display: none;">
+                                            <input class="form-control" placeholder="GST" readonly type="number"
                                                    v-bind:id="index"
                                                    v-model="imei.gst" v-on:input="onPriceChange($event, index)">
                                             <span class="help-block"
@@ -177,20 +195,20 @@
                                 <td class="left">
                                     <strong>Subtotal</strong>
                                 </td>
-                                <td class="right">{{inventory.total_unit_price}}</td>
+                                <td class="right">&#8377; {{inventory.total_unit_price}}</td>
                             </tr>
                             <tr>
                                 <td class="left">
                                     <strong>GST</strong>
                                 </td>
-                                <td class="right">{{inventory.total_gst}}</td>
+                                <td class="right">&#8377; {{inventory.total_gst}}</td>
                             </tr>
                             <tr>
                                 <td class="left">
                                     <strong>Total</strong>
                                 </td>
                                 <td class="right">
-                                    <strong>{{inventory.total_price}}</strong>
+                                    <strong>&#8377; {{inventory.total_price}}</strong>
                                 </td>
                             </tr>
                             </tbody>
@@ -211,9 +229,9 @@
                     invoice_number: '',
                     supplier_id: '',
                     product_qty: 1,
-                    total_unit_price: '',
-                    total_gst: '',
-                    total_price: '',
+                    total_unit_price: 0,
+                    total_gst: 0,
+                    total_price: 0,
                     products_details_list: []
                 },
                 has_error: false,
@@ -223,6 +241,7 @@
                 suppliers: [],
                 brands: [],
                 products: [],
+                gst_percentages: [12, 28]
             }
         },
         created() {
@@ -236,8 +255,9 @@
                 product_color: '',
                 unit_price: '',
                 gst: '',
+                gst_percentage: '',
                 total_price: '',
-                products_in_brand: []
+                products_in_brand: [],
             });
         },
         methods: {
@@ -268,6 +288,7 @@
                         product_color: '',
                         unit_price: '',
                         gst: '',
+                        gst_percentage: '',
                         total_price: '',
                         products_in_brand: []
                     });
@@ -313,12 +334,6 @@
                     .catch((err) => console.error(err));
             },
             addInventory(event) {
-                // const found = this.inventory.products_details_list.filter(el => el.imei_number === event.target.value);
-                // if (found.length > 1) {
-                //     Vue.$toast.error("Duplicate IMEI Numbered");
-                //     return false;
-                // }
-
                 var valueArr = this.inventory.products_details_list.filter(el => el.imei_number != "").map(function
                     (item) {
                     if (item.imei_number != '') {
@@ -377,7 +392,7 @@
                     return valueArr.indexOf(item) != idx
                 });
                 if (isDuplicate) {
-                    Vue.$toast.error("Duplicate IMEI Numbered");
+                    Vue.$toast.error("Duplicate IMEI Number Found");
                     return false;
                 }
 
@@ -393,7 +408,7 @@
             onBillNoChange(event) {
                 console.log(event.target.value);
             },
-            onPriceChange(event, index) {
+            calcTotalAmount() {
                 this.inventory.total_unit_price = this.inventory.products_details_list.map(t => t.unit_price).reduce((previous, current) => {
                     return parseFloat(previous) + parseFloat(current == '' ? 0 : current);
                 }, 0);
@@ -408,18 +423,16 @@
                         '' ? 0 : current.unit_price);
                         return parseFloat(previous) + parseFloat(tot);
                     }, 0);
+            },
+            onPriceChange(event, index) {
+                let unitPrice = this.inventory.products_details_list[index].unit_price;
+                let gstPercentage = this.inventory.products_details_list[index].gst_percentage;
+                let gstAmount = (gstPercentage / 100) * unitPrice;
 
-                return this.inventory.products_details_list.map((element) => {
-                    element.brand_id = element.brand_id;
-                    element.product_id = element.product_id;
-                    element.imei_number = element.imei_number;
-                    element.product_color = element.product_color;
-                    element.unit_price = element.unit_price;
-                    element.gst = element.gst;
-                    element.total_price = parseFloat(element.unit_price == '' ? 0 :
-                        element.unit_price) + parseFloat(element.gst == '' ? 0 :
-                        element.gst);
-                });
+                this.inventory.products_details_list[index].gst = gstAmount;
+                this.inventory.products_details_list[index].total_price = parseFloat(unitPrice == '' ? 0 : unitPrice) + parseFloat(gstAmount == '' ? 0 : gstAmount);
+
+                this.calcTotalAmount();
             }
         },
         components: {

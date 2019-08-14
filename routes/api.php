@@ -116,6 +116,7 @@ Route::prefix('v1')->group(function () {
             Route::get('getImeiBasedStockDetailsExcel/{branch_id}', 'InventoryController@getImeiBasedStockDetailsByBranchExcel');
 
             Route::post('getImeiBasedSalesDetails/{branch_id}', 'InventoryController@getImeiBasedSalesDetailsByBranch');
+            Route::post('getImeiBasedSalesDetailsExcel/{branch_id}', 'InventoryController@getImeiBasedSalesDetailsByBranchExcel');
 
             Route::get('getBranchWiseProductStock/{product_id}', 'ProductController@getBranchWiseProductStock');
 

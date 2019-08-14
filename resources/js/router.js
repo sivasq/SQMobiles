@@ -84,8 +84,8 @@ const routes = [
             // auth: true,
             auth: {
                 roles: 'admin',
-                redirect: { name: '403' },
-                forbiddenRedirect: '/403'
+                redirect: { name: 'dashboard' },
+                forbiddenRedirect: '/dashboard'
             }
         }
     },

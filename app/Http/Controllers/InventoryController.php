@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Branch;
+use App\Exports\ImeiSalesExport;
 use App\Exports\ImeiStockExport;
 use App\Inventory;
 use App\InventoryProduct;
@@ -28,6 +29,7 @@ class InventoryController extends Controller
             'products_details_list.*.imei_number' => 'required|unique:inventory_product_details',
             'products_details_list.*.unit_price' => 'required',
             'products_details_list.*.gst' => 'required',
+            'products_details_list.*.gst_percentage' => 'required',
             'products_details_list.*.total_price' => 'required',
         ],
             [
@@ -38,6 +40,7 @@ class InventoryController extends Controller
                 'products_details_list.*.product_color.required' => 'Color Required',
                 'products_details_list.*.unit_price.required' => 'Unit Price Required',
                 'products_details_list.*.gst.required' => 'GST Required',
+                'products_details_list.*.gst_percentage.required' => 'GST Required',
                 'products_details_list.*.total_price.required' => 'Total Price Required',
             ]);
 
@@ -84,6 +87,11 @@ class InventoryController extends Controller
                             'product_id' => $products_details['product_id'],
                             'product_color' => $products_details['product_color'],
                             'unit_price' => $products_details['unit_price'],
+                            'cgst_percentage' => ($products_details['gst_percentage'] / 2),
+                            'sgst_percentage' => ($products_details['gst_percentage'] / 2),
+                            'gst_percentage' => $products_details['gst_percentage'],
+                            'cgst' => ($products_details['gst'] / 2),
+                            'sgst' => ($products_details['gst'] / 2),
                             'gst' => $products_details['gst'],
                             'total_price' => $products_details['total_price'],
                             'received_from' => null,
@@ -478,6 +486,88 @@ class InventoryController extends Controller
                 ->get()->toArray();
 
             return $data;
+        }
+    }
+
+    public function getImeiBasedSalesDetailsByBranchExcel($branch_id, Request $request)
+    {
+        $from = $request->get('from');
+        $to = $request->get('to');
+        if ($branch_id == 0) {
+            //            DB::enableQueryLog();
+            //            return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', '!=', null)->get());
+            $data = DB::table('inventory_product_details')
+                ->where('inventory_product_details.sales_invoice', '!=', null)
+                ->whereBetween('inventory_product_details.sales_at', [$from . ' 00:00:00', $to . ' 23:59:59'])
+                ->leftJoin('products', function ($join) {
+                    $join->on('products.id', '=', 'inventory_product_details.product_id');
+                })
+                ->join('brands', function ($join) {
+                    $join->on('products.brand_id', '=', 'brands.id');
+                })
+                ->join('branches', function ($join) {
+                    $join->on('inventory_product_details.branch_id', '=', 'branches.id');
+                })
+                ->join('inventory_products', function ($join) {
+                    $join->on('inventory_product_details.inventory_product_id', '=', 'inventory_products.id');
+                })
+                ->join('inventories', function ($join) {
+                    $join->on('inventory_products.inventory_id', '=', 'inventories.id');
+                })
+                ->join('suppliers', function ($join) {
+                    $join->on('inventories.supplier_id', '=', 'suppliers.id');
+                })
+                ->join('users', function ($join) {
+                    $join->on('inventory_product_details.sale_by', '=', 'users.id');
+                })
+                ->select('inventory_product_details.*', 'suppliers.*', 'inventories.*', 'inventory_products.*', 'branches.*', 'brands.*', 'products.*',
+                    'inventory_product_details.id as id', 'users.name')
+                ->get()->toArray();
+            //            dd(DB::getQueryLog());
+            //            return $data;
+
+            return Excel::download(new ImeiSalesExport($data, [[$from . ' to ' . $to . ' Products Sales Report - All Branch'], [date('d-M-Y')],
+                [],
+                ['Product IMEI', 'Product Color', 'Product Name', 'Branch', 'Sales Invoice', 'Sales At', 'Sale By',
+                    'Location']]), 'stock.xlsx');
+        } else if ($branch_id > 0) {
+            //            return InventoryProductDetailResource::collection(InventoryProductDetail::where('sales_invoice', '!=', null)->where('branch_id', $branch_id)->get());
+            $data = DB::table('inventory_product_details')
+                ->where('inventory_product_details.branch_id', $branch_id)
+                ->where('inventory_product_details.sales_invoice', '!=', null)
+                ->whereBetween('inventory_product_details.sales_at', [$from . ' 00:00:00', $to . ' 23:59:59'])
+                ->leftJoin('products', function ($join) {
+                    $join->on('products.id', '=', 'inventory_product_details.product_id');
+                })
+                ->join('brands', function ($join) {
+                    $join->on('products.brand_id', '=', 'brands.id');
+                })
+                ->join('branches', function ($join) {
+                    $join->on('inventory_product_details.branch_id', '=', 'branches.id');
+                })
+                ->join('inventory_products', function ($join) {
+                    $join->on('inventory_product_details.inventory_product_id', '=', 'inventory_products.id');
+                })
+                ->join('inventories', function ($join) {
+                    $join->on('inventory_products.inventory_id', '=', 'inventories.id');
+                })
+                ->join('suppliers', function ($join) {
+                    $join->on('inventories.supplier_id', '=', 'suppliers.id');
+                })
+                ->join('users', function ($join) {
+                    $join->on('inventory_product_details.sale_by', '=', 'users.id');
+                })
+                ->select('inventory_product_details.*', 'suppliers.*', 'inventories.*', 'inventory_products.*', 'branches.*', 'brands.*', 'products.*',
+                    'inventory_product_details.id as id', 'users.name')
+                ->get()->toArray();
+
+            $branch = Branch::where('id', $branch_id)->first();
+
+            return Excel::download(new ImeiSalesExport($data, [[$from . ' to ' . $to . ' Products Stock Report - '
+                . $branch->branch_name . ' ' .
+                $branch->branch_location], [date('d-M-Y')], [],
+                ['Product IMEI', 'Product Color', 'Product Name', 'Sales Invoice', 'Sales At', 'Sale By',
+                    'Branch', 'Location']]), 'stock.xlsx');
         }
     }
 

@@ -16,7 +16,7 @@
 .mdrp__activator .activator-wrapper .text-field {
     font-size: 16px !important;
     padding: 4px 10px 5px 5px !important;
-    width: 225px !important;
+    width: 100% !important;
     border: none;
     border-bottom: 1px solid #757575;
 }
@@ -29,4 +29,12 @@
 
 .w-35 {
     width: 35% !important;
+}
+
+.mdrp__activator .activator-wrapper .text-field {
+    border: 1px solid #ced4da!important;
+}
+
+.mdrp-root{
+    width: inherit!important;
 }

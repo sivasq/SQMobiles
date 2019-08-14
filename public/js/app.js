@@ -3466,6 +3466,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3473,39 +3475,56 @@ __webpack_require__.r(__webpack_exports__);
         // LOGGED
         admin: [{
           name: "Manage Branches",
-          path: "branch"
+          path: "branch",
+          access: ["admin"]
         }, {
           name: "Manage Users",
-          path: "users"
+          path: "users",
+          access: ["admin"]
         }, {
           name: "Suppliers",
-          path: "supplier"
+          path: "supplier",
+          access: ["admin"]
         }, {
           name: "Brands",
-          path: "brand"
+          path: "brand",
+          access: ["admin"]
         }, {
           name: "Products",
-          path: "product"
+          path: "product",
+          access: ["admin"]
         }, {
           name: "Inventory Old",
-          path: "addinventory"
+          path: "addinventory",
+          access: ["admin"]
         }, {
           name: "Inventory New",
-          path: "inventory"
+          path: "inventory",
+          access: ["admin"]
         }, {
           name: "IMEI Stock By Location",
-          path: "imeistockdetail"
+          path: "imeistockdetail",
+          access: ["admin"]
         }, {
           name: "IMEI Sales By Location",
-          path: "imeisalesdetail"
+          path: "imeisalesdetail",
+          access: ["admin"]
         }, {
           name: "Product Stock Details",
-          path: "productstockdetail"
+          path: "productstockdetail",
+          access: ["admin"]
         }]
       }
     };
   },
-  created: function created() {//
+  computed: {
+    checkUserPermission: function checkUserPermission(access) {
+      console.log(access); // console.log(access.includes($auth.user().roles))
+      // return access.includes($auth.user().roles);
+    }
+  },
+  created: function created() {
+    console.log(this.$auth.user());
   },
   methods: {//
   },
@@ -3622,18 +3641,39 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       stockSalesDetails: [],
       branches: [],
+      brands: [],
       activeTab: 0,
       loading: false,
       request_source: '',
       start_date: '',
       end_date: '',
       imeiTxnLogs: [],
-      searchStock: ''
+      searchStock: '',
+      activeBrand: 0
     };
   },
   // components: { DateRangePicker },
@@ -3642,35 +3682,80 @@ __webpack_require__.r(__webpack_exports__);
     this.end_date = new Date().toJSON().slice(0, 10).replace(/-/g, '-');
     this.fetchBranches();
     this.fetchProducts(0);
+    this.fetchBrands();
   },
   computed: {
     filterStocks: function filterStocks() {
       var _this = this;
 
-      return this.stockSalesDetails.filter(function (stock) {
-        return !_this.searchStock || stock.imei_number.indexOf(_this.searchStock.trim()) > -1 || stock.sales_invoice.toLowerCase().indexOf(_this.searchStock.toLowerCase().trim()) > -1; // return client.imei_number.indexOf(this.searchClient) > -1;
-      });
+      // console.log(this.activeBrand);
+      if (this.activeBrand == 0) {
+        return this.stockSalesDetails.filter(function (stock) {
+          return !_this.searchStock || stock.imei_number.indexOf(_this.searchStock.trim()) > -1 || stock.sales_invoice.toLowerCase().indexOf(_this.searchStock.toLowerCase().trim()) > -1; // return client.imei_number.indexOf(this.searchClient) > -1;
+        });
+      } else if (this.activeBrand > 0) {
+        return this.stockSalesDetails.filter(function (stock) {
+          return (!_this.searchStock || stock.imei_number.indexOf(_this.searchStock.trim()) > -1 || stock.sales_invoice.toLowerCase().indexOf(_this.searchStock.toLowerCase().trim()) > -1) && stock.brand_id == _this.activeBrand; // return client.imei_number.indexOf(this.searchClient) > -1;
+        });
+      }
     }
   },
   methods: {
+    exportData: function exportData() {
+      axios({
+        url: window.base_url + '/api/v1/auth/getImeiBasedSalesDetailsExcel/' + this.activeTab,
+        data: {
+          'from': this.start_date,
+          'to': this.end_date
+        },
+        method: 'POST',
+        responseType: 'blob' // important
+
+      }).then(function (response) {
+        var url = window.URL.createObjectURL(new Blob([response.data]));
+        var link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'file.xlsx'); //or any other extension
+
+        document.body.appendChild(link);
+        link.click();
+      });
+    },
+    onBrandChange: function onBrandChange(event) {
+      console.log(event.target.value); // return this.stockSalesDetails.filter(stock => {
+      //     return stock.brand_id == event.target.value;
+      //     // return client.imei_number.indexOf(this.searchClient) > -1;
+      // });
+    },
     handleChange: function handleChange(values) {
       this.start_date = values[0].format('YYYY-MM-DD');
       this.end_date = values[1].format('YYYY-MM-DD');
       this.fetchProducts(this.activeTab);
     },
-    fetchBranches: function fetchBranches() {
+    fetchBrands: function fetchBrands() {
       var _this2 = this;
 
+      axios.get(window.base_url + '/api/v1/auth/fetchBrands').then(function (response) {
+        _this2.brands = response.data.data;
+        console.log(_this2.brands);
+      })["catch"](function (err) {
+        return console.error(err);
+      });
+    },
+    fetchBranches: function fetchBranches() {
+      var _this3 = this;
+
       axios.get(window.base_url + '/api/v1/auth/fetchBranches').then(function (response) {
-        _this2.branches = response.data.data;
-        console.log(_this2.branches);
+        _this3.branches = response.data.data;
+        console.log(_this3.branches);
       })["catch"](function (err) {
         return console.error(err);
       });
     },
     fetchProducts: function fetchProducts(branchId) {
-      var _this3 = this;
+      var _this4 = this;
 
+      this.activeTab = branchId;
       var CancelToken1 = axios.CancelToken;
       var source = CancelToken1.source();
       if (this.request_source != '') this.request_source.cancel('Operation canceled by the user.');
@@ -3681,9 +3766,9 @@ __webpack_require__.r(__webpack_exports__);
       }, {
         cancelToken1: this.request_source.token
       }).then(function (response) {
-        _this3.loading = false;
-        _this3.stockSalesDetails = response.data;
-        console.log(_this3.stockSalesDetails);
+        _this4.loading = false;
+        _this4.stockSalesDetails = response.data;
+        console.log(_this4.stockSalesDetails);
       })["catch"](function (err) {
         return console.error(err);
       });
@@ -3693,7 +3778,7 @@ __webpack_require__.r(__webpack_exports__);
       this.imeiTxnLogs = event.params.logData;
     },
     fetchImeiTxnLogs: function fetchImeiTxnLogs(imeiId) {
-      var _this4 = this;
+      var _this5 = this;
 
       var CancelToken = axios.CancelToken; // var call1 = CancelToken.source();
       // call1.cancel('cancelled');
@@ -3704,7 +3789,7 @@ __webpack_require__.r(__webpack_exports__);
       axios.get(window.base_url + '/api/v1/auth/getImeiTxnLog/' + imeiId, {
         cancelToken: this.request_source.token
       }).then(function (response) {
-        _this4.$modal.show('log-details', {
+        _this5.$modal.show('log-details', {
           logData: response.data
         });
       })["catch"](function (err) {
@@ -3843,6 +3928,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3856,20 +3957,29 @@ __webpack_require__.r(__webpack_exports__);
       loading: false,
       request_source: '',
       imeiTxnLogs: [],
-      searchStock: ''
+      searchStock: '',
+      activeBrand: 0,
+      brands: []
     };
   },
   created: function created() {
     this.fetchBranches();
     this.fetchProducts(0);
+    this.fetchBrands();
   },
   computed: {
     filterStocks: function filterStocks() {
       var _this = this;
 
-      return this.stocksDetails.filter(function (stock) {
-        return !_this.searchStock.trim() || stock.imei_number.indexOf(_this.searchStock.trim()) > -1 || stock.invoice_number.toLowerCase().indexOf(_this.searchStock.toLowerCase().trim()) > -1; // return client.imei_number.indexOf(this.searchClient) > -1;
-      });
+      if (this.activeBrand == 0) {
+        return this.stocksDetails.filter(function (stock) {
+          return !_this.searchStock.trim() || stock.imei_number.indexOf(_this.searchStock.trim()) > -1 || stock.invoice_number.toLowerCase().indexOf(_this.searchStock.toLowerCase().trim()) > -1; // return client.imei_number.indexOf(this.searchClient) > -1;
+        });
+      } else if (this.activeBrand > 0) {
+        return this.stocksDetails.filter(function (stock) {
+          return (!_this.searchStock.trim() || stock.imei_number.indexOf(_this.searchStock.trim()) > -1 || stock.invoice_number.toLowerCase().indexOf(_this.searchStock.toLowerCase().trim()) > -1) && stock.brand_id == _this.activeBrand; // return client.imei_number.indexOf(this.searchClient) > -1;
+        });
+      }
     }
   },
   methods: {
@@ -3898,6 +4008,12 @@ __webpack_require__.r(__webpack_exports__);
         }
       }
     },
+    onBrandChange: function onBrandChange(event) {
+      console.log(event.target.value); // return this.stockSalesDetails.filter(stock => {
+      //     return stock.brand_id == event.target.value;
+      //     // return client.imei_number.indexOf(this.searchClient) > -1;
+      // });
+    },
     fetchBranches: function fetchBranches() {
       var _this2 = this;
 
@@ -3908,8 +4024,18 @@ __webpack_require__.r(__webpack_exports__);
         return console.error(err);
       });
     },
-    fetchProducts: function fetchProducts(branchId) {
+    fetchBrands: function fetchBrands() {
       var _this3 = this;
+
+      axios.get(window.base_url + '/api/v1/auth/fetchBrands').then(function (response) {
+        _this3.brands = response.data.data;
+        console.log(_this3.brands);
+      })["catch"](function (err) {
+        return console.error(err);
+      });
+    },
+    fetchProducts: function fetchProducts(branchId) {
+      var _this4 = this;
 
       var CancelToken = axios.CancelToken; // var call1 = CancelToken.source();
       // call1.cancel('cancelled');
@@ -3924,10 +4050,10 @@ __webpack_require__.r(__webpack_exports__);
       axios.get(window.base_url + '/api/v1/auth/getImeiBasedStockDetails/' + branchId, {
         cancelToken: this.request_source.token
       }).then(function (response) {
-        _this3.selected = [];
-        _this3.loading = false;
-        _this3.showTransfer = false;
-        _this3.stocksDetails = response.data; // console.log(this.stocksDetails);
+        _this4.selected = [];
+        _this4.loading = false;
+        _this4.showTransfer = false;
+        _this4.stocksDetails = response.data; // console.log(this.stocksDetails);
       })["catch"](function (err) {
         return console.error(err);
       });
@@ -3941,7 +4067,7 @@ __webpack_require__.r(__webpack_exports__);
       }
     },
     transferStock: function transferStock() {
-      var _this4 = this;
+      var _this5 = this;
 
       console.log(this.transferTo);
       console.log(this.activeTab);
@@ -3953,7 +4079,7 @@ __webpack_require__.r(__webpack_exports__);
         transfer_items: app.selected
       }).then(function (response) {
         if (response.data.success) {
-          _this4.fetchProducts(app.activeTab);
+          _this5.fetchProducts(app.activeTab);
         }
       })["catch"](function (res) {});
     },
@@ -3962,7 +4088,7 @@ __webpack_require__.r(__webpack_exports__);
       this.imeiTxnLogs = event.params.logData;
     },
     fetchImeiTxnLogs: function fetchImeiTxnLogs(imeiId) {
-      var _this5 = this;
+      var _this6 = this;
 
       var CancelToken = axios.CancelToken; // var call1 = CancelToken.source();
       // call1.cancel('cancelled');
@@ -3973,7 +4099,7 @@ __webpack_require__.r(__webpack_exports__);
       axios.get(window.base_url + '/api/v1/auth/getImeiTxnLog/' + imeiId, {
         cancelToken: this.request_source.token
       }).then(function (response) {
-        _this5.$modal.show('log-details', {
+        _this6.$modal.show('log-details', {
           logData: response.data
         });
       })["catch"](function (err) {
@@ -4863,6 +4989,24 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -4870,9 +5014,9 @@ __webpack_require__.r(__webpack_exports__);
         invoice_number: '',
         supplier_id: '',
         product_qty: 1,
-        total_unit_price: '',
-        total_gst: '',
-        total_price: '',
+        total_unit_price: 0,
+        total_gst: 0,
+        total_price: 0,
         products_details_list: []
       },
       has_error: false,
@@ -4881,7 +5025,8 @@ __webpack_require__.r(__webpack_exports__);
       success: false,
       suppliers: [],
       brands: [],
-      products: []
+      products: [],
+      gst_percentages: [12, 28]
     };
   },
   created: function created() {
@@ -4895,6 +5040,7 @@ __webpack_require__.r(__webpack_exports__);
       product_color: '',
       unit_price: '',
       gst: '',
+      gst_percentage: '',
       total_price: '',
       products_in_brand: []
     });
@@ -4927,6 +5073,7 @@ __webpack_require__.r(__webpack_exports__);
           product_color: '',
           unit_price: '',
           gst: '',
+          gst_percentage: '',
           total_price: '',
           products_in_brand: []
         });
@@ -4978,11 +5125,6 @@ __webpack_require__.r(__webpack_exports__);
     addInventory: function addInventory(event) {
       var _this4 = this;
 
-      // const found = this.inventory.products_details_list.filter(el => el.imei_number === event.target.value);
-      // if (found.length > 1) {
-      //     Vue.$toast.error("Duplicate IMEI Numbered");
-      //     return false;
-      // }
       var valueArr = this.inventory.products_details_list.filter(function (el) {
         return el.imei_number != "";
       }).map(function (item) {
@@ -5041,7 +5183,7 @@ __webpack_require__.r(__webpack_exports__);
       });
 
       if (isDuplicate) {
-        Vue.$toast.error("Duplicate IMEI Numbered");
+        Vue.$toast.error("Duplicate IMEI Number Found");
         return false;
       }
 
@@ -5058,7 +5200,7 @@ __webpack_require__.r(__webpack_exports__);
     onBillNoChange: function onBillNoChange(event) {
       console.log(event.target.value);
     },
-    onPriceChange: function onPriceChange(event, index) {
+    calcTotalAmount: function calcTotalAmount() {
       this.inventory.total_unit_price = this.inventory.products_details_list.map(function (t) {
         return t.unit_price;
       }).reduce(function (previous, current) {
@@ -5075,15 +5217,14 @@ __webpack_require__.r(__webpack_exports__);
         var tot = parseFloat(current.gst == '' ? 0 : current.gst) + parseFloat(current.unit_price == '' ? 0 : current.unit_price);
         return parseFloat(previous) + parseFloat(tot);
       }, 0);
-      return this.inventory.products_details_list.map(function (element) {
-        element.brand_id = element.brand_id;
-        element.product_id = element.product_id;
-        element.imei_number = element.imei_number;
-        element.product_color = element.product_color;
-        element.unit_price = element.unit_price;
-        element.gst = element.gst;
-        element.total_price = parseFloat(element.unit_price == '' ? 0 : element.unit_price) + parseFloat(element.gst == '' ? 0 : element.gst);
-      });
+    },
+    onPriceChange: function onPriceChange(event, index) {
+      var unitPrice = this.inventory.products_details_list[index].unit_price;
+      var gstPercentage = this.inventory.products_details_list[index].gst_percentage;
+      var gstAmount = gstPercentage / 100 * unitPrice;
+      this.inventory.products_details_list[index].gst = gstAmount;
+      this.inventory.products_details_list[index].total_price = parseFloat(unitPrice == '' ? 0 : unitPrice) + parseFloat(gstAmount == '' ? 0 : gstAmount);
+      this.calcTotalAmount();
     }
   },
   components: {//
@@ -5646,6 +5787,10 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
 //
 //
 //
@@ -62801,22 +62946,28 @@ var render = function() {
               "ul",
               { staticClass: "list-group" },
               _vm._l(_vm.routes.admin, function(route, key) {
-                return _c(
-                  "li",
-                  { key: route.path, staticClass: "list-group-item" },
-                  [
-                    _c(
-                      "router-link",
-                      {
-                        key: key,
-                        staticClass: "nav-link p-0",
-                        attrs: { to: { name: route.path } }
-                      },
-                      [_vm._v(_vm._s(route.name) + "\n                    ")]
+                return route.access.includes(_vm.$auth.user().roles)
+                  ? _c(
+                      "li",
+                      { key: route.path, staticClass: "list-group-item" },
+                      [
+                        _c(
+                          "router-link",
+                          {
+                            key: key,
+                            staticClass: "nav-link p-0",
+                            attrs: { to: { name: route.path } }
+                          },
+                          [
+                            _vm._v(
+                              _vm._s(route.name) + "\n                    "
+                            )
+                          ]
+                        )
+                      ],
+                      1
                     )
-                  ],
-                  1
-                )
+                  : _vm._e()
               }),
               0
             )
@@ -62938,15 +63089,20 @@ var render = function() {
         )
       ]),
       _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "row justify-content-left mt-5 ml-3" },
-        [
-          _c("v-md-date-range-picker", {
-            attrs: { "auto-apply": false, "show-year-select": "" },
-            on: { change: _vm.handleChange }
-          }),
-          _vm._v(" "),
+      _c("div", { staticClass: "row justify-content-left mt-5 mr-2" }, [
+        _c(
+          "div",
+          { staticClass: "col-sm-6 col-md-3" },
+          [
+            _c("v-md-date-range-picker", {
+              attrs: { "auto-apply": false, "show-year-select": "" },
+              on: { change: _vm.handleChange }
+            })
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-sm-6 col-md-3" }, [
           _c("input", {
             directives: [
               {
@@ -62956,7 +63112,7 @@ var render = function() {
                 expression: "searchStock"
               }
             ],
-            staticClass: "form-control w-35 ml-3",
+            staticClass: "form-control",
             attrs: {
               placeholder: "Filter By IMEI / Sales Invoice",
               type: "search"
@@ -62971,9 +63127,81 @@ var render = function() {
               }
             }
           })
-        ],
-        1
-      ),
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-sm-6 col-md-3" }, [
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.activeBrand,
+                  expression: "activeBrand"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { id: "brand_id" },
+              on: {
+                change: [
+                  function($event) {
+                    var $$selectedVal = Array.prototype.filter
+                      .call($event.target.options, function(o) {
+                        return o.selected
+                      })
+                      .map(function(o) {
+                        var val = "_value" in o ? o._value : o.value
+                        return val
+                      })
+                    _vm.activeBrand = $event.target.multiple
+                      ? $$selectedVal
+                      : $$selectedVal[0]
+                  },
+                  function($event) {
+                    return _vm.onBrandChange($event)
+                  }
+                ]
+              }
+            },
+            [
+              _c("option", { attrs: { selected: "", value: "0" } }, [
+                _vm._v("All")
+              ]),
+              _vm._v(" "),
+              _vm._l(_vm.brands, function(brand, index) {
+                return _c(
+                  "option",
+                  {
+                    key: brand.id,
+                    staticClass: "list-group-item",
+                    domProps: { value: brand.id }
+                  },
+                  [_vm._v(_vm._s(brand.brand_name) + "\n                ")]
+                )
+              })
+            ],
+            2
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-sm-6 col-md-3" }, [
+          _c(
+            "button",
+            {
+              staticClass: "btn btn btn-outline-secondary",
+              staticStyle: { width: "100%" },
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  return _vm.exportData($event)
+                }
+              }
+            },
+            [_vm._v("Export As\n                Excel\n            ")]
+          )
+        ])
+      ]),
       _vm._v(" "),
       _c("div", { staticClass: "row justify-content-center mt-3" }, [
         _c("div", { staticClass: "col-12" }, [
@@ -62996,6 +63224,7 @@ var render = function() {
                     "tr",
                     {
                       key: stocksDetail.id,
+                      staticStyle: { cursor: "pointer" },
                       on: {
                         click: function($event) {
                           $event.preventDefault()
@@ -63004,7 +63233,23 @@ var render = function() {
                       }
                     },
                     [
-                      _c("td", [_vm._v(_vm._s(stocksDetail.imei_number))]),
+                      _c(
+                        "td",
+                        {
+                          staticStyle: {
+                            "text-decoration-line": "underline",
+                            "text-decoration-style": "dashed",
+                            "text-decoration-color": "red"
+                          }
+                        },
+                        [
+                          _vm._v(
+                            "\n                        " +
+                              _vm._s(stocksDetail.imei_number) +
+                              "\n                    "
+                          )
+                        ]
+                      ),
                       _vm._v(" "),
                       _c("td", [_vm._v(_vm._s(stocksDetail.invoice_number))]),
                       _vm._v(" "),
@@ -63036,13 +63281,17 @@ var render = function() {
                           _vm._s(stocksDetail.brand_name) +
                             " -\n                        " +
                             _vm._s(stocksDetail.product_name) +
+                            " - " +
+                            _vm._s(stocksDetail.product_color) +
                             "\n                    "
                         )
                       ]),
                       _vm._v(" "),
                       _c("td", [
                         _vm._v(
-                          _vm._s(stocksDetail.branch_location) +
+                          _vm._s(stocksDetail.branch_name) +
+                            " - " +
+                            _vm._s(stocksDetail.branch_location) +
                             "\n                    "
                         )
                       ])
@@ -63330,27 +63579,87 @@ var render = function() {
         )
       ]),
       _vm._v(" "),
-      _c("input", {
-        directives: [
-          {
-            name: "model",
-            rawName: "v-model",
-            value: _vm.searchStock,
-            expression: "searchStock"
-          }
-        ],
-        staticClass: "form-control w-25",
-        attrs: { placeholder: "Filter By IMEI / Bill", type: "search" },
-        domProps: { value: _vm.searchStock },
-        on: {
-          input: function($event) {
-            if ($event.target.composing) {
-              return
+      _c("div", { staticClass: "row justify-content-left mt-5 mr-2" }, [
+        _c("div", { staticClass: "col-sm-6 col-md-3" }, [
+          _c(
+            "select",
+            {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.activeBrand,
+                  expression: "activeBrand"
+                }
+              ],
+              staticClass: "form-control",
+              attrs: { id: "brand_id" },
+              on: {
+                change: [
+                  function($event) {
+                    var $$selectedVal = Array.prototype.filter
+                      .call($event.target.options, function(o) {
+                        return o.selected
+                      })
+                      .map(function(o) {
+                        var val = "_value" in o ? o._value : o.value
+                        return val
+                      })
+                    _vm.activeBrand = $event.target.multiple
+                      ? $$selectedVal
+                      : $$selectedVal[0]
+                  },
+                  function($event) {
+                    return _vm.onBrandChange($event)
+                  }
+                ]
+              }
+            },
+            [
+              _c("option", { attrs: { selected: "", value: "0" } }, [
+                _vm._v("All")
+              ]),
+              _vm._v(" "),
+              _vm._l(_vm.brands, function(brand, index) {
+                return _c(
+                  "option",
+                  {
+                    key: brand.id,
+                    staticClass: "list-group-item",
+                    domProps: { value: brand.id }
+                  },
+                  [_vm._v(_vm._s(brand.brand_name) + "\n                ")]
+                )
+              })
+            ],
+            2
+          )
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "col-sm-6 col-md-3" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.searchStock,
+                expression: "searchStock"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: { placeholder: "Filter By IMEI / Bill", type: "search" },
+            domProps: { value: _vm.searchStock },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.searchStock = $event.target.value
+              }
             }
-            _vm.searchStock = $event.target.value
-          }
-        }
-      }),
+          })
+        ])
+      ]),
       _vm._v(" "),
       _c("div", { staticClass: "row justify-content-center mt-3" }, [
         _c("div", { staticClass: "col-12" }, [
@@ -63475,6 +63784,8 @@ var render = function() {
                             _vm._s(stocksDetail.brand_name) +
                               " -\n                        " +
                               _vm._s(stocksDetail.product_name) +
+                              " - " +
+                              _vm._s(stocksDetail.product_color) +
                               "\n                    "
                           )
                         ]),
@@ -65230,41 +65541,163 @@ var render = function() {
                         )
                       ]),
                       _vm._v(" "),
-                      _c("div", { staticClass: "table-responsive-sm" }, [
-                        _c("table", { staticClass: "table" }, [
-                          _vm._m(0),
-                          _vm._v(" "),
-                          _c(
-                            "tbody",
-                            _vm._l(
-                              _vm.inventory.products_details_list,
-                              function(imei, index) {
-                                return _vm.inventory.products_details_list
-                                  .length > 0
-                                  ? _c("tr", [
-                                      _c("td", [_vm._v(_vm._s(index + 1))]),
-                                      _vm._v(" "),
-                                      _c(
-                                        "td",
-                                        { staticStyle: { width: "150px" } },
-                                        [
-                                          _c(
-                                            "select",
-                                            {
-                                              directives: [
-                                                {
-                                                  name: "model",
-                                                  rawName: "v-model",
-                                                  value: imei.brand_id,
-                                                  expression: "imei.brand_id"
+                      _c("div", { staticClass: "table " }, [
+                        _c(
+                          "table",
+                          { staticClass: "table table-responsive-lg" },
+                          [
+                            _vm._m(0),
+                            _vm._v(" "),
+                            _c(
+                              "tbody",
+                              _vm._l(
+                                _vm.inventory.products_details_list,
+                                function(imei, index) {
+                                  return _vm.inventory.products_details_list
+                                    .length > 0
+                                    ? _c("tr", [
+                                        _c("td", [_vm._v(_vm._s(index + 1))]),
+                                        _vm._v(" "),
+                                        _c(
+                                          "td",
+                                          { staticStyle: { width: "150px" } },
+                                          [
+                                            _c(
+                                              "select",
+                                              {
+                                                directives: [
+                                                  {
+                                                    name: "model",
+                                                    rawName: "v-model",
+                                                    value: imei.brand_id,
+                                                    expression: "imei.brand_id"
+                                                  }
+                                                ],
+                                                staticClass:
+                                                  "form-control custom-select",
+                                                attrs: { id: "brand_id" },
+                                                on: {
+                                                  change: [
+                                                    function($event) {
+                                                      var $$selectedVal = Array.prototype.filter
+                                                        .call(
+                                                          $event.target.options,
+                                                          function(o) {
+                                                            return o.selected
+                                                          }
+                                                        )
+                                                        .map(function(o) {
+                                                          var val =
+                                                            "_value" in o
+                                                              ? o._value
+                                                              : o.value
+                                                          return val
+                                                        })
+                                                      _vm.$set(
+                                                        imei,
+                                                        "brand_id",
+                                                        $event.target.multiple
+                                                          ? $$selectedVal
+                                                          : $$selectedVal[0]
+                                                      )
+                                                    },
+                                                    function($event) {
+                                                      return _vm.onBrandChange(
+                                                        $event,
+                                                        index
+                                                      )
+                                                    }
+                                                  ]
                                                 }
+                                              },
+                                              [
+                                                _c(
+                                                  "option",
+                                                  {
+                                                    attrs: {
+                                                      disabled: "",
+                                                      selected: "",
+                                                      value: ""
+                                                    }
+                                                  },
+                                                  [_vm._v("Select Brand")]
+                                                ),
+                                                _vm._v(" "),
+                                                _vm._l(_vm.brands, function(
+                                                  brand,
+                                                  index
+                                                ) {
+                                                  return _c(
+                                                    "option",
+                                                    {
+                                                      key: brand.id,
+                                                      staticClass:
+                                                        "list-group-item",
+                                                      domProps: {
+                                                        value: brand.id
+                                                      }
+                                                    },
+                                                    [
+                                                      _vm._v(
+                                                        _vm._s(
+                                                          brand.brand_name
+                                                        ) +
+                                                          "\n                                            "
+                                                      )
+                                                    ]
+                                                  )
+                                                })
                                               ],
-                                              staticClass:
-                                                "form-control custom-select",
-                                              attrs: { id: "brand_id" },
-                                              on: {
-                                                change: [
-                                                  function($event) {
+                                              2
+                                            ),
+                                            _vm._v(" "),
+                                            _vm.has_error &&
+                                            _vm.errors[
+                                              "products_details_list." +
+                                                index +
+                                                ".brand_id"
+                                            ]
+                                              ? _c(
+                                                  "span",
+                                                  { staticClass: "help-block" },
+                                                  [
+                                                    _vm._v(
+                                                      _vm._s(
+                                                        _vm.errors[
+                                                          "products_details_list." +
+                                                            index +
+                                                            ".brand_id"
+                                                        ][0]
+                                                      ) +
+                                                        "\n                                        "
+                                                    )
+                                                  ]
+                                                )
+                                              : _vm._e()
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "td",
+                                          { staticStyle: { width: "250px" } },
+                                          [
+                                            _c(
+                                              "select",
+                                              {
+                                                directives: [
+                                                  {
+                                                    name: "model",
+                                                    rawName: "v-model",
+                                                    value: imei.product_id,
+                                                    expression:
+                                                      "imei.product_id"
+                                                  }
+                                                ],
+                                                staticClass:
+                                                  "form-control custom-select",
+                                                attrs: { id: "product_id" },
+                                                on: {
+                                                  change: function($event) {
                                                     var $$selectedVal = Array.prototype.filter
                                                       .call(
                                                         $event.target.options,
@@ -65281,554 +65714,585 @@ var render = function() {
                                                       })
                                                     _vm.$set(
                                                       imei,
-                                                      "brand_id",
+                                                      "product_id",
                                                       $event.target.multiple
                                                         ? $$selectedVal
                                                         : $$selectedVal[0]
                                                     )
+                                                  }
+                                                }
+                                              },
+                                              [
+                                                _c(
+                                                  "option",
+                                                  {
+                                                    attrs: {
+                                                      disabled: "",
+                                                      selected: "",
+                                                      value: ""
+                                                    }
+                                                  },
+                                                  [_vm._v("Select Product")]
+                                                ),
+                                                _vm._v(" "),
+                                                _vm._l(
+                                                  imei.products_in_brand,
+                                                  function(product, index) {
+                                                    return _c(
+                                                      "option",
+                                                      {
+                                                        key: product.id,
+                                                        staticClass:
+                                                          "list-group-item",
+                                                        domProps: {
+                                                          value: product.id
+                                                        }
+                                                      },
+                                                      [
+                                                        _vm._v(
+                                                          "\n                                                " +
+                                                            _vm._s(
+                                                              product.product_name
+                                                            ) +
+                                                            "\n                                            "
+                                                        )
+                                                      ]
+                                                    )
+                                                  }
+                                                )
+                                              ],
+                                              2
+                                            ),
+                                            _vm._v(" "),
+                                            _vm.has_error &&
+                                            _vm.errors[
+                                              "products_details_list." +
+                                                index +
+                                                ".product_id"
+                                            ]
+                                              ? _c(
+                                                  "span",
+                                                  { staticClass: "help-block" },
+                                                  [
+                                                    _vm._v(
+                                                      _vm._s(
+                                                        _vm.errors[
+                                                          "products_details_list." +
+                                                            index +
+                                                            ".product_id"
+                                                        ][0]
+                                                      ) +
+                                                        "\n                                        "
+                                                    )
+                                                  ]
+                                                )
+                                              : _vm._e()
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "td",
+                                          { staticStyle: { width: "150px" } },
+                                          [
+                                            _c("input", {
+                                              directives: [
+                                                {
+                                                  name: "model",
+                                                  rawName: "v-model",
+                                                  value: imei.product_color,
+                                                  expression:
+                                                    "imei.product_color"
+                                                }
+                                              ],
+                                              staticClass: "form-control",
+                                              attrs: {
+                                                placeholder: "Product Color",
+                                                type: "text",
+                                                id: index
+                                              },
+                                              domProps: {
+                                                value: imei.product_color
+                                              },
+                                              on: {
+                                                input: function($event) {
+                                                  if ($event.target.composing) {
+                                                    return
+                                                  }
+                                                  _vm.$set(
+                                                    imei,
+                                                    "product_color",
+                                                    $event.target.value
+                                                  )
+                                                }
+                                              }
+                                            }),
+                                            _vm._v(" "),
+                                            _vm.has_error &&
+                                            _vm.errors[
+                                              "products_details_list." +
+                                                index +
+                                                ".product_color"
+                                            ]
+                                              ? _c(
+                                                  "span",
+                                                  { staticClass: "help-block" },
+                                                  [
+                                                    _vm._v(
+                                                      _vm._s(
+                                                        _vm.errors[
+                                                          "products_details_list." +
+                                                            index +
+                                                            ".product_color"
+                                                        ][0]
+                                                      ) +
+                                                        "\n                                        "
+                                                    )
+                                                  ]
+                                                )
+                                              : _vm._e()
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "td",
+                                          {
+                                            staticStyle: {
+                                              "min-width": "250px"
+                                            }
+                                          },
+                                          [
+                                            _c("input", {
+                                              directives: [
+                                                {
+                                                  name: "model",
+                                                  rawName: "v-model",
+                                                  value: imei.imei_number,
+                                                  expression: "imei.imei_number"
+                                                }
+                                              ],
+                                              staticClass: "form-control",
+                                              attrs: {
+                                                placeholder:
+                                                  "Type or Scan IMEI",
+                                                type: "text",
+                                                id: index
+                                              },
+                                              domProps: {
+                                                value: imei.imei_number
+                                              },
+                                              on: {
+                                                blur: _vm.checkImei,
+                                                keydown: function($event) {
+                                                  if (
+                                                    !$event.type.indexOf(
+                                                      "key"
+                                                    ) &&
+                                                    _vm._k(
+                                                      $event.keyCode,
+                                                      "enter",
+                                                      13,
+                                                      $event.key,
+                                                      "Enter"
+                                                    )
+                                                  ) {
+                                                    return null
+                                                  }
+                                                  $event.preventDefault()
+                                                  return _vm.addInventory(
+                                                    $event
+                                                  )
+                                                },
+                                                input: function($event) {
+                                                  if ($event.target.composing) {
+                                                    return
+                                                  }
+                                                  _vm.$set(
+                                                    imei,
+                                                    "imei_number",
+                                                    $event.target.value
+                                                  )
+                                                }
+                                              }
+                                            }),
+                                            _vm._v(" "),
+                                            _vm.has_error &&
+                                            _vm.errors[
+                                              "products_details_list." +
+                                                index +
+                                                ".imei_number"
+                                            ]
+                                              ? _c(
+                                                  "span",
+                                                  { staticClass: "help-block" },
+                                                  [
+                                                    _vm._v(
+                                                      _vm._s(
+                                                        _vm.errors[
+                                                          "products_details_list." +
+                                                            index +
+                                                            ".imei_number"
+                                                        ][0]
+                                                      ) +
+                                                        "\n                                        "
+                                                    )
+                                                  ]
+                                                )
+                                              : _vm._e()
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "td",
+                                          { staticStyle: { width: "150px" } },
+                                          [
+                                            _c("input", {
+                                              directives: [
+                                                {
+                                                  name: "model",
+                                                  rawName: "v-model",
+                                                  value: imei.unit_price,
+                                                  expression: "imei.unit_price"
+                                                }
+                                              ],
+                                              staticClass: "form-control",
+                                              attrs: {
+                                                min: "0",
+                                                placeholder: "Unit Price",
+                                                type: "number",
+                                                id: index
+                                              },
+                                              domProps: {
+                                                value: imei.unit_price
+                                              },
+                                              on: {
+                                                input: [
+                                                  function($event) {
+                                                    if (
+                                                      $event.target.composing
+                                                    ) {
+                                                      return
+                                                    }
+                                                    _vm.$set(
+                                                      imei,
+                                                      "unit_price",
+                                                      $event.target.value
+                                                    )
                                                   },
                                                   function($event) {
-                                                    return _vm.onBrandChange(
+                                                    return _vm.onPriceChange(
                                                       $event,
                                                       index
                                                     )
                                                   }
                                                 ]
                                               }
-                                            },
-                                            [
-                                              _c(
-                                                "option",
-                                                {
-                                                  attrs: {
-                                                    disabled: "",
-                                                    selected: "",
-                                                    value: ""
-                                                  }
-                                                },
-                                                [_vm._v("Select Brand")]
-                                              ),
-                                              _vm._v(" "),
-                                              _vm._l(_vm.brands, function(
-                                                brand,
-                                                index
-                                              ) {
-                                                return _c(
-                                                  "option",
-                                                  {
-                                                    key: brand.id,
-                                                    staticClass:
-                                                      "list-group-item",
-                                                    domProps: {
-                                                      value: brand.id
-                                                    }
-                                                  },
+                                            }),
+                                            _vm._v(" "),
+                                            _vm.has_error &&
+                                            _vm.errors[
+                                              "products_details_list." +
+                                                index +
+                                                ".unit_price"
+                                            ]
+                                              ? _c(
+                                                  "span",
+                                                  { staticClass: "help-block" },
                                                   [
                                                     _vm._v(
-                                                      _vm._s(brand.brand_name) +
-                                                        "\n                                            "
+                                                      _vm._s(
+                                                        _vm.errors[
+                                                          "products_details_list." +
+                                                            index +
+                                                            ".unit_price"
+                                                        ][0]
+                                                      ) +
+                                                        "\n                                        "
                                                     )
                                                   ]
                                                 )
-                                              })
-                                            ],
-                                            2
-                                          ),
-                                          _vm._v(" "),
-                                          _vm.has_error &&
-                                          _vm.errors[
-                                            "products_details_list." +
-                                              index +
-                                              ".brand_id"
+                                              : _vm._e()
                                           ]
-                                            ? _c(
-                                                "span",
-                                                { staticClass: "help-block" },
-                                                [
-                                                  _vm._v(
-                                                    _vm._s(
-                                                      _vm.errors[
-                                                        "products_details_list." +
-                                                          index +
-                                                          ".brand_id"
-                                                      ][0]
-                                                    ) +
-                                                      "\n                                        "
-                                                  )
-                                                ]
-                                              )
-                                            : _vm._e()
-                                        ]
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "td",
-                                        { staticStyle: { width: "250px" } },
-                                        [
-                                          _c(
-                                            "select",
-                                            {
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "td",
+                                          { staticStyle: { width: "150px" } },
+                                          [
+                                            _c(
+                                              "select",
+                                              {
+                                                directives: [
+                                                  {
+                                                    name: "model",
+                                                    rawName: "v-model",
+                                                    value: imei.gst_percentage,
+                                                    expression:
+                                                      "imei.gst_percentage"
+                                                  }
+                                                ],
+                                                staticClass:
+                                                  "form-control custom-select",
+                                                on: {
+                                                  change: [
+                                                    function($event) {
+                                                      var $$selectedVal = Array.prototype.filter
+                                                        .call(
+                                                          $event.target.options,
+                                                          function(o) {
+                                                            return o.selected
+                                                          }
+                                                        )
+                                                        .map(function(o) {
+                                                          var val =
+                                                            "_value" in o
+                                                              ? o._value
+                                                              : o.value
+                                                          return val
+                                                        })
+                                                      _vm.$set(
+                                                        imei,
+                                                        "gst_percentage",
+                                                        $event.target.multiple
+                                                          ? $$selectedVal
+                                                          : $$selectedVal[0]
+                                                      )
+                                                    },
+                                                    function($event) {
+                                                      return _vm.onPriceChange(
+                                                        $event,
+                                                        index
+                                                      )
+                                                    }
+                                                  ]
+                                                }
+                                              },
+                                              [
+                                                _c(
+                                                  "option",
+                                                  {
+                                                    attrs: {
+                                                      disabled: "",
+                                                      selected: "",
+                                                      value: ""
+                                                    }
+                                                  },
+                                                  [_vm._v("GST")]
+                                                ),
+                                                _vm._v(" "),
+                                                _vm._l(
+                                                  _vm.gst_percentages,
+                                                  function(
+                                                    gst_percentage,
+                                                    index
+                                                  ) {
+                                                    return _c(
+                                                      "option",
+                                                      {
+                                                        key: gst_percentage,
+                                                        staticClass:
+                                                          "list-group-item",
+                                                        domProps: {
+                                                          value: gst_percentage
+                                                        }
+                                                      },
+                                                      [
+                                                        _vm._v(
+                                                          "\n                                                " +
+                                                            _vm._s(
+                                                              gst_percentage
+                                                            ) +
+                                                            "\n                                            "
+                                                        )
+                                                      ]
+                                                    )
+                                                  }
+                                                )
+                                              ],
+                                              2
+                                            ),
+                                            _vm._v(" "),
+                                            _vm.has_error &&
+                                            _vm.errors[
+                                              "products_details_list." +
+                                                index +
+                                                ".gst_percentage"
+                                            ]
+                                              ? _c(
+                                                  "span",
+                                                  { staticClass: "help-block" },
+                                                  [
+                                                    _vm._v(
+                                                      _vm._s(
+                                                        _vm.errors[
+                                                          "products_details_list." +
+                                                            index +
+                                                            ".gst_percentage"
+                                                        ][0]
+                                                      ) +
+                                                        "\n                                        "
+                                                    )
+                                                  ]
+                                                )
+                                              : _vm._e()
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "td",
+                                          {
+                                            staticStyle: {
+                                              width: "150px",
+                                              display: "none"
+                                            }
+                                          },
+                                          [
+                                            _c("input", {
                                               directives: [
                                                 {
                                                   name: "model",
                                                   rawName: "v-model",
-                                                  value: imei.product_id,
-                                                  expression: "imei.product_id"
+                                                  value: imei.gst,
+                                                  expression: "imei.gst"
                                                 }
                                               ],
-                                              staticClass:
-                                                "form-control custom-select",
-                                              attrs: { id: "product_id" },
-                                              on: {
-                                                change: function($event) {
-                                                  var $$selectedVal = Array.prototype.filter
-                                                    .call(
-                                                      $event.target.options,
-                                                      function(o) {
-                                                        return o.selected
-                                                      }
-                                                    )
-                                                    .map(function(o) {
-                                                      var val =
-                                                        "_value" in o
-                                                          ? o._value
-                                                          : o.value
-                                                      return val
-                                                    })
-                                                  _vm.$set(
-                                                    imei,
-                                                    "product_id",
-                                                    $event.target.multiple
-                                                      ? $$selectedVal
-                                                      : $$selectedVal[0]
-                                                  )
-                                                }
-                                              }
-                                            },
-                                            [
-                                              _c(
-                                                "option",
-                                                {
-                                                  attrs: {
-                                                    disabled: "",
-                                                    selected: "",
-                                                    value: ""
-                                                  }
-                                                },
-                                                [_vm._v("Select Product")]
-                                              ),
-                                              _vm._v(" "),
-                                              _vm._l(
-                                                imei.products_in_brand,
-                                                function(product, index) {
-                                                  return _c(
-                                                    "option",
-                                                    {
-                                                      key: product.id,
-                                                      staticClass:
-                                                        "list-group-item",
-                                                      domProps: {
-                                                        value: product.id
-                                                      }
-                                                    },
-                                                    [
-                                                      _vm._v(
-                                                        "\n                                                " +
-                                                          _vm._s(
-                                                            product.product_name
-                                                          ) +
-                                                          "\n                                            "
-                                                      )
-                                                    ]
-                                                  )
-                                                }
-                                              )
-                                            ],
-                                            2
-                                          ),
-                                          _vm._v(" "),
-                                          _vm.has_error &&
-                                          _vm.errors[
-                                            "products_details_list." +
-                                              index +
-                                              ".product_id"
-                                          ]
-                                            ? _c(
-                                                "span",
-                                                { staticClass: "help-block" },
-                                                [
-                                                  _vm._v(
-                                                    _vm._s(
-                                                      _vm.errors[
-                                                        "products_details_list." +
-                                                          index +
-                                                          ".product_id"
-                                                      ][0]
-                                                    ) +
-                                                      "\n                                        "
-                                                  )
-                                                ]
-                                              )
-                                            : _vm._e()
-                                        ]
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "td",
-                                        { staticStyle: { width: "150px" } },
-                                        [
-                                          _c("input", {
-                                            directives: [
-                                              {
-                                                name: "model",
-                                                rawName: "v-model",
-                                                value: imei.product_color,
-                                                expression: "imei.product_color"
-                                              }
-                                            ],
-                                            staticClass: "form-control",
-                                            attrs: {
-                                              placeholder: "Product Color",
-                                              type: "text",
-                                              id: index
-                                            },
-                                            domProps: {
-                                              value: imei.product_color
-                                            },
-                                            on: {
-                                              input: function($event) {
-                                                if ($event.target.composing) {
-                                                  return
-                                                }
-                                                _vm.$set(
-                                                  imei,
-                                                  "product_color",
-                                                  $event.target.value
-                                                )
-                                              }
-                                            }
-                                          }),
-                                          _vm._v(" "),
-                                          _vm.has_error &&
-                                          _vm.errors[
-                                            "products_details_list." +
-                                              index +
-                                              ".product_color"
-                                          ]
-                                            ? _c(
-                                                "span",
-                                                { staticClass: "help-block" },
-                                                [
-                                                  _vm._v(
-                                                    _vm._s(
-                                                      _vm.errors[
-                                                        "products_details_list." +
-                                                          index +
-                                                          ".product_color"
-                                                      ][0]
-                                                    ) +
-                                                      "\n                                        "
-                                                  )
-                                                ]
-                                              )
-                                            : _vm._e()
-                                        ]
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "td",
-                                        { staticStyle: { width: "auto" } },
-                                        [
-                                          _c("input", {
-                                            directives: [
-                                              {
-                                                name: "model",
-                                                rawName: "v-model",
-                                                value: imei.imei_number,
-                                                expression: "imei.imei_number"
-                                              }
-                                            ],
-                                            staticClass: "form-control",
-                                            attrs: {
-                                              placeholder: "Type or Scan IMEI",
-                                              type: "text",
-                                              id: index
-                                            },
-                                            domProps: {
-                                              value: imei.imei_number
-                                            },
-                                            on: {
-                                              blur: _vm.checkImei,
-                                              keydown: function($event) {
-                                                if (
-                                                  !$event.type.indexOf("key") &&
-                                                  _vm._k(
-                                                    $event.keyCode,
-                                                    "enter",
-                                                    13,
-                                                    $event.key,
-                                                    "Enter"
-                                                  )
-                                                ) {
-                                                  return null
-                                                }
-                                                $event.preventDefault()
-                                                return _vm.addInventory($event)
+                                              staticClass: "form-control",
+                                              attrs: {
+                                                placeholder: "GST",
+                                                readonly: "",
+                                                type: "number",
+                                                id: index
                                               },
-                                              input: function($event) {
-                                                if ($event.target.composing) {
-                                                  return
-                                                }
-                                                _vm.$set(
-                                                  imei,
-                                                  "imei_number",
-                                                  $event.target.value
+                                              domProps: { value: imei.gst },
+                                              on: {
+                                                input: [
+                                                  function($event) {
+                                                    if (
+                                                      $event.target.composing
+                                                    ) {
+                                                      return
+                                                    }
+                                                    _vm.$set(
+                                                      imei,
+                                                      "gst",
+                                                      $event.target.value
+                                                    )
+                                                  },
+                                                  function($event) {
+                                                    return _vm.onPriceChange(
+                                                      $event,
+                                                      index
+                                                    )
+                                                  }
+                                                ]
+                                              }
+                                            }),
+                                            _vm._v(" "),
+                                            _vm.has_error &&
+                                            _vm.errors[
+                                              "products_details_list." +
+                                                index +
+                                                ".gst"
+                                            ]
+                                              ? _c(
+                                                  "span",
+                                                  { staticClass: "help-block" },
+                                                  [
+                                                    _vm._v(
+                                                      _vm._s(
+                                                        _vm.errors[
+                                                          "products_details_list." +
+                                                            index +
+                                                            ".gst"
+                                                        ][0]
+                                                      ) +
+                                                        "\n                                        "
+                                                    )
+                                                  ]
                                                 )
-                                              }
-                                            }
-                                          }),
-                                          _vm._v(" "),
-                                          _vm.has_error &&
-                                          _vm.errors[
-                                            "products_details_list." +
-                                              index +
-                                              ".imei_number"
+                                              : _vm._e()
                                           ]
-                                            ? _c(
-                                                "span",
-                                                { staticClass: "help-block" },
-                                                [
-                                                  _vm._v(
-                                                    _vm._s(
-                                                      _vm.errors[
-                                                        "products_details_list." +
-                                                          index +
-                                                          ".imei_number"
-                                                      ][0]
-                                                    ) +
-                                                      "\n                                        "
-                                                  )
-                                                ]
-                                              )
-                                            : _vm._e()
-                                        ]
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "td",
-                                        { staticStyle: { width: "150px" } },
-                                        [
-                                          _c("input", {
-                                            directives: [
-                                              {
-                                                name: "model",
-                                                rawName: "v-model",
-                                                value: imei.unit_price,
-                                                expression: "imei.unit_price"
-                                              }
-                                            ],
-                                            staticClass: "form-control",
-                                            attrs: {
-                                              placeholder: "Unit Price",
-                                              type: "number",
-                                              id: index
-                                            },
-                                            domProps: {
-                                              value: imei.unit_price
-                                            },
-                                            on: {
-                                              input: [
-                                                function($event) {
-                                                  if ($event.target.composing) {
-                                                    return
-                                                  }
-                                                  _vm.$set(
-                                                    imei,
-                                                    "unit_price",
-                                                    $event.target.value
-                                                  )
-                                                },
-                                                function($event) {
-                                                  return _vm.onPriceChange(
-                                                    $event,
-                                                    index
-                                                  )
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "td",
+                                          { staticStyle: { width: "150px" } },
+                                          [
+                                            _c("input", {
+                                              directives: [
+                                                {
+                                                  name: "model",
+                                                  rawName: "v-model",
+                                                  value: imei.total_price,
+                                                  expression: "imei.total_price"
                                                 }
-                                              ]
-                                            }
-                                          }),
-                                          _vm._v(" "),
-                                          _vm.has_error &&
-                                          _vm.errors[
-                                            "products_details_list." +
-                                              index +
-                                              ".unit_price"
-                                          ]
-                                            ? _c(
-                                                "span",
-                                                { staticClass: "help-block" },
-                                                [
-                                                  _vm._v(
-                                                    _vm._s(
-                                                      _vm.errors[
-                                                        "products_details_list." +
-                                                          index +
-                                                          ".unit_price"
-                                                      ][0]
-                                                    ) +
-                                                      "\n                                        "
-                                                  )
-                                                ]
-                                              )
-                                            : _vm._e()
-                                        ]
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "td",
-                                        { staticStyle: { width: "150px" } },
-                                        [
-                                          _c("input", {
-                                            directives: [
-                                              {
-                                                name: "model",
-                                                rawName: "v-model",
-                                                value: imei.gst,
-                                                expression: "imei.gst"
-                                              }
-                                            ],
-                                            staticClass: "form-control",
-                                            attrs: {
-                                              placeholder: "GST",
-                                              type: "number",
-                                              id: index
-                                            },
-                                            domProps: { value: imei.gst },
-                                            on: {
-                                              input: [
-                                                function($event) {
-                                                  if ($event.target.composing) {
-                                                    return
+                                              ],
+                                              staticClass: "form-control",
+                                              attrs: {
+                                                placeholder: "Total Price",
+                                                readonly: "",
+                                                type: "number",
+                                                id: index
+                                              },
+                                              domProps: {
+                                                value: imei.total_price
+                                              },
+                                              on: {
+                                                input: [
+                                                  function($event) {
+                                                    if (
+                                                      $event.target.composing
+                                                    ) {
+                                                      return
+                                                    }
+                                                    _vm.$set(
+                                                      imei,
+                                                      "total_price",
+                                                      $event.target.value
+                                                    )
+                                                  },
+                                                  function($event) {
+                                                    return _vm.onPriceChange(
+                                                      $event,
+                                                      index
+                                                    )
                                                   }
-                                                  _vm.$set(
-                                                    imei,
-                                                    "gst",
-                                                    $event.target.value
-                                                  )
-                                                },
-                                                function($event) {
-                                                  return _vm.onPriceChange(
-                                                    $event,
-                                                    index
-                                                  )
-                                                }
-                                              ]
-                                            }
-                                          }),
-                                          _vm._v(" "),
-                                          _vm.has_error &&
-                                          _vm.errors[
-                                            "products_details_list." +
-                                              index +
-                                              ".gst"
-                                          ]
-                                            ? _c(
-                                                "span",
-                                                { staticClass: "help-block" },
-                                                [
-                                                  _vm._v(
-                                                    _vm._s(
-                                                      _vm.errors[
-                                                        "products_details_list." +
-                                                          index +
-                                                          ".gst"
-                                                      ][0]
-                                                    ) +
-                                                      "\n                                        "
-                                                  )
                                                 ]
-                                              )
-                                            : _vm._e()
-                                        ]
-                                      ),
-                                      _vm._v(" "),
-                                      _c(
-                                        "td",
-                                        { staticStyle: { width: "150px" } },
-                                        [
-                                          _c("input", {
-                                            directives: [
-                                              {
-                                                name: "model",
-                                                rawName: "v-model",
-                                                value: imei.total_price,
-                                                expression: "imei.total_price"
                                               }
-                                            ],
-                                            staticClass: "form-control",
-                                            attrs: {
-                                              placeholder: "Total Price",
-                                              readonly: "",
-                                              type: "number",
-                                              id: index
-                                            },
-                                            domProps: {
-                                              value: imei.total_price
-                                            },
-                                            on: {
-                                              input: [
-                                                function($event) {
-                                                  if ($event.target.composing) {
-                                                    return
-                                                  }
-                                                  _vm.$set(
-                                                    imei,
-                                                    "total_price",
-                                                    $event.target.value
-                                                  )
-                                                },
-                                                function($event) {
-                                                  return _vm.onPriceChange(
-                                                    $event,
-                                                    index
-                                                  )
-                                                }
-                                              ]
-                                            }
-                                          }),
-                                          _vm._v(" "),
-                                          _vm.has_error &&
-                                          _vm.errors[
-                                            "products_details_list." +
-                                              index +
-                                              ".total_price"
+                                            }),
+                                            _vm._v(" "),
+                                            _vm.has_error &&
+                                            _vm.errors[
+                                              "products_details_list." +
+                                                index +
+                                                ".total_price"
+                                            ]
+                                              ? _c(
+                                                  "span",
+                                                  { staticClass: "help-block" },
+                                                  [
+                                                    _vm._v(
+                                                      _vm._s(
+                                                        _vm.errors[
+                                                          "products_details_list." +
+                                                            index +
+                                                            ".total_price"
+                                                        ][0]
+                                                      ) +
+                                                        "\n                                "
+                                                    )
+                                                  ]
+                                                )
+                                              : _vm._e()
                                           ]
-                                            ? _c(
-                                                "span",
-                                                { staticClass: "help-block" },
-                                                [
-                                                  _vm._v(
-                                                    _vm._s(
-                                                      _vm.errors[
-                                                        "products_details_list." +
-                                                          index +
-                                                          ".total_price"
-                                                      ][0]
-                                                    ) +
-                                                      "\n                                "
-                                                  )
-                                                ]
-                                              )
-                                            : _vm._e()
-                                        ]
-                                      )
-                                    ])
-                                  : _vm._e()
-                              }
-                            ),
-                            0
-                          )
-                        ])
+                                        )
+                                      ])
+                                    : _vm._e()
+                                }
+                              ),
+                              0
+                            )
+                          ]
+                        )
                       ])
                     ])
                   ]
@@ -65853,7 +66317,7 @@ var render = function() {
                   _vm._m(1),
                   _vm._v(" "),
                   _c("td", { staticClass: "right" }, [
-                    _vm._v(_vm._s(_vm.inventory.total_unit_price))
+                    _vm._v("₹ " + _vm._s(_vm.inventory.total_unit_price))
                   ])
                 ]),
                 _vm._v(" "),
@@ -65861,7 +66325,7 @@ var render = function() {
                   _vm._m(2),
                   _vm._v(" "),
                   _c("td", { staticClass: "right" }, [
-                    _vm._v(_vm._s(_vm.inventory.total_gst))
+                    _vm._v("₹ " + _vm._s(_vm.inventory.total_gst))
                   ])
                 ]),
                 _vm._v(" "),
@@ -65869,7 +66333,9 @@ var render = function() {
                   _vm._m(3),
                   _vm._v(" "),
                   _c("td", { staticClass: "right" }, [
-                    _c("strong", [_vm._v(_vm._s(_vm.inventory.total_price))])
+                    _c("strong", [
+                      _vm._v("₹ " + _vm._s(_vm.inventory.total_price))
+                    ])
                   ])
                 ])
               ])
@@ -65895,13 +66361,21 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", { staticStyle: { width: "150px" } }, [_vm._v("Item Color")]),
         _vm._v(" "),
-        _c("th", { staticStyle: { width: "auto" } }, [_vm._v("IMEI Number")]),
+        _c("th", { staticStyle: { "min-width": "250px" } }, [
+          _vm._v("IMEI Number")
+        ]),
         _vm._v(" "),
-        _c("th", { staticStyle: { width: "150px" } }, [_vm._v("Unit Rate")]),
+        _c("th", { staticStyle: { width: "150px" } }, [_vm._v("Unit Rate(₹)")]),
         _vm._v(" "),
-        _c("th", { staticStyle: { width: "150px" } }, [_vm._v("GST")]),
+        _c("th", { staticStyle: { width: "100px" } }, [_vm._v("GST %")]),
         _vm._v(" "),
-        _c("th", { staticStyle: { width: "150px" } }, [_vm._v("Total Price")])
+        _c("th", { staticStyle: { width: "150px", display: "none" } }, [
+          _vm._v("GST")
+        ]),
+        _vm._v(" "),
+        _c("th", { staticStyle: { width: "150px" } }, [
+          _vm._v("Total Price(₹)")
+        ])
       ])
     ])
   },
@@ -67009,6 +67483,14 @@ var render = function() {
                           _vm._s(stocksDetail.available_stock) +
                             "\n                    "
                         )
+                      ]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _vm._v("₹ " + _vm._s(stocksDetail.total_wo_gst))
+                      ]),
+                      _vm._v(" "),
+                      _c("td", [
+                        _vm._v("₹ " + _vm._s(stocksDetail.total_w_gst))
                       ])
                     ]
                   )
@@ -67071,7 +67553,11 @@ var staticRenderFns = [
       _c("tr", [
         _c("th", [_vm._v("Product Name")]),
         _vm._v(" "),
-        _c("th", [_vm._v("Available Stock")])
+        _c("th", [_vm._v("Available Stock")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Stock Value without GST")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Stock Value with GST")])
       ])
     ])
   }
@@ -88531,9 +89017,9 @@ var routes = [{
     auth: {
       roles: 'admin',
       redirect: {
-        name: '403'
+        name: 'dashboard'
       },
-      forbiddenRedirect: '/403'
+      forbiddenRedirect: '/dashboard'
     }
   }
 }, {
