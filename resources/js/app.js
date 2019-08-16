@@ -19,6 +19,7 @@ import VueToast from 'vue-toast-notification';
 import 'vue-toast-notification/dist/index.css';
 import VModal from 'vue-js-modal'
 import VMdDateRangePicker from "v-md-date-range-picker";
+import VueScrollTo from "vue-scrollto";
 
 import VueMoment from 'vue-moment';
 // import vuetify from './plugins/vuetify';
@@ -41,7 +42,7 @@ axios.defaults.baseURL = window.base_url + '/api/v1';
 Vue.use(VueAuth, auth);
 Vue.use(VMdDateRangePicker);
 Vue.use(VueMoment);
-
+Vue.use(VueScrollTo)
 
 // Vue.use(Vuetify);
 // Load Index

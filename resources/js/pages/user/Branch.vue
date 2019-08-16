@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" id="branch_form">
         <div class="row justify-content-md-center">
             <div class="col-12 col-md-6">
                 <div class="card card-default">
@@ -43,7 +43,9 @@
                     </li>
                     <li :key="branch.id" class="list-group-item" v-for="(branch, index) in branches">
                         {{index + 1}}) {{branch.branch_name}} - {{branch.branch_location}}
-                        <button @click="editBranch(branch)" class="btn btn-sm btn-outline-info" v-if="branch.id != '1'">
+                        <button @click="editBranch(branch)" class="btn btn-sm btn-outline-info"
+                                v-if="branch.id !=
+                        '1'" v-scroll-to="'#branch_form'">
                             Edit
                         </button>
                         <button @click="deleteBranch(branch.id)" class="btn btn-sm btn-outline-danger"

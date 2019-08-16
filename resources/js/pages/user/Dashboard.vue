@@ -4,7 +4,8 @@
             <div class="card-header">Navigation</div>
 
             <div class="card-body p-0">
-                <ul class="list-group" v-if="$auth.check('admin')">
+                <ul class="list-group" v-if="$auth.check('admin') || $auth.check('account') ||
+                $auth.check('stockuser')">
                     <li class="list-group-item" v-bind:key="route.path"
                         v-for="(route, key) in
                     routes.admin" v-if="route.access.includes($auth.user().roles)">
@@ -23,16 +24,47 @@
                 routes: {
                     // LOGGED
                     admin: [
-                        {name: "Manage Branches", path: "branch", access: ["admin"]},
-                        {name: "Manage Users", path: "users", access: ["admin"]},
-                        {name: "Suppliers", path: "supplier", access: ["admin"]},
-                        {name: "Brands", path: "brand", access: ["admin"]},
-                        {name: "Products", path: "product", access: ["admin"]},
-                        {name: "Inventory Old", path: "addinventory", access: ["admin"]},
-                        {name: "Inventory New", path: "inventory", access: ["admin"]},
-                        {name: "IMEI Stock By Location", path: "imeistockdetail", access: ["admin"]},
-                        {name: "IMEI Sales By Location", path: "imeisalesdetail", access: ["admin"]},
-                        {name: "Product Stock Details", path: "productstockdetail", access: ["admin"]}
+                        {
+                            name: "Manage Branches",
+                            path: "branch", access: ["admin", "account"]
+                        },
+                        {
+                            name: "Manage Users",
+                            path: "users", access: ["admin", "account"]
+                        },
+                        {
+                            name: "Suppliers",
+                            path: "supplier", access: ["admin", "account"]
+                        },
+                        {
+                            name: "Brands",
+                            path: "brand", access: ["admin", "account", "stockuser"]
+                        },
+                        {
+                            name: "Products",
+                            path: "product", access: ["admin", "account", "stockuser"]
+                        },
+                        // {
+                        //     name: "Inventory Old",
+                        //     path: "addinventory", access: ["admin", "account"]
+                        // },
+                        {
+                            name: "Inventory",
+                            path: "inventory", access: ["admin", "account", "stockuser"]
+                        },
+                        {
+                            name: "IMEI Stock By Location",
+                            path: "imeistockdetail",
+                            access: ["admin", "account", "stockuser"]
+                        },
+                        {
+                            name: "IMEI Sales By Location",
+                            path: "imeisalesdetail", access: ["admin", "account"]
+                        },
+                        {
+                            name: "Product Stock Details",
+                            path: "productstockdetail", access: ["admin", "account"]
+                        }
                     ],
                 }
             }

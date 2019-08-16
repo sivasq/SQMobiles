@@ -13,21 +13,22 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto" v-if="$auth.check('user')">
+            <!--            <ul class="navbar-nav mr-auto" v-if="$auth.check('user')">-->
+            <!--                <li class="nav-item" v-bind:key="route.path" v-for="(route, key) in routes.user">-->
+            <!--                    <router-link :key="key" :to="{ name : route.path }" class="nav-link">{{route.name}}</router-link>-->
+            <!--                </li>-->
+            <!--            </ul>-->
+            <ul class="navbar-nav mr-auto" v-if="$auth.check('admin') || $auth.check('account') ||
+                $auth.check('stockuser')">
                 <li class="nav-item" v-bind:key="route.path" v-for="(route, key) in routes.user">
                     <router-link :key="key" :to="{ name : route.path }" class="nav-link">{{route.name}}</router-link>
                 </li>
             </ul>
-            <ul class="navbar-nav mr-auto" v-if="$auth.check('admin')">
-                <li class="nav-item" v-bind:key="route.path" v-for="(route, key) in routes.user">
-                    <router-link :key="key" :to="{ name : route.path }" class="nav-link">{{route.name}}</router-link>
-                </li>
-            </ul>
-            <ul class="navbar-nav ml-auto" v-if="!$auth.check()">
-                <li class="nav-item" v-bind:key="route.path" v-for="(route, key) in routes.unlogged">
-                    <router-link :key="key" :to="{ name : route.path }" class="nav-link">{{route.name}}</router-link>
-                </li>
-            </ul>
+            <!--            <ul class="navbar-nav ml-auto" v-if="!$auth.check()">-->
+            <!--                <li class="nav-item" v-bind:key="route.path" v-for="(route, key) in routes.unlogged">-->
+            <!--                    <router-link :key="key" :to="{ name : route.path }" class="nav-link">{{route.name}}</router-link>-->
+            <!--                </li>-->
+            <!--            </ul>-->
             <ul class="navbar-nav ml-auto" v-if="$auth.check()">
                 <li class="nav-item">
                     <a @click.prevent="$auth.logout()" class="nav-link" href="#">Logout</a>

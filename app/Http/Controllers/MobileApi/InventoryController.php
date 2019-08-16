@@ -5,6 +5,7 @@ namespace App\Http\Controllers\MobileApi;
 use App\Branch;
 use App\Http\Controllers\MobileApi\BaseController as BaseController;
 use App\Http\Resources\InventoryProductDetail as InventoryProductDetailResource;
+use App\Inventory;
 use App\InventoryProduct;
 use App\InventoryProductDetail;
 use App\InventoryProductDetailTxnHistory;
@@ -16,7 +17,7 @@ use Validator;
 
 class InventoryController extends BaseController
 {
-    public function addStock(Request $request)
+    public function addStock1(Request $request)
     {
         if (Auth::user()->roles != 'stockuser') {
             return response()->json(['status' => 'false', 'message' => 'unAuthorized'], 401);
@@ -50,6 +51,93 @@ class InventoryController extends BaseController
                 'imei_number' => $request['imei_number'],
                 'branch_id' => $request->branch_id,
                 'product_id' => $request->product_id,
+                'received_from' => null,
+                'received_at' => now(),
+                'created_at' => now(),
+            ];
+
+            $imeiEntryId = InventoryProductDetail::create($inventory_imei_records)->id;
+
+            if ($imeiEntryId) {
+
+                $to = Branch::select(DB::raw("CONCAT(branches.branch_name, '-', branches.branch_location) as branch"))->where
+                ('id', $request->get('branch_id'))->first();
+
+                $auth_user = Auth::user();
+                $user_id = $auth_user->id;
+                $user_name = $auth_user->name;
+
+                $txn_histories[] = [
+                    'inventory_product_detail_id' => $imeiEntryId,
+                    'txn_details' => "stock added to " . $to->branch . " by " . $user_name,
+                    'txn_by' => $user_id,
+                    'created_at' => now()
+                ];
+                $imeiTxnLog = InventoryProductDetailTxnHistory::insert($txn_histories);
+            }
+            DB::commit();
+            return response()->json(['status' => 'success'], 200);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json(['status' => 'false', 'msg' => $e], 400);
+        }
+    }
+
+    public function addStock(Request $request)
+    {
+        if (Auth::user()->roles != 'stockuser') {
+            return response()->json(['status' => 'false', 'message' => 'unAuthorized'], 401);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'invoice_number' => 'required',
+            'supplier_id' => 'required',
+            'brand_id' => 'required',
+            'product_id' => 'required',
+            'product_color' => 'required',
+            'branch_id' => 'required',
+            'imei_number' => 'required|unique:inventory_product_details',
+            'unit_price' => 'required',
+            'gst' => 'required',
+            'gst_percentage' => 'required',
+            'total_price' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $inventory = Inventory::firstOrCreate(
+                ['invoice_number' => $request->invoice_number],
+                ['supplier_id' => $request->supplier_id]
+            );
+
+            $inventoryProduct = InventoryProduct::updateOrCreate(
+                ['inventory_id' => $inventory->id, 'product_id' => $request->product_id],
+                ['inventory_product_qty' => \DB::raw('inventory_product_qty + 1'), 'purchase_price_per_qty' => 0]
+            );
+
+            // Inventory_imei_records to be saved
+            $inventory_imei_records = [
+                'inventory_product_id' => $inventoryProduct->id,
+                'imei_number' => $request['imei_number'],
+                'branch_id' => $request->branch_id,
+                'product_id' => $request->product_id,
+                'product_color' => $request->product_color,
+                'unit_price' => $request->unit_price,
+                'cgst_percentage' => ($request->gst_percentage / 2),
+                'sgst_percentage' => ($request->gst_percentage / 2),
+                'gst_percentage' => $request->gst_percentage,
+                'cgst' => ($request->gst / 2),
+                'sgst' => ($request->gst / 2),
+                'gst' => $request->gst,
+                'total_price' => $request->total_price,
                 'received_from' => null,
                 'received_at' => now(),
                 'created_at' => now(),

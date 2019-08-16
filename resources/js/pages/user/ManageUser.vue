@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="container">
+        <div class="container" id="user_form">
             <div class="row justify-content-md-center">
                 <div class="col-12 col-md-6">
                     <div class="card card-default">
@@ -89,7 +89,7 @@
                                 <td>{{user.mobile}}</td>
                                 <td>{{user.branch_details.branch_name}} - {{user.branch_details.branch_location}}</td>
                                 <td>
-                                    <button @click="editUser(user)" class="btn btn-sm btn-outline-info">Edit</button>
+                                    <button v-scroll-to="'#user_form'" @click="editUser(user)" class="btn btn-sm btn-outline-info">Edit</button>
                                     <button @click="deleteUser(user.id)" class="btn btn-sm btn-outline-danger"
                                             v-if="user.roles != 'admin' && user.activeStatus == true">Delete
                                     </button>

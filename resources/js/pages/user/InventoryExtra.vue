@@ -131,7 +131,7 @@
                                         <!-- Unit Price -->
                                         <td style="width: 150px;">
                                             <input class="form-control" min="0" placeholder="Unit Price"
-                                                   type="number" v-bind:id="index"
+                                                   step="0.01" type="number" v-bind:id="index"
                                                    v-model="imei.unit_price" v-on:input="onPriceChange($event, index)">
                                             <span class="help-block"
                                                   v-if="has_error && errors['products_details_list.'+index+'.unit_price']">{{errors['products_details_list.'+index+'.unit_price'][0]}}
@@ -157,7 +157,8 @@
 
                                         <!-- GST -->
                                         <td style="width: 150px; display: none;">
-                                            <input class="form-control" placeholder="GST" readonly type="number"
+                                            <input class="form-control" placeholder="GST" readonly step="0.01"
+                                                   type="number"
                                                    v-bind:id="index"
                                                    v-model="imei.gst" v-on:input="onPriceChange($event, index)">
                                             <span class="help-block"
@@ -168,7 +169,7 @@
                                         <!-- Total Price -->
                                         <td style="width: 150px;">
                                             <input class="form-control" placeholder="Total Price" readonly
-                                                   type="number"
+                                                   step="0.01" type="number"
                                                    v-bind:id="index" v-model="imei.total_price" v-on:input="onPriceChange($event,
                                                    index)">
                                             <span class="help-block"
@@ -241,7 +242,7 @@
                 suppliers: [],
                 brands: [],
                 products: [],
-                gst_percentages: [12, 28]
+                gst_percentages: [12, 18, 28]
             }
         },
         created() {

@@ -98,7 +98,7 @@
                         <td>{{stocksDetail.brand_name}} -
                             {{stocksDetail.product_name}} - {{stocksDetail.product_color}}
                         </td>
-                        <td>{{stocksDetail.branch_location}}
+                        <td>{{stocksDetail.branch_name}} - {{stocksDetail.branch_location}}
                         </td>
                     </tr>
                     </tbody>

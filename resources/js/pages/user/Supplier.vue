@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" id="supplier_form">
         <div class="row justify-content-md-center">
             <div class="col-12">
                 <div class="card card-default">
@@ -81,7 +81,8 @@
                         <td>{{supplier.email}}</td>
                         <td>{{supplier.address}}</td>
                         <td>
-                            <button @click="editSupplier(supplier)" class="btn btn-sm btn-outline-info">Edit</button>
+                            <button v-scroll-to="'#supplier_form'" @click="editSupplier(supplier)"
+                                    class="btn btn-sm btn-outline-info">Edit</button>
                             <button @click="deleteSupplier(supplier.id)" class="btn btn-sm btn-outline-danger"
                                     v-if="supplier.activeStatus == true">Delete
                             </button>

@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" id="product_form">
         <div class="row justify-content-md-center">
             <div class="col-12">
                 <div class="card card-default">
@@ -42,18 +42,23 @@
                 <input class="form-control mb-1" placeholder="Filter By Brand" type="search" v-model="searchBrand">
                 <ul class="list-group">
                     <li class="list-group-item text-center text-primary"> Products List &nbsp;&nbsp;&nbsp;<button
-                        @click.prevent="exportData" class="btn btn-sm btn-outline-secondary">Export As Excel</button></li>
+                        @click.prevent="exportData" class="btn btn-sm btn-outline-secondary">Export As Excel
+                    </button>
+                    </li>
                     <li class="list-group-item text-center text-danger" v-if='products.length === 0'>There are no
                         Product yet!
                     </li>
                     <li :key="product.id" class="list-group-item" v-for="(product, index) in filterProducts">
                         {{index + 1}}) {{product.brand_details.brand_name}} {{product.product_name}}
-                        <button @click="editProduct(product)" class="btn btn-sm btn-outline-info">Edit</button>
+                        <button v-scroll-to="'#product_form'" @click="editProduct(product)"
+                                class="btn btn-sm btn-outline-info">Edit</button>
                         <button @click="deleteProduct(product.id)" class="btn btn-sm btn-outline-danger"
-                                v-if="product.activeStatus == true">Delete
+                                v-if="($auth.check('admin') || $auth.check('account')) && product.activeStatus == true">
+                            Delete
                         </button>
                         <button @click="unDeleteProduct(product.id)" class="btn btn-sm btn-outline-secondary"
-                                v-if="product.activeStatus == false">UnDelete
+                                v-if="($auth.check('admin') || $auth.check('account')) && product.activeStatus == false">
+                            UnDelete
                         </button>
                     </li>
                 </ul>

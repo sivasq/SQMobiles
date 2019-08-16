@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container" id="brand_form">
         <div class="row justify-content-md-center">
             <div class="col-12">
                 <div class="card card-default">
@@ -29,11 +29,15 @@
                     </li>
                     <li :key="brand.id" class="list-group-item" v-for="(brand, index) in brands">
                         {{index + 1}}) {{brand.brand_name}}
-                        <button @click="editBrand(brand)" class="btn btn-sm btn-outline-info">Edit</button>
+                        <button v-scroll-to="'#brand_form'" @click="editBrand(brand)"
+                                class="btn btn-sm btn-outline-info">Edit</button>
                         <button @click="deleteBrand(brand.id)" class="btn btn-sm btn-outline-danger"
-                                v-if="brand.activeStatus == true">Delete</button>
-                        <button @click="unDeleteBrand(brand.id)" class="btn btn-sm btn-outline-secondary"
-                                v-if="brand.activeStatus == false">UnDelete
+                                v-if="($auth.check('admin') || $auth.check('account')) && brand.activeStatus == true">Delete
+                        </button>
+                        <button @click="unDeleteBrand(brand.id)"
+                                class="btn btn-sm btn-outline-secondary"
+                                v-if="($auth.check('admin') || $auth.check('account')) && brand.activeStatus == false">
+                            UnDelete
                         </button>
                     </li>
                 </ul>

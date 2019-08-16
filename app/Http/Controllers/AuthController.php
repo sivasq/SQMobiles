@@ -100,6 +100,12 @@ class AuthController extends Controller
             ], 422);
         }
 
+        // Check Email Exist and get user
+        $user = User::where('email', $request->email)->whereIn('roles', ['admin', 'account', 'stockuser'])->first();
+        if (is_null($user)) {
+            return response()->json(['success' => false, 'message' => 'unAuthorized'], 401);
+        }
+
         $credentials = $request->only('email', 'password');
         if ($token = $this->guard()->attempt($credentials)) {
             return response()->json(['success' => true], 200)->header('Authorization', $token);
@@ -178,7 +184,7 @@ class AuthController extends Controller
     public function un_destroy($user)
     {
         $restored = User::withTrashed()->find($user)->restore();
-        if($restored) {
+        if ($restored) {
             return response()->json(['status' => 'success', 'message' => 'User Restored successfully'], 200);
         }
     }

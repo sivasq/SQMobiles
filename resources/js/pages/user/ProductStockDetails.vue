@@ -45,8 +45,8 @@
                     <tr>
                         <th>Product Name</th>
                         <th>Available Stock</th>
-                        <th>Stock Value without GST</th>
-                        <th>Stock Value with GST</th>
+                        <th v-if="$auth.check('admin') || $auth.check('account')">Stock Value without GST</th>
+                        <th v-if="$auth.check('admin') || $auth.check('account')">Stock Value with GST</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -62,15 +62,18 @@
                         <td>{{stocksDetail
                             .available_stock}}
                         </td>
-                        <td>&#8377; {{stocksDetail.total_wo_gst}}</td>
-                        <td>&#8377; {{stocksDetail.total_w_gst}}</td>
+                        <td v-if="$auth.check('admin') || $auth.check('account')">&#8377;
+                            {{stocksDetail.total_wo_gst}}
+                        </td>
+                        <td v-if="$auth.check('admin') || $auth.check('account')">&#8377; {{stocksDetail.total_w_gst}}
+                        </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <modal @before-open="beforeOpen" name="stock-details" height="auto" :scrollable="true">
+        <modal :scrollable="true" @before-open="beforeOpen" height="auto" name="stock-details">
             <table class="table table-striped table-hover">
                 <thead>
                 <tr>

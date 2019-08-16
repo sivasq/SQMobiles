@@ -14,7 +14,6 @@ import IMEIStockDetails from "./pages/user/IMEIStockDetails";
 import ManageUser from "./pages/user/ManageUser";
 import IMEISalesDetails from "./pages/user/IMEISalesDetails";
 import ProductStockDetails from "./pages/user/ProductStockDetails";
-import Inventory from "./pages/user/Inventory";
 import InventoryExtra from "./pages/user/InventoryExtra";
 
 // Routes
@@ -62,7 +61,7 @@ const routes = [
         meta: {
             // auth: false
             auth: {
-                redirect: { name: 'dashboard' },
+                redirect: {name: 'dashboard'},
                 forbiddenRedirect: 'dashboard'
             }
         }
@@ -83,8 +82,8 @@ const routes = [
         meta: {
             // auth: true,
             auth: {
-                roles: 'admin',
-                redirect: { name: 'dashboard' },
+                roles: ['admin', 'account'],
+                redirect: {name: 'dashboard'},
                 forbiddenRedirect: '/dashboard'
             }
         }
@@ -96,9 +95,9 @@ const routes = [
         meta: {
             // auth: true,
             auth: {
-                roles: 'admin',
-                redirect: { name: 'admin' },
-                forbiddenRedirect: '/admin/403'
+                roles: ['admin', 'account'],
+                redirect: {name: 'dashboard'},
+                forbiddenRedirect: '/dashboard'
             }
         }
     },
@@ -109,9 +108,9 @@ const routes = [
         meta: {
             // auth: true,
             auth: {
-                roles: 'admin',
-                redirect: { name: 'admin' },
-                forbiddenRedirect: '/admin/403'
+                roles: ['admin', 'account', 'stockuser'],
+                redirect: {name: 'dashboard'},
+                forbiddenRedirect: '/dashboard'
             }
         }
     },
@@ -122,9 +121,9 @@ const routes = [
         meta: {
             // auth: true,
             auth: {
-                roles: 'admin',
-                redirect: { name: 'admin' },
-                forbiddenRedirect: '/admin/403'
+                roles: ['admin', 'account'],
+                redirect: {name: 'dashboard'},
+                forbiddenRedirect: '/dashboard'
             }
         }
     },
@@ -135,9 +134,9 @@ const routes = [
         meta: {
             // auth: true,
             auth: {
-                roles: 'admin',
-                redirect: { name: 'admin' },
-                forbiddenRedirect: '/admin/403'
+                roles: ['admin', 'account', 'stockuser'],
+                redirect: {name: 'dashboard'},
+                forbiddenRedirect: '/dashboard'
             }
         }
     },
@@ -148,9 +147,9 @@ const routes = [
         meta: {
             // auth: true,
             auth: {
-                roles: 'admin',
-                redirect: { name: 'admin' },
-                forbiddenRedirect: '/admin/403'
+                roles: ['admin', 'account'],
+                redirect: {name: 'dashboard'},
+                forbiddenRedirect: '/dashboard'
             }
         }
     },
@@ -161,9 +160,9 @@ const routes = [
         meta: {
             // auth: true,
             auth: {
-                roles: 'admin',
-                redirect: { name: 'admin' },
-                forbiddenRedirect: '/admin/403'
+                roles: ['admin', 'account', 'stockuser'],
+                redirect: {name: 'dashboard'},
+                forbiddenRedirect: '/dashboard'
             }
         }
     },
@@ -174,9 +173,9 @@ const routes = [
         meta: {
             // auth: true,
             auth: {
-                roles: 'admin',
-                redirect: { name: 'admin' },
-                forbiddenRedirect: '/admin/403'
+                roles: ['admin', 'account', 'stockuser'],
+                redirect: {name: 'dashboard'},
+                forbiddenRedirect: '/dashboard'
             }
         }
     },
@@ -187,9 +186,9 @@ const routes = [
         meta: {
             // auth: true,
             auth: {
-                roles: 'admin',
-                redirect: { name: 'admin' },
-                forbiddenRedirect: '/admin/403'
+                roles: ['admin', 'account'],
+                redirect: {name: 'dashboard'},
+                forbiddenRedirect: '/dashboard'
             }
         }
     },
@@ -200,9 +199,9 @@ const routes = [
         meta: {
             // auth: true,
             auth: {
-                roles: 'admin',
-                redirect: { name: 'admin' },
-                forbiddenRedirect: '/admin/403'
+                roles: ['admin', 'account'],
+                redirect: {name: 'dashboard'},
+                forbiddenRedirect: '/dashboard'
             }
         }
     },
