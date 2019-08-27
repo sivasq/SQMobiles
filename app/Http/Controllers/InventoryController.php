@@ -18,6 +18,30 @@ use Validator;
 
 class InventoryController extends Controller
 {
+    public function setPrice(Request $request)
+    {
+        $data = DB::table('inventory_product_details')
+            ->where('inventory_product_details.product_id', $request->get('id'))
+            ->where('inventories.id', 2)
+            ->leftJoin('inventory_products', function ($join) {
+                $join->on('inventory_product_details.inventory_product_id', '=', 'inventory_products.id');
+            })
+            ->join('inventories', function ($join) {
+                $join->on('inventory_products.inventory_id', '=', 'inventories.id');
+            })
+            ->update(array(
+                'unit_price' => $request->get('price'),
+                'gst_percentage' => $request->get('gst'),
+                'cgst_percentage' => $request->get('gst') / 2,
+                'sgst_percentage' => $request->get('gst') / 2,
+                'gst' => (($request->get('gst') / 100) * $request->get('price')),
+                'cgst' => (($request->get('gst') / 100) * $request->get('price')) / 2,
+                'sgst' => (($request->get('gst') / 100) * $request->get('price')) / 2,
+                'total_price' => $request->get('price') + (($request->get('gst') / 100) * $request->get('price')),
+            ));
+        return response()->json(['status' => 'success'], 200);
+    }
+
     public function extraInventory(Request $request)
     {
         $validator = Validator::make($request->all(), [

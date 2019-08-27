@@ -44,6 +44,10 @@
                             name: "Products",
                             path: "product", access: ["admin", "account", "stockuser"]
                         },
+	                    {
+		                    name: "ProductsPrice",
+		                    path: "productprice", access: ["admin", "account"]
+	                    },
                         // {
                         //     name: "Inventory Old",
                         //     path: "addinventory", access: ["admin", "account"]

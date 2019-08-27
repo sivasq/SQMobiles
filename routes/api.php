@@ -126,6 +126,9 @@ Route::prefix('v1')->group(function () {
             Route::post('transferStock', 'InventoryController@transferStock');
 
             Route::get('getImeiTxnLog/{imei_id}', 'InventoryProductDetailTxnHistoryController@getImeiTxnLog');
+
+            //
+            Route::post('setPrice', 'InventoryController@setPrice');
         });
     });
 });

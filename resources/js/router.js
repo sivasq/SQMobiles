@@ -9,6 +9,7 @@ import Supplier from './pages/user/Supplier'
 import Brand from "./pages/user/Brand";
 import Branch from "./pages/user/Branch";
 import Product from "./pages/user/Product";
+import ProductPrice from "./pages/user/ProductPrice";
 import InventoryAdd from "./pages/user/InventoryAdd";
 import IMEIStockDetails from "./pages/user/IMEIStockDetails";
 import ManageUser from "./pages/user/ManageUser";
@@ -135,6 +136,19 @@ const routes = [
             // auth: true,
             auth: {
                 roles: ['admin', 'account', 'stockuser'],
+                redirect: {name: 'dashboard'},
+                forbiddenRedirect: '/dashboard'
+            }
+        }
+    },
+    {
+        path: '/productprice',
+        name: 'productprice',
+        component: ProductPrice,
+        meta: {
+            // auth: true,
+            auth: {
+                roles: ['admin', 'account'],
                 redirect: {name: 'dashboard'},
                 forbiddenRedirect: '/dashboard'
             }

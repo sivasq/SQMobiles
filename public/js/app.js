@@ -3501,6 +3501,10 @@ __webpack_require__.r(__webpack_exports__);
           name: "Products",
           path: "product",
           access: ["admin", "account", "stockuser"]
+        }, {
+          name: "ProductsPrice",
+          path: "productprice",
+          access: ["admin", "account"]
         }, // {
         //     name: "Inventory Old",
         //     path: "addinventory", access: ["admin", "account"]
@@ -5411,6 +5415,115 @@ __webpack_require__.r(__webpack_exports__);
           _this7.fetchProducts();
         }
       })["catch"](function (res) {});
+    }
+  },
+  components: {//
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/pages/user/ProductPrice.vue?vue&type=script&lang=js&":
+/*!***********************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/pages/user/ProductPrice.vue?vue&type=script&lang=js& ***!
+  \***********************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      product: {
+        brand_id: '',
+        product_name: ''
+      },
+      has_error: false,
+      error: '',
+      errors: {},
+      success: false,
+      brands: [],
+      products: [],
+      action: 'addProduct',
+      product_id: '',
+      isUpdate: false,
+      searchBrand: ''
+    };
+  },
+  created: function created() {
+    this.fetchProducts();
+  },
+  computed: {
+    filterProducts: function filterProducts() {
+      var _this = this;
+
+      return this.products.filter(function (stock) {
+        return !_this.searchBrand.trim() || stock.brand_details.brand_name.toLowerCase().indexOf(_this.searchBrand.toLowerCase().trim()) > -1; // return client.imei_number.indexOf(this.searchClient) > -1;
+      });
+    }
+  },
+  methods: {
+    setPrice: function setPrice(p_id) {
+      var id = p_id;
+      var price = $("#" + p_id + " #price").val();
+      var gst = $("#" + p_id + " #gst").val();
+      axios.post(window.base_url + '/api/v1/auth/setPrice', {
+        id: id,
+        price: price,
+        gst: gst
+      }).then(function (response) {
+        if (response.data.status === 'success') {
+          Vue.$toast.success("price Added");
+        }
+      })["catch"](function (res) {});
+    },
+    fetchProducts: function fetchProducts() {
+      var _this2 = this;
+
+      axios.get(window.base_url + '/api/v1/auth/fetchProducts').then(function (response) {
+        _this2.products = response.data.data;
+        console.log(_this2.products);
+      })["catch"](function (err) {
+        return console.error(err);
+      });
     }
   },
   components: {//
@@ -66089,6 +66202,209 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/pages/user/ProductPrice.vue?vue&type=template&id=69628865&":
+/*!***************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/pages/user/ProductPrice.vue?vue&type=template&id=69628865& ***!
+  \***************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "container", attrs: { id: "product_form" } },
+    [
+      _c("div", { staticClass: "row justify-content-md-center" }, [
+        _c("div", { staticClass: "col-12 mt-5" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.searchBrand,
+                expression: "searchBrand"
+              }
+            ],
+            staticClass: "form-control mb-1",
+            attrs: { placeholder: "Filter By Brand", type: "search" },
+            domProps: { value: _vm.searchBrand },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.searchBrand = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c(
+            "ul",
+            { staticClass: "list-group" },
+            [
+              _c(
+                "li",
+                { staticClass: "list-group-item text-center text-primary" },
+                [_vm._v(" Products List")]
+              ),
+              _vm._v(" "),
+              _vm.products.length === 0
+                ? _c(
+                    "li",
+                    { staticClass: "list-group-item text-center text-danger" },
+                    [
+                      _vm._v(
+                        "There are no\n                    Product yet!\n                "
+                      )
+                    ]
+                  )
+                : _vm._e(),
+              _vm._v(" "),
+              _vm._l(_vm.filterProducts, function(product, index) {
+                return _c(
+                  "li",
+                  {
+                    key: product.id,
+                    staticClass: "list-group-item",
+                    attrs: { id: product.id }
+                  },
+                  [
+                    _c("div", { staticClass: "row" }, [
+                      _vm._v(
+                        "\n                        " +
+                          _vm._s(index + 1) +
+                          ") " +
+                          _vm._s(product.brand_details.brand_name) +
+                          " " +
+                          _vm._s(product.product_name) +
+                          "\n                          \n                        "
+                      ),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: product.id,
+                            expression: "product.id"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        staticStyle: { width: "70px" },
+                        attrs: {
+                          id: "id",
+                          placeholder: "Product id",
+                          readonly: "",
+                          type: "text"
+                        },
+                        domProps: { value: product.id },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(product, "id", $event.target.value)
+                          }
+                        }
+                      }),
+                      _vm._v(
+                        "\n                         \n                        "
+                      ),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: product.price,
+                            expression: "product.price"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        staticStyle: { width: "200px" },
+                        attrs: {
+                          id: "price",
+                          placeholder: "price",
+                          type: "text"
+                        },
+                        domProps: { value: product.price },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(product, "price", $event.target.value)
+                          }
+                        }
+                      }),
+                      _vm._v(
+                        "\n                         \n                        "
+                      ),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: product.gst,
+                            expression: "product.gst"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        staticStyle: { width: "100px" },
+                        attrs: { id: "gst", placeholder: "Gst", type: "text" },
+                        domProps: { value: product.gst },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(product, "gst", $event.target.value)
+                          }
+                        }
+                      }),
+                      _vm._v(
+                        "\n                         \n                        "
+                      ),
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn btn-sm btn-outline-primary",
+                          on: {
+                            click: function($event) {
+                              return _vm.setPrice(product.id)
+                            }
+                          }
+                        },
+                        [
+                          _vm._v(
+                            "\n                            set Price\n                        "
+                          )
+                        ]
+                      )
+                    ])
+                  ]
+                )
+              })
+            ],
+            2
+          )
+        ])
+      ])
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/pages/user/ProductStockDetails.vue?vue&type=template&id=3c124540&":
 /*!**********************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/pages/user/ProductStockDetails.vue?vue&type=template&id=3c124540& ***!
@@ -88086,6 +88402,75 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/pages/user/ProductPrice.vue":
+/*!**************************************************!*\
+  !*** ./resources/js/pages/user/ProductPrice.vue ***!
+  \**************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _ProductPrice_vue_vue_type_template_id_69628865___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ProductPrice.vue?vue&type=template&id=69628865& */ "./resources/js/pages/user/ProductPrice.vue?vue&type=template&id=69628865&");
+/* harmony import */ var _ProductPrice_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ProductPrice.vue?vue&type=script&lang=js& */ "./resources/js/pages/user/ProductPrice.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _ProductPrice_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _ProductPrice_vue_vue_type_template_id_69628865___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _ProductPrice_vue_vue_type_template_id_69628865___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/pages/user/ProductPrice.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/pages/user/ProductPrice.vue?vue&type=script&lang=js&":
+/*!***************************************************************************!*\
+  !*** ./resources/js/pages/user/ProductPrice.vue?vue&type=script&lang=js& ***!
+  \***************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ProductPrice_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./ProductPrice.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/pages/user/ProductPrice.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_ProductPrice_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/pages/user/ProductPrice.vue?vue&type=template&id=69628865&":
+/*!*********************************************************************************!*\
+  !*** ./resources/js/pages/user/ProductPrice.vue?vue&type=template&id=69628865& ***!
+  \*********************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ProductPrice_vue_vue_type_template_id_69628865___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../node_modules/vue-loader/lib??vue-loader-options!./ProductPrice.vue?vue&type=template&id=69628865& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/pages/user/ProductPrice.vue?vue&type=template&id=69628865&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ProductPrice_vue_vue_type_template_id_69628865___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ProductPrice_vue_vue_type_template_id_69628865___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/pages/user/ProductStockDetails.vue":
 /*!*********************************************************!*\
   !*** ./resources/js/pages/user/ProductStockDetails.vue ***!
@@ -88241,16 +88626,18 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _pages_user_Brand__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./pages/user/Brand */ "./resources/js/pages/user/Brand.vue");
 /* harmony import */ var _pages_user_Branch__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./pages/user/Branch */ "./resources/js/pages/user/Branch.vue");
 /* harmony import */ var _pages_user_Product__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./pages/user/Product */ "./resources/js/pages/user/Product.vue");
-/* harmony import */ var _pages_user_InventoryAdd__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./pages/user/InventoryAdd */ "./resources/js/pages/user/InventoryAdd.vue");
-/* harmony import */ var _pages_user_IMEIStockDetails__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./pages/user/IMEIStockDetails */ "./resources/js/pages/user/IMEIStockDetails.vue");
-/* harmony import */ var _pages_user_ManageUser__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./pages/user/ManageUser */ "./resources/js/pages/user/ManageUser.vue");
-/* harmony import */ var _pages_user_IMEISalesDetails__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./pages/user/IMEISalesDetails */ "./resources/js/pages/user/IMEISalesDetails.vue");
-/* harmony import */ var _pages_user_ProductStockDetails__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./pages/user/ProductStockDetails */ "./resources/js/pages/user/ProductStockDetails.vue");
-/* harmony import */ var _pages_user_InventoryExtra__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./pages/user/InventoryExtra */ "./resources/js/pages/user/InventoryExtra.vue");
+/* harmony import */ var _pages_user_ProductPrice__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./pages/user/ProductPrice */ "./resources/js/pages/user/ProductPrice.vue");
+/* harmony import */ var _pages_user_InventoryAdd__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./pages/user/InventoryAdd */ "./resources/js/pages/user/InventoryAdd.vue");
+/* harmony import */ var _pages_user_IMEIStockDetails__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./pages/user/IMEIStockDetails */ "./resources/js/pages/user/IMEIStockDetails.vue");
+/* harmony import */ var _pages_user_ManageUser__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./pages/user/ManageUser */ "./resources/js/pages/user/ManageUser.vue");
+/* harmony import */ var _pages_user_IMEISalesDetails__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./pages/user/IMEISalesDetails */ "./resources/js/pages/user/IMEISalesDetails.vue");
+/* harmony import */ var _pages_user_ProductStockDetails__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./pages/user/ProductStockDetails */ "./resources/js/pages/user/ProductStockDetails.vue");
+/* harmony import */ var _pages_user_InventoryExtra__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./pages/user/InventoryExtra */ "./resources/js/pages/user/InventoryExtra.vue");
  // Pages
 // import Home from './pages/Home'
 
  // import Register from './pages/Register'
+
 
 
 
@@ -88323,7 +88710,7 @@ var routes = [{
 }, {
   path: '/users',
   name: 'users',
-  component: _pages_user_ManageUser__WEBPACK_IMPORTED_MODULE_10__["default"],
+  component: _pages_user_ManageUser__WEBPACK_IMPORTED_MODULE_11__["default"],
   meta: {
     // auth: true,
     auth: {
@@ -88391,9 +88778,23 @@ var routes = [{
     }
   }
 }, {
+  path: '/productprice',
+  name: 'productprice',
+  component: _pages_user_ProductPrice__WEBPACK_IMPORTED_MODULE_8__["default"],
+  meta: {
+    // auth: true,
+    auth: {
+      roles: ['admin', 'account'],
+      redirect: {
+        name: 'dashboard'
+      },
+      forbiddenRedirect: '/dashboard'
+    }
+  }
+}, {
   path: '/addinventory',
   name: 'addinventory',
-  component: _pages_user_InventoryAdd__WEBPACK_IMPORTED_MODULE_8__["default"],
+  component: _pages_user_InventoryAdd__WEBPACK_IMPORTED_MODULE_9__["default"],
   meta: {
     // auth: true,
     auth: {
@@ -88407,7 +88808,7 @@ var routes = [{
 }, {
   path: '/inventory',
   name: 'inventory',
-  component: _pages_user_InventoryExtra__WEBPACK_IMPORTED_MODULE_13__["default"],
+  component: _pages_user_InventoryExtra__WEBPACK_IMPORTED_MODULE_14__["default"],
   meta: {
     // auth: true,
     auth: {
@@ -88421,7 +88822,7 @@ var routes = [{
 }, {
   path: '/imeistockdetail',
   name: 'imeistockdetail',
-  component: _pages_user_IMEIStockDetails__WEBPACK_IMPORTED_MODULE_9__["default"],
+  component: _pages_user_IMEIStockDetails__WEBPACK_IMPORTED_MODULE_10__["default"],
   meta: {
     // auth: true,
     auth: {
@@ -88435,7 +88836,7 @@ var routes = [{
 }, {
   path: '/imeisalesdetail',
   name: 'imeisalesdetail',
-  component: _pages_user_IMEISalesDetails__WEBPACK_IMPORTED_MODULE_11__["default"],
+  component: _pages_user_IMEISalesDetails__WEBPACK_IMPORTED_MODULE_12__["default"],
   meta: {
     // auth: true,
     auth: {
@@ -88449,7 +88850,7 @@ var routes = [{
 }, {
   path: '/productstockdetail',
   name: 'productstockdetail',
-  component: _pages_user_ProductStockDetails__WEBPACK_IMPORTED_MODULE_12__["default"],
+  component: _pages_user_ProductStockDetails__WEBPACK_IMPORTED_MODULE_13__["default"],
   meta: {
     // auth: true,
     auth: {

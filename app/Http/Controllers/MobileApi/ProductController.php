@@ -61,7 +61,7 @@ class ProductController extends BaseController
             ->join('brands', function ($join) {
                 $join->on('products.brand_id', '=', 'brands.id');
             })
-            ->select('inventory_product_details.imei_number', 'brands.brand_name', 'products.product_name',
+            ->select('inventory_product_details.id as imei_id','inventory_product_details.imei_number', 'brands.brand_name', 'products.product_name',
                 DB::raw("CONCAT(branches.branch_name, '-', branches.branch_location) as sent_from"))
             ->get();
         return $this->sendResponse($data, 'NotReceived Stock Details Retrieved Successfully.');
