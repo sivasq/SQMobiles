@@ -141,19 +141,19 @@ const routes = [
             }
         }
     },
-    {
-        path: '/productprice',
-        name: 'productprice',
-        component: ProductPrice,
-        meta: {
-            // auth: true,
-            auth: {
-                roles: ['admin', 'account'],
-                redirect: {name: 'dashboard'},
-                forbiddenRedirect: '/dashboard'
-            }
-        }
-    },
+    // {
+    //     path: '/productprice',
+    //     name: 'productprice',
+    //     component: ProductPrice,
+    //     meta: {
+    //         // auth: true,
+    //         auth: {
+    //             roles: ['admin', 'account'],
+    //             redirect: {name: 'dashboard'},
+    //             forbiddenRedirect: '/dashboard'
+    //         }
+    //     }
+    // },
     {
         path: '/addinventory',
         name: 'addinventory',
